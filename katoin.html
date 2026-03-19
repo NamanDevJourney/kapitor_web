@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Katoin – Commodity Trade Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+:root {
+  /* KAP light theme */
+  --bg:#FCF8E8;
+  --surface:#FFFFFF;
+  --surface2:#F5ECD6;
+  --surface3:#F5ECD6;
+  --border:rgba(15,23,42,0.08);
+  --border-md:rgba(15,23,42,0.16);
+
+  --blue:#4a7fcb;   --blue-light:#6b9de0;
+  --blue-dim:rgba(74,127,203,0.09);   --blue-border:rgba(74,127,203,0.2);
+
+  --green:#3db87a;  --green-light:#5ed498;
+  --green-dim:rgba(61,184,122,0.09);  --green-border:rgba(61,184,122,0.2);
+
+  /* Katoin: warm amber-earth palette */
+  --kat:#e8961e;       --kat-light:#f0b44a;
+  --kat-dim:rgba(232,150,30,0.09);    --kat-border:rgba(232,150,30,0.22);
+  --kat-earth:#c47830; --kat-dark:#8a4c10;
+  --kat-sand:#d4b870;  --kat-sand-dim:rgba(212,184,112,0.08); --kat-sand-border:rgba(212,184,112,0.2);
+
+  --red:#c05038;    --red-dim:rgba(192,80,56,0.09);   --red-border:rgba(192,80,56,0.2);
+
+  --text:#111827;  --text-muted:#6B6B6B;  --text-dim:#9CA3AF;  --white:#ffffff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:300;line-height:1.65;overflow-x:hidden;}
+
+h1,h2,h3{font-family:'Outfit',system-ui,sans-serif;font-weight:700;letter-spacing:-0.03em;color:var(--text);}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.kat{color:var(--kat);}     .ey.kat::before{background:var(--kat);}
+.ey.sand{color:var(--kat-sand);} .ey.sand::before{background:var(--kat-sand);}
+.ey.g{color:var(--green);}     .ey.g::before{background:var(--green);}
+.ey.b{color:var(--blue-light);} .ey.b::before{background:var(--blue-light);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--text);margin-bottom:0.85rem;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+
+/* ─── HEADER ─── */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+.nav-wrap{display:flex;align-items:center;gap:0.4rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+.nav-item-wrap{position:relative;display:flex;align-items:center;}
+.nav-trigger{background:transparent;border:none;color:var(--text-muted);font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+.nav-trigger:hover{color:var(--text);}
+.nav-item-wrap.active>.nav-trigger{color:var(--kat);}
+.chevron{font-size:0.7rem;opacity:0.8;}
+.nav-main-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+.nav-main-link:hover{color:var(--text);}
+.nav-main-link.active{color:var(--kat);}
+.nav-dropdown{position:absolute;top:100%;left:0;margin-top:0.35rem;min-width:260px;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 18px 45px rgba(15,23,42,0.18);padding:0.6rem 0;display:none;}
+.nav-item-wrap:hover>.nav-dropdown{display:block;}
+.nav-dropdown-head{display:block;padding:0.5rem 1rem;font-size:0.78rem;font-weight:600;color:var(--text);text-decoration:none;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+.nav-dropdown-inner{padding:0 0 0.4rem 0.85rem;display:flex;flex-direction:column;}
+.nav-dropdown-inner a{padding:0.3rem 0.9rem;font-size:0.74rem;color:var(--text-muted);text-decoration:none;border-radius:3px;display:block;}
+.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--kat);color:var(--kat);}
+.btn-cta{background:var(--kat);color:#080604;border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-cta:hover{background:var(--kat-light);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;}
+.nav-mobile-toggle{display:none;background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.3rem 0.6rem;border-radius:4px;font-size:0.9rem;cursor:pointer;}
+
+/* ─── HERO ─── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 65% 55% at 55% 28%,rgba(232,150,30,0.1) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 8% 70%,rgba(196,120,48,0.05) 0%,transparent 50%),
+    radial-gradient(ellipse 35% 35% at 92% 68%,rgba(212,184,112,0.04) 0%,transparent 45%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.013) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.013) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 65% at 50% 40%,black 10%,transparent 75%);}
+.hero-content{position:relative;z-index:2;max-width:900px;}
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(232,150,30,0.3);border-radius:3px;background:rgba(232,150,30,0.08);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--kat);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--kat);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.18}}
+.hero h1{color:var(--text);margin-bottom:0.6rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.64rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:560px;color:var(--text-muted);margin-bottom:2rem;line-height:1.8;}
+.hero-not{display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap;}
+.not-pill{font-family:"JetBrains Mono",monospace;font-size:0.63rem;letter-spacing:0.08em;padding:0.38rem 0.9rem;border-radius:3px;}
+.not-pill.no{border:1px solid rgba(192,80,56,0.2);color:rgba(192,80,56,0.55);background:rgba(192,80,56,0.05);text-decoration:line-through;}
+.not-pill.yes{border:1px solid var(--kat-border);color:var(--kat);background:var(--kat-dim);}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--kat);color:#080604;border:none;padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:var(--kat-light);transform:translateY(-1px);box-shadow:0 8px 30px rgba(232,150,30,0.22);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--kat-border);color:var(--kat);}
+
+/* hero metrics */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--kat);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 44s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--kat);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* ─── TOKENIZATION ─── */
+.token-layout{display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:start;}
+.token-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.tp-topbar{height:2px;background:var(--kat);}
+.tp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.tp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.tp-badge{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--kat-dim);color:var(--kat);border:1px solid var(--kat-border);}
+/* token card */
+.token-card{margin:1.5rem 1.75rem;background:var(--surface2);border:1px solid var(--kat-border);border-radius:8px;overflow:hidden;}
+.tc-topbar{height:3px;background:linear-gradient(90deg,var(--kat),var(--kat-sand));}
+.tc-body{padding:1.1rem 1.25rem;}
+.tc-row{display:flex;justify-content:space-between;align-items:center;padding:0.45rem 0;border-bottom:1px solid var(--border);}
+.tc-row:last-child{border-bottom:none;}
+.tc-key{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);}
+.tc-val{font-family:"JetBrains Mono",monospace;font-size:0.68rem;}
+/* tokenization steps */
+.token-steps{padding:0 1.75rem 1.5rem;}
+.ts-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.ts-flow{display:flex;flex-direction:column;gap:0;}
+.ts-step{display:flex;align-items:center;gap:10px;padding:0.5rem 0;border-bottom:1px solid var(--border);}
+.ts-step:last-child{border-bottom:none;}
+.ts-num{font-family:'Outfit',system-ui,sans-serif;font-size:0.72rem;font-weight:700;color:var(--kat);width:20px;flex-shrink:0;}
+.ts-text{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.ts-check{font-family:"JetBrains Mono",monospace;font-size:0.55rem;color:var(--green);margin-left:auto;flex-shrink:0;}
+/* lot list */
+.active-lots{margin:0 1.75rem 1.5rem;border-top:1px solid var(--border);padding-top:1.1rem;}
+.al-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.al-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:0.6rem 0;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;align-items:center;transition:background 0.15s;}
+.al-row.hdr{padding:0.4rem 0;}
+.al-row:last-child{border-bottom:none;}
+.al-cell{color:var(--text-muted);}
+.al-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.al-lot{display:flex;align-items:center;gap:7px;}
+.al-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;background:var(--kat);}
+.al-name{color:var(--text);}
+.al-status{padding:0.15rem 0.48rem;border-radius:2px;font-size:0.52rem;letter-spacing:0.08em;display:inline-block;}
+.st-transit{background:var(--kat-dim);color:var(--kat);border:1px solid var(--kat-border);}
+.st-storage{background:var(--blue-dim);color:var(--blue-light);border:1px solid var(--blue-border);}
+.st-sold{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.st-pend{background:var(--kat-sand-dim);color:var(--kat-sand);border:1px solid var(--kat-sand-border);}
+
+/* ─── TRADE LEVELS ─── */
+.trade-levels-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:3rem;}
+.tl-card{background:var(--surface);padding:2rem 1.5rem;position:relative;overflow:hidden;transition:background 0.2s;}
+.tl-card:hover{background:var(--surface2);}
+.tl-top-line{position:absolute;top:0;left:0;right:0;height:2px;}
+.tl-level{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.tl-flow{font-family:'Outfit',system-ui,sans-serif;font-size:0.95rem;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:0.5rem;}
+.tl-desc{font-size:0.76rem;color:var(--text-muted);margin-bottom:1.1rem;line-height:1.65;}
+.tl-outputs{display:flex;flex-direction:column;gap:0.3rem;}
+.tl-output{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);display:flex;align-items:center;gap:6px;}
+.tl-output::before{content:"→";color:var(--kat);font-size:0.58rem;}
+/* supply chain flow viz */
+.supply-chain{padding:2rem 0;position:relative;}
+.sc-wrap{display:flex;align-items:center;justify-content:space-between;gap:0;}
+.sc-node{
+  flex:1;text-align:center;padding:1.25rem 0.5rem;
+  background:var(--surface);border:1px solid var(--border-md);border-radius:8px;
+  position:relative;z-index:1;transition:border-color 0.2s,background 0.2s;
+}
+.sc-node:hover{border-color:var(--kat-border);background:var(--surface2);}
+.sc-icon{font-size:1.1rem;margin-bottom:0.4rem;color:var(--kat);}
+.sc-label{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);}
+.sc-arrow{flex-shrink:0;font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--kat);padding:0 0.3rem;opacity:0.6;}
+
+/* ─── PROFIT DISTRIBUTION ─── */
+.profit-layout{display:grid;grid-template-columns:1fr 1.05fr;gap:5rem;align-items:start;}
+.profit-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.pp-topbar{height:2px;background:linear-gradient(90deg,var(--kat),var(--green));}
+.pp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.pp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.pp-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--green);}
+/* distribution steps */
+.dist-steps{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.ds-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.ds-flow{display:flex;flex-direction:column;gap:0.4rem;}
+.ds-step{display:flex;align-items:center;gap:10px;padding:0.55rem 0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:5px;border-left:2px solid var(--kat);}
+.ds-num{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--kat);width:18px;flex-shrink:0;}
+.ds-text{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+/* profit record */
+.profit-record{padding:1.25rem 1.75rem;}
+.pr-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.pr-rows{display:flex;flex-direction:column;gap:0;}
+.pr-row{display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0;border-bottom:1px solid var(--border);}
+.pr-row:last-child{border-bottom:none;}
+.pr-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.pr-val{font-family:"JetBrains Mono",monospace;font-size:0.7rem;}
+/* distribution log */
+.dist-log{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;margin-top:3rem;}
+.dl-topbar{height:2px;background:linear-gradient(90deg,var(--green),var(--kat));}
+.dl-header{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dl-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.dl-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--green);}
+.dl-rows{padding:0.25rem 0;}
+.dlr-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;padding:0.65rem 1.75rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;align-items:center;transition:background 0.15s;}
+.dlr-row:last-child{border-bottom:none;}
+.dlr-row:hover{background:rgba(255,255,255,0.02);}
+.dlr-row.hdr{background:rgba(0,0,0,0.2);}
+.dlr-cell{color:var(--text-muted);}
+.dlr-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.dlr-profit{color:var(--green);}
+.dlr-lot{display:flex;align-items:center;gap:7px;}
+.dlr-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+
+/* ─── GLOBAL FLOW ─── */
+.flow-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.fp-topbar{height:2px;background:linear-gradient(90deg,var(--kat),var(--kat-sand),var(--kat-earth));}
+.fp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.fp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+/* flow diagram */
+.fp-flow{padding:1.5rem 1.75rem;border-bottom:1px solid var(--border);}
+.ff-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.8rem;}
+.ff-nodes{display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:0.5rem;}
+.ff-node{text-align:center;flex-shrink:0;padding:0.65rem 0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;min-width:90px;}
+.ff-node-icon{font-size:0.9rem;color:var(--kat);margin-bottom:0.2rem;}
+.ff-node-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;color:var(--text-muted);letter-spacing:0.04em;}
+.ff-arrow{font-family:"JetBrains Mono",monospace;font-size:0.65rem;color:var(--kat);padding:0 0.3rem;flex-shrink:0;opacity:0.5;}
+/* commodity types */
+.fp-commodities{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);}
+.fc-item{background:var(--surface);padding:1rem 1.1rem;transition:background 0.2s;}
+.fc-item:hover{background:var(--surface2);}
+.fc-icon{font-size:0.9rem;margin-bottom:0.35rem;color:var(--kat);}
+.fc-name{font-family:"JetBrains Mono",monospace;font-size:0.6rem;letter-spacing:0.06em;color:var(--text-muted);}
+/* integration chips */
+.fp-integrations{display:flex;flex-wrap:wrap;gap:0.5rem;padding:1.25rem 1.75rem;}
+.fi-chip{font-family:"JetBrains Mono",monospace;font-size:0.6rem;letter-spacing:0.08em;padding:0.32rem 0.75rem;border-radius:3px;background:var(--kat-dim);color:var(--kat);border:1px solid var(--kat-border);}
+.fi-chip.blue{background:var(--blue-dim);color:var(--blue-light);border-color:var(--blue-border);}
+.fi-chip.green{background:var(--green-dim);color:var(--green);border-color:var(--green-border);}
+.fi-chip.sand{background:var(--kat-sand-dim);color:var(--kat-sand);border-color:var(--kat-sand-border);}
+/* shipment record */
+.fp-shipments{padding:0.25rem 0;}
+.fps-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:0.65rem 1.75rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;align-items:center;transition:background 0.15s;}
+.fps-row.hdr{background:rgba(0,0,0,0.2);}
+.fps-row:last-child{border-bottom:none;}
+.fps-row:hover{background:rgba(255,255,255,0.02);}
+.fps-cell{color:var(--text-muted);}
+.fps-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+
+/* ─── GOVERNANCE ─── */
+.gov-wrap{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.gov-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.gv-topbar{height:2px;}
+.gv-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);}
+.gv-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.gv-items{padding:0.25rem 0;}
+.gv-item{display:flex;justify-content:space-between;align-items:center;padding:0.62rem 1.6rem;border-bottom:1px solid var(--border);}
+.gv-item:last-child{border-bottom:none;}
+.gv-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.gv-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;}
+/* risk exposure */
+.risk-items{padding:1rem 1.6rem;border-top:1px solid var(--border);}
+.ri-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.ri-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;}
+.ri-name{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);width:160px;flex-shrink:0;}
+.ri-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.ri-fill{height:100%;border-radius:2px;}
+.ri-score{font-family:"JetBrains Mono",monospace;font-size:0.58rem;width:50px;text-align:right;flex-shrink:0;}
+
+/* ─── DASHBOARD ─── */
+.dash-panels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.dash-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp-topbar{height:2px;}
+.dp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.dp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.dp-metric{background:var(--surface);padding:1rem 1.1rem;}
+.dp-m-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.dp-m-val{font-family:'Outfit',system-ui,sans-serif;font-size:1rem;font-weight:700;}
+.dp-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-top:0.18rem;}
+.dp-rows{padding:0.25rem 0;}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.6rem;border-bottom:1px solid var(--border);}
+.dp-row:last-child{border-bottom:none;}
+.dp-row-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.dp-row-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);}
+
+/* ─── FINAL CTA ─── */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(232,150,30,0.07) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--text);margin-bottom:0.75rem;max-width:620px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:480px;margin:0 auto 2rem;}
+.fc-pillars{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:2.5rem;}
+.fc-pill{font-family:"JetBrains Mono",monospace;font-size:0.65rem;color:var(--kat);padding:0.38rem 1rem;border:1px solid var(--kat-border);border-radius:3px;background:var(--kat-dim);}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-final{background:var(--kat);color:#080604;border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{background:var(--kat-light);box-shadow:0 8px 30px rgba(232,150,30,0.22);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--kat-border);color:var(--kat);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:'Outfit',system-ui,sans-serif;font-size:1.15rem;font-weight:700;color:var(--text);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--kat);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .trade-levels-grid{grid-template-columns:repeat(2,1fr);}
+  .fp-commodities{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:900px){
+  header{padding:0.75rem 1.25rem;}
+  .nav-mobile-toggle{display:inline-flex;align-items:center;justify-content:center;}
+  .nav-wrap{display:none;position:absolute;top:100%;left:0;right:0;margin-top:0.35rem;padding:0.75rem 1.25rem;background:rgba(252,248,232,0.98);border-bottom:1px solid var(--border);flex-direction:column;align-items:flex-start;gap:0.25rem;}
+  .nav-wrap.is-open{display:flex;}
+  .nav-item-wrap{width:100%;flex-direction:column;align-items:flex-start;}
+  .nav-dropdown{position:static;margin-top:0.15rem;box-shadow:none;border-radius:6px;width:100%;display:none;}
+  .nav-dropdown-inner{padding-left:1.4rem;}
+  .hdr-right{gap:0.5rem;}
+  .hdr-right .btn-cta{padding-inline:0.9rem;}
+  .two-col,.token-layout,.profit-layout,.gov-wrap,.dash-panels{grid-template-columns:1fr;}
+  .dlr-row{grid-template-columns:2fr 1fr 1fr;}
+  .dlr-row>*:nth-child(4),.dlr-row>*:nth-child(5),.dlr-row.hdr>*:nth-child(4),.dlr-row.hdr>*:nth-child(5){display:none;}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .trade-levels-grid,.fp-commodities{grid-template-columns:1fr;}
+  .sc-wrap{flex-wrap:wrap;justify-content:center;}
+  .sc-arrow{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap active">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-main-link">RWA</a>
+    <a href="prime.html" class="nav-main-link">Prime</a>
+    <a href="gp.html" class="nav-main-link">Global Payments</a>
+    <a href="compliance.html" class="nav-main-link">Compliance</a>
+    <a href="api.html" class="nav-main-link">Developers</a>
+    <a href="company.html" class="nav-main-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>3.2 · KATOIN · COMMODITY TRADE ENGINE · LOTS ACTIVE</div>
+      <h1 style="color:var(--text);">Commodity Trade<br><span style="color:var(--kat);">Engine.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip" style="background:var(--kat-dim);border:1px solid var(--kat-border);color:var(--kat);">KATOIN</span>
+        <span class="token-chip" style="background:var(--kat-sand-dim);border:1px solid var(--kat-sand-border);color:var(--kat-sand);">REAL-ASSET TOKENIZATION</span>
+        <span style="color:var(--text-dim);">Quantity-Defined · Trade-Linked · Profit-Distributed on Sale</span>
+      </div>
+      <p class="hero-sub">Real-asset tokenization and trade settlement engine converting verified commodity flows into ledger-backed digital representations. Profit is distributed automatically upon commercial execution — not promised, not estimated, event-based.</p>
+      <div class="hero-not">
+        <span class="not-pill no">Synthetic Commodity Exposure</span>
+        <span class="not-pill no">Pre-Promised Yield</span>
+        <span class="not-pill no">Blind Pools</span>
+        <span class="not-pill yes">Real Trade Cycles</span>
+        <span class="not-pill yes">Quantity-Verified</span>
+        <span class="not-pill yes">Profit on Sale</span>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Participate in Katoin</button>
+        <button class="btn-out">View Active Commodity Lots →</button>
+        <button class="btn-out">Access Trade Documentation →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Active Commodity Lots</div>
+          <div class="hm-val" style="color:var(--kat);">284</div>
+          <div class="hm-sub">Across 5 categories</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Total Lot Value</div>
+          <div class="hm-val" style="color:var(--kat-sand);">$1.8B</div>
+          <div class="hm-sub"><span class="up">▲ 3.2%</span> MTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Distributions (MTD)</div>
+          <div class="hm-val" style="color:var(--green);">$24M</div>
+          <div class="hm-sub">Upon sale settlement</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Trade Levels</div>
+          <div class="hm-val">4</div>
+          <div class="hm-sub">L1 → L4 active</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Synthetic Exposure</div>
+          <div class="hm-val" style="color:var(--kat);font-size:1.1rem;">Zero</div>
+          <div class="hm-sub">Real assets only</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">WHEAT LOT WHL-2280</span><span class="up">TRANSIT ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">COPPER LOT CPR-0841</span>STORAGE</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">PALM OIL POL-1142</span><span class="up">SOLD +14.2% MARGIN</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">RICE LOT RCL-0560</span>L3 DISTRIBUTION</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">CRUDE OIL CRD-3310</span><span class="up">EXPORT TRANSIT</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">DIST. LOG</span><span class="up">+$24M MTD</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ACTIVE LOTS</span>284 VERIFIED</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TRADE ENGINE</span><span class="up">ALL LEVELS ACTIVE</span></span>
+    <!-- dupe -->
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">WHEAT LOT WHL-2280</span><span class="up">TRANSIT ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">PALM OIL POL-1142</span><span class="up">SOLD +14.2% MARGIN</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">DIST. LOG</span><span class="up">+$24M MTD</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ACTIVE LOTS</span>284 VERIFIED</span>
+  </div>
+</div>
+
+<!-- ═══ TOKENIZATION ═══ -->
+<section class="section" id="tokenization">
+  <div class="container">
+    <div class="token-layout">
+      <div>
+        <div class="token-panel">
+          <div class="tp-topbar"></div>
+          <div class="tp-header">
+            <div class="tp-title">Active Commodity Token</div>
+            <div class="tp-badge">LOT WHL-2280</div>
+          </div>
+          <!-- token card -->
+          <div class="token-card">
+            <div class="tc-topbar"></div>
+            <div class="tc-body">
+              <div class="tc-row"><span class="tc-key">Commodity Type</span><span class="tc-val" style="color:var(--kat);">Premium Wheat · Grade A</span></div>
+              <div class="tc-row"><span class="tc-key">Lot Size</span><span class="tc-val" style="color:var(--text);">480 MT</span></div>
+              <div class="tc-row"><span class="tc-key">Purchase Value</span><span class="tc-val">$384,000 · $800/MT</span></div>
+              <div class="tc-row"><span class="tc-key">Trade Route</span><span class="tc-val">Punjab → Delhi → Export</span></div>
+              <div class="tc-row"><span class="tc-key">Expected Margin</span><span class="tc-val" style="color:var(--kat);">12% – 18%</span></div>
+              <div class="tc-row"><span class="tc-key">Settlement Window</span><span class="tc-val">28–35 days</span></div>
+              <div class="tc-row"><span class="tc-key">Trade Level</span><span class="tc-val" style="color:var(--kat-sand);">Level 2 → Level 4</span></div>
+              <div class="tc-row"><span class="tc-key">Ledger Status</span><span class="tc-val" style="color:var(--green);">RECORDED · VERIFIED</span></div>
+            </div>
+          </div>
+          <!-- tokenization steps -->
+          <div class="token-steps">
+            <div class="ts-label">Tokenization Sequence — Completed Before Issuance</div>
+            <div class="ts-flow">
+              <div class="ts-step"><div class="ts-num">01</div><div class="ts-text">Commodity verification</div><div class="ts-check">✓ DONE</div></div>
+              <div class="ts-step"><div class="ts-num">02</div><div class="ts-text">Quantity confirmation · 480 MT weighed</div><div class="ts-check">✓ DONE</div></div>
+              <div class="ts-step"><div class="ts-num">03</div><div class="ts-text">Quality grading · Grade A certified</div><div class="ts-check">✓ DONE</div></div>
+              <div class="ts-step"><div class="ts-num">04</div><div class="ts-text">Trade documentation · Invoice + LC issued</div><div class="ts-check">✓ DONE</div></div>
+              <div class="ts-step"><div class="ts-num">05</div><div class="ts-text">Counterparty validation · KYB confirmed</div><div class="ts-check">✓ DONE</div></div>
+            </div>
+          </div>
+          <!-- active lots -->
+          <div class="active-lots">
+            <div class="al-label">Active Lots — Current Status</div>
+            <div class="al-row hdr">
+              <span class="al-cell hdr">LOT / COMMODITY</span>
+              <span class="al-cell hdr">VALUE</span>
+              <span class="al-cell hdr">LEVEL</span>
+              <span class="al-cell hdr">STATUS</span>
+            </div>
+            <div class="al-row">
+              <div class="al-lot"><div class="al-dot" style="background:var(--kat);"></div><span class="al-name">WHL-2280 · Wheat</span></div>
+              <span class="al-cell">$384K</span>
+              <span class="al-cell">L2→L4</span>
+              <span><span class="al-status st-transit">TRANSIT</span></span>
+            </div>
+            <div class="al-row">
+              <div class="al-lot"><div class="al-dot" style="background:var(--blue-light);"></div><span class="al-name">CPR-0841 · Copper</span></div>
+              <span class="al-cell">$1.2M</span>
+              <span class="al-cell">L1→L2</span>
+              <span><span class="al-status st-storage">STORAGE</span></span>
+            </div>
+            <div class="al-row">
+              <div class="al-lot"><div class="al-dot" style="background:var(--green);"></div><span class="al-name">POL-1142 · Palm Oil</span></div>
+              <span class="al-cell">$840K</span>
+              <span class="al-cell">L3</span>
+              <span><span class="al-status st-sold">SOLD</span></span>
+            </div>
+            <div class="al-row">
+              <div class="al-lot"><div class="al-dot" style="background:var(--kat-sand);"></div><span class="al-name">RCL-0560 · Rice</span></div>
+              <span class="al-cell">$220K</span>
+              <span class="al-cell">L3</span>
+              <span><span class="al-status st-pend">PENDING</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey kat">Commodity Tokenization</div>
+        <h2 style="color:var(--text);">Real Quantity.<br>Real Price. Ledger Verified.</h2>
+        <p style="margin-top:0.85rem;">Katoin tokens represent verified commodity quantity, entry price, storage or transit status, and trade lifecycle stage. Tokenization occurs only after five sequential verification steps — no unbacked issuance is possible.</p>
+        <p style="margin-top:0.85rem;">Each token carries complete metadata: commodity type, lot size, purchase value, trade route, expected margin range, and settlement window. All data is recorded inside the Unified Ledger.</p>
+        <div style="margin-top:2.5rem;display:flex;flex-direction:column;gap:0.6rem;">
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--kat);">
+            <div><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">No Unbacked Issuance</h4><p style="font-size:0.73rem;">Every Katoin token is backed by a verified, physically confirmed commodity lot. Token supply cannot exceed verified physical inventory.</p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--kat);">
+            <div><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">Trade Lifecycle Tracking</h4><p style="font-size:0.73rem;">Each token tracks the full lifecycle from sourcing to final sale — storage status, transit stage, trade level, and distribution readiness.</p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--kat);">
+            <div><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">Counterparty-Validated</h4><p style="font-size:0.73rem;">Every trade involves counterparty validation through KYB/KYC screening before the lot is accepted into the Katoin framework.</p></div>
+          </div>
+        </div>
+        <div style="margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--kat-border);border-radius:5px;background:var(--kat-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--kat);">No unbacked issuance. All data is recorded inside the Unified Ledger.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TRADE LEVELS ═══ -->
+<section class="section" id="trade-levels">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey kat">Trade Levels</div>
+      <h2 style="color:var(--text);">Four Levels.<br>Real Supply Chains.</h2>
+      <p>Katoin integrates into real-world supply chains across four defined trade levels — from primary producer to international retail. Each level generates margin, updates ledger status, triggers profit allocation, and adjusts risk score. Capital follows real commodity movement.</p>
+    </div>
+    <div class="trade-levels-grid">
+      <div class="tl-card">
+        <div class="tl-top-line" style="background:var(--kat);"></div>
+        <div class="tl-level">LEVEL 1 · PRIMARY</div>
+        <div class="tl-flow">Farmer / Producer<br>→ Distributor</div>
+        <p class="tl-desc">Primary sourcing from verified producers — farm-gate purchase, quality certification, initial storage, and first-mile logistics.</p>
+        <div class="tl-outputs">
+          <div class="tl-output">Verified sourcing record</div>
+          <div class="tl-output">Quality grading certificate</div>
+          <div class="tl-output">Initial margin captured</div>
+        </div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-top-line" style="background:linear-gradient(90deg,var(--kat),var(--kat-sand));"></div>
+        <div class="tl-level">LEVEL 2 · BULK</div>
+        <div class="tl-flow">Distributor<br>→ Wholesaler</div>
+        <p class="tl-desc">Bulk transfer, warehousing, and regional routing. Aggregates lots across producers for volume-efficient wholesale transactions.</p>
+        <div class="tl-outputs">
+          <div class="tl-output">Warehouse receipt issued</div>
+          <div class="tl-output">Regional routing logged</div>
+          <div class="tl-output">Bulk margin accrued</div>
+        </div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-top-line" style="background:var(--kat-sand);"></div>
+        <div class="tl-level">LEVEL 3 · DOMESTIC</div>
+        <div class="tl-flow">Wholesaler<br>→ Retail</div>
+        <p class="tl-desc">Domestic distribution and margin realization. Final preparation for consumer or industrial sale within-country.</p>
+        <div class="tl-outputs">
+          <div class="tl-output">Domestic sale confirmed</div>
+          <div class="tl-output">Retail margin verified</div>
+          <div class="tl-output">Distribution profit allocated</div>
+        </div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-top-line" style="background:linear-gradient(90deg,var(--kat-sand),var(--kat-earth));"></div>
+        <div class="tl-level">LEVEL 4 · INTERNATIONAL</div>
+        <div class="tl-flow">Export<br>→ International Retail</div>
+        <p class="tl-desc">Cross-border trade and final market settlement. Highest margin potential via export premiums and international pricing.</p>
+        <div class="tl-outputs">
+          <div class="tl-output">Export clearance logged</div>
+          <div class="tl-output">International settlement</div>
+          <div class="tl-output">Maximum margin captured</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPPLY CHAIN FLOW -->
+    <div style="background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;">
+      <div style="height:2px;background:linear-gradient(90deg,var(--kat),var(--kat-sand),var(--kat-earth),var(--green));"></div>
+      <div style="padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);">
+        <div style="font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);">Commodity Flow Model</div>
+      </div>
+      <div class="supply-chain" style="padding:1.5rem 1.75rem;">
+        <div class="sc-wrap">
+          <div class="sc-node">
+            <div class="sc-icon">🌾</div>
+            <div class="sc-label">Producer</div>
+          </div>
+          <div class="sc-arrow">→</div>
+          <div class="sc-node">
+            <div class="sc-icon" style="color:var(--kat-sand);">🏪</div>
+            <div class="sc-label">Storage</div>
+          </div>
+          <div class="sc-arrow">→</div>
+          <div class="sc-node">
+            <div class="sc-icon" style="color:var(--blue-light);">📄</div>
+            <div class="sc-label">Trade Finance</div>
+          </div>
+          <div class="sc-arrow">→</div>
+          <div class="sc-node">
+            <div class="sc-icon" style="color:var(--kat-earth);">🚢</div>
+            <div class="sc-label">Shipment</div>
+          </div>
+          <div class="sc-arrow">→</div>
+          <div class="sc-node">
+            <div class="sc-icon" style="color:var(--green);">🏭</div>
+            <div class="sc-label">Buyer</div>
+          </div>
+          <div class="sc-arrow">→</div>
+          <div class="sc-node" style="border-color:var(--kat-border);background:rgba(232,150,30,0.06);">
+            <div class="sc-icon">💰</div>
+            <div class="sc-label" style="color:var(--kat);">Settlement</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROFIT DISTRIBUTION ═══ -->
+<section class="section" id="profit">
+  <div class="container">
+    <div class="profit-layout">
+      <div>
+        <div class="ey g">Profit Distribution</div>
+        <h2 style="color:var(--text);">Automated Upon<br>Commercial Sale</h2>
+        <p style="margin-top:0.85rem;">Profit is distributed only when commodity is sold, payment is confirmed, settlement is cleared, and margin is verified. No pre-promised yield. Profit is event-based — triggered by real commercial execution, not by time or schedule.</p>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;">
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--green);">
+            <div><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">Event-Based Profit</h4><p style="font-size:0.73rem;">No yield schedule. No estimated returns. Profit flows when and only when a commercial sale is executed and payment is cleared.</p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--green);">
+            <div><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">Transparent Cost Basis</h4><p style="font-size:0.73rem;">Entry price, sale price, gross margin, and net profit are all visible to Katoin holders at the lot level — no opacity in the margin calculation.</p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--green);">
+            <div><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">Ledger-Recorded Distributions</h4><p style="font-size:0.73rem;">Every distribution is ledger-recorded, reserve-mapped, and audit-tracked. The timestamp, amount, and lot reference are permanently stored.</p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--green);">
+            <div><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">Multi-Currency Settlement</h4><p style="font-size:0.73rem;">Distributions may settle in fiat, stablecoins, or approved crypto assets via GIPS payment rails and Kapitor Smart Wallet.</p></div>
+          </div>
+        </div>
+        <div style="margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--green-border);border-radius:5px;background:var(--green-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--green);">No pre-promised yield. Profit is event-based. Distributed only on commercial sale confirmation.</div>
+      </div>
+      <div>
+        <div class="profit-panel">
+          <div class="pp-topbar"></div>
+          <div class="pp-header">
+            <div class="pp-title">Distribution Engine — Lot POL-1142</div>
+            <div class="pp-live"><div style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;"></div>SETTLED</div>
+          </div>
+          <div class="dist-steps">
+            <div class="ds-label">Distribution Sequence — Completed</div>
+            <div class="ds-flow">
+              <div class="ds-step"><div class="ds-num">01</div><div class="ds-text">Sale price recorded — $980,000</div></div>
+              <div class="ds-step"><div class="ds-num">02</div><div class="ds-text">Cost basis reconciled — $840,000</div></div>
+              <div class="ds-step"><div class="ds-num">03</div><div class="ds-text">Net profit calculated — $140,000</div></div>
+              <div class="ds-step"><div class="ds-num">04</div><div class="ds-text">Allocation percentage applied — 100%</div></div>
+              <div class="ds-step"><div class="ds-num">05</div><div class="ds-text">Profit credited to Katoin holders</div></div>
+            </div>
+          </div>
+          <div class="profit-record">
+            <div class="pr-label">Lot POL-1142 · Palm Oil · Distribution Record</div>
+            <div class="pr-rows">
+              <div class="pr-row"><span class="pr-key">Commodity Lot ID</span><span class="pr-val" style="color:var(--kat);">POL-1142</span></div>
+              <div class="pr-row"><span class="pr-key">Entry Price</span><span class="pr-val">$840,000</span></div>
+              <div class="pr-row"><span class="pr-key">Sale Price</span><span class="pr-val" style="color:var(--text);">$980,000</span></div>
+              <div class="pr-row"><span class="pr-key">Gross Margin</span><span class="pr-val" style="color:var(--kat);">16.67%</span></div>
+              <div class="pr-row"><span class="pr-key">Net Profit</span><span class="pr-val" style="color:var(--green);">$140,000</span></div>
+              <div class="pr-row"><span class="pr-key">Distribution Timestamp</span><span class="pr-val">14:22:08 · Feb 22</span></div>
+              <div class="pr-row"><span class="pr-key">Ledger Status</span><span class="pr-val" style="color:var(--green);">RECORDED · AUDIT-TRACKED</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISTRIBUTION LOG -->
+    <div class="dist-log">
+      <div class="dl-topbar"></div>
+      <div class="dl-header">
+        <div class="dl-title">Live Distribution Log</div>
+        <div class="dl-live"><div style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;"></div>REAL-TIME</div>
+      </div>
+      <div class="dl-rows">
+        <div class="dlr-row hdr">
+          <span class="dlr-cell hdr">LOT / COMMODITY</span>
+          <span class="dlr-cell hdr">SALE PRICE</span>
+          <span class="dlr-cell hdr">MARGIN</span>
+          <span class="dlr-cell hdr">NET PROFIT</span>
+          <span class="dlr-cell hdr">TIMESTAMP</span>
+        </div>
+        <div class="dlr-row">
+          <div class="dlr-lot"><div class="dlr-dot" style="background:var(--green);"></div><span style="color:var(--text);">POL-1142 · Palm Oil</span></div>
+          <span class="dlr-cell">$980,000</span>
+          <span class="dlr-cell" style="color:var(--kat);">16.67%</span>
+          <span class="dlr-profit">$140,000</span>
+          <span class="dlr-cell">14:22:08</span>
+        </div>
+        <div class="dlr-row">
+          <div class="dlr-lot"><div class="dlr-dot" style="background:var(--green);"></div><span style="color:var(--text);">SYB-0440 · Soybeans</span></div>
+          <span class="dlr-cell">$1,240,000</span>
+          <span class="dlr-cell" style="color:var(--kat);">12.8%</span>
+          <span class="dlr-profit">$141,800</span>
+          <span class="dlr-cell">13:48:22</span>
+        </div>
+        <div class="dlr-row">
+          <div class="dlr-lot"><div class="dlr-dot" style="background:var(--green);"></div><span style="color:var(--text);">IRN-0880 · Iron Ore</span></div>
+          <span class="dlr-cell">$2,840,000</span>
+          <span class="dlr-cell" style="color:var(--kat);">9.4%</span>
+          <span class="dlr-profit">$244,200</span>
+          <span class="dlr-cell">12:10:55</span>
+        </div>
+        <div class="dlr-row">
+          <div class="dlr-lot"><div class="dlr-dot" style="background:var(--kat-sand);"></div><span style="color:var(--text);">CRN-1200 · Corn</span></div>
+          <span class="dlr-cell">$680,000</span>
+          <span class="dlr-cell" style="color:var(--kat);">14.1%</span>
+          <span class="dlr-profit">$83,800</span>
+          <span class="dlr-cell">10:34:18</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GLOBAL COMMODITY FLOW ═══ -->
+<section class="section" id="flow">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey sand">Global Commodity Flow</div>
+      <h2 style="color:var(--text);">Integrated Trade<br>Infrastructure</h2>
+      <p>Katoin supports five commodity categories across the full producer-to-buyer flow. Each shipment cycle generates a Trade ID, financing reference, counterparty record, risk evaluation, and final margin record. Commodity flow is visible, not abstract.</p>
+    </div>
+    <div class="flow-panel">
+      <div class="fp-topbar"></div>
+      <div class="fp-header"><div class="fp-title">Commodity Flow Infrastructure</div></div>
+      <!-- full flow diagram with KFI integration -->
+      <div class="fp-flow">
+        <div class="ff-label">Integrated Shipment Cycle</div>
+        <div class="ff-nodes">
+          <div class="ff-node"><div class="ff-node-icon">🌾</div><div class="ff-node-label">Producer</div></div>
+          <div class="ff-arrow">→</div>
+          <div class="ff-node"><div class="ff-node-icon" style="color:var(--kat-sand);">🏪</div><div class="ff-node-label">Storage</div></div>
+          <div class="ff-arrow">→</div>
+          <div class="ff-node" style="border-color:var(--blue-border);"><div class="ff-node-icon" style="color:var(--blue-light);">📄</div><div class="ff-node-label" style="color:var(--blue-light);">KFI / LC</div></div>
+          <div class="ff-arrow">→</div>
+          <div class="ff-node"><div class="ff-node-icon" style="color:var(--kat-earth);">🚢</div><div class="ff-node-label">Shipment</div></div>
+          <div class="ff-arrow">→</div>
+          <div class="ff-node"><div class="ff-node-icon" style="color:var(--green);">🏭</div><div class="ff-node-label">Buyer</div></div>
+          <div class="ff-arrow">→</div>
+          <div class="ff-node" style="border-color:var(--kat-border);background:rgba(232,150,30,0.06);"><div class="ff-node-icon">💰</div><div class="ff-node-label" style="color:var(--kat);">GIPS Settlement</div></div>
+          <div class="ff-arrow">→</div>
+          <div class="ff-node" style="border-color:var(--green-border);background:rgba(61,184,122,0.06);"><div class="ff-node-icon" style="color:var(--green);">⬡</div><div class="ff-node-label" style="color:var(--green);">Distribution</div></div>
+        </div>
+      </div>
+      <!-- commodity types -->
+      <div class="fp-commodities">
+        <div class="fc-item"><div class="fc-icon">🌾</div><div class="fc-name">Agricultural</div></div>
+        <div class="fc-item"><div class="fc-icon" style="color:var(--kat-sand);">⚙️</div><div class="fc-name">Industrial Metals</div></div>
+        <div class="fc-item"><div class="fc-icon" style="color:var(--kat-earth);">⚡</div><div class="fc-name">Energy-Linked</div></div>
+        <div class="fc-item"><div class="fc-icon" style="color:var(--text-muted);">📦</div><div class="fc-name">Bulk Raw Materials</div></div>
+        <div class="fc-item"><div class="fc-icon" style="color:var(--green);">🏭</div><div class="fc-name">Processed Goods</div></div>
+      </div>
+      <!-- integrations -->
+      <div class="fp-integrations">
+        <span class="fi-chip">Trade Finance Vault</span>
+        <span class="fi-chip blue">KFI — BG / LC / SBLC</span>
+        <span class="fi-chip green">GIPS Payment Rails</span>
+        <span class="fi-chip sand">International Settlement Layer</span>
+        <span class="fi-chip">Unified Ledger</span>
+        <span class="fi-chip blue">Risk Engine</span>
+      </div>
+      <!-- shipment records -->
+      <div class="fp-shipments">
+        <div class="fps-row hdr">
+          <span class="fps-cell hdr">TRADE ID / COMMODITY</span>
+          <span class="fps-cell hdr">FINANCING</span>
+          <span class="fps-cell hdr">COUNTERPARTY</span>
+          <span class="fps-cell hdr">STATUS</span>
+        </div>
+        <div class="fps-row">
+          <div style="display:flex;align-items:center;gap:7px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--kat);flex-shrink:0;"></div><span style="color:var(--text);">TRD-8841 · Wheat Export</span></div>
+          <span class="fps-cell">LC-KFI-2280</span>
+          <span class="fps-cell" style="color:var(--green);">KYB VERIFIED</span>
+          <span><span class="al-status st-transit">IN TRANSIT</span></span>
+        </div>
+        <div class="fps-row">
+          <div style="display:flex;align-items:center;gap:7px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--kat-sand);flex-shrink:0;"></div><span style="color:var(--text);">TRD-8830 · Copper</span></div>
+          <span class="fps-cell">BG-KFI-0841</span>
+          <span class="fps-cell" style="color:var(--green);">KYB VERIFIED</span>
+          <span><span class="al-status st-storage">WAREHOUSED</span></span>
+        </div>
+        <div class="fps-row">
+          <div style="display:flex;align-items:center;gap:7px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;"></div><span style="color:var(--text);">TRD-8812 · Iron Ore</span></div>
+          <span class="fps-cell">SBLC-KFI-0880</span>
+          <span class="fps-cell" style="color:var(--green);">KYB VERIFIED</span>
+          <span><span class="al-status st-sold">SETTLED</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GOVERNANCE & RISK ═══ -->
+<section class="section" id="governance">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey kat">Governance & Risk Controls</div>
+      <h2 style="color:var(--text);">Quantity Verified.<br>Counterparty Screened. Risk Scored.</h2>
+    </div>
+    <div class="gov-wrap">
+      <div class="gov-panel">
+        <div class="gv-topbar" style="background:linear-gradient(90deg,var(--kat),var(--kat-sand));"></div>
+        <div class="gv-header"><div class="gv-title">Governance Controls</div></div>
+        <div class="gv-items">
+          <div class="gv-item"><span class="gv-key">Quantity Verification Protocols</span><span class="gv-val" style="color:var(--kat);">ENFORCED</span></div>
+          <div class="gv-item"><span class="gv-key">Counterparty Screening</span><span class="gv-val" style="color:var(--kat);">KYB MANDATORY</span></div>
+          <div class="gv-item"><span class="gv-key">Trade-Level Margin Validation</span><span class="gv-val" style="color:var(--kat);">EACH LEVEL</span></div>
+          <div class="gv-item"><span class="gv-key">Liquidity Controls</span><span class="gv-val" style="color:var(--kat);">ACTIVE</span></div>
+          <div class="gv-item"><span class="gv-key">Unified Ledger Enforcement</span><span class="gv-val" style="color:var(--kat);">ALL LOTS</span></div>
+          <div class="gv-item"><span class="gv-key">Risk Engine Monitoring</span><span class="gv-val" style="color:var(--kat);">CONTINUOUS</span></div>
+          <div class="gv-item"><span class="gv-key">Unbacked Token Issuance</span><span class="gv-val" style="color:var(--green);">PROHIBITED</span></div>
+        </div>
+      </div>
+      <div class="gov-panel">
+        <div class="gv-topbar" style="background:linear-gradient(90deg,var(--kat-earth),var(--kat));"></div>
+        <div class="gv-header"><div class="gv-title">Risk Exposure Monitor</div></div>
+        <div class="gv-items">
+          <div class="gv-item"><span class="gv-key">Active Lots</span><span class="gv-val" style="color:var(--kat);">284</span></div>
+          <div class="gv-item"><span class="gv-key">Risk Engine Status</span><span class="gv-val" style="color:var(--green);">ALL CLEAR</span></div>
+          <div class="gv-item"><span class="gv-key">Last Risk Evaluation</span><span class="gv-val">2 min ago</span></div>
+        </div>
+        <div class="risk-items">
+          <div class="ri-label">Active Risk Factors — Monitored</div>
+          <div class="ri-row">
+            <div class="ri-name">Price Volatility</div>
+            <div class="ri-track"><div class="ri-fill" style="width:38%;background:var(--kat);"></div></div>
+            <div class="ri-score" style="color:var(--kat);">MODERATE</div>
+          </div>
+          <div class="ri-row">
+            <div class="ri-name">Counterparty Default</div>
+            <div class="ri-track"><div class="ri-fill" style="width:12%;background:var(--green);"></div></div>
+            <div class="ri-score" style="color:var(--green);">LOW</div>
+          </div>
+          <div class="ri-row">
+            <div class="ri-name">Logistics Delays</div>
+            <div class="ri-track"><div class="ri-fill" style="width:22%;background:var(--kat);"></div></div>
+            <div class="ri-score" style="color:var(--kat);">LOW-MED</div>
+          </div>
+          <div class="ri-row">
+            <div class="ri-name">Regulatory Risk</div>
+            <div class="ri-track"><div class="ri-fill" style="width:15%;background:var(--green);"></div></div>
+            <div class="ri-score" style="color:var(--green);">LOW</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey kat">Dashboard View</div>
+      <h2 style="color:var(--text);">Holder & Institutional<br>Katoin Views</h2>
+    </div>
+    <div class="dash-panels">
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--kat),var(--kat-sand));"></div>
+        <div class="dp-header"><div class="dp-title">Katoin Holder Dashboard</div><div class="dp-tag">STANDARD</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Active Positions</div><div class="dp-m-val" style="color:var(--text);">4 lots</div><div class="dp-m-sub" style="color:var(--text-dim);">3 active · 1 sold</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Entry Value</div><div class="dp-m-val" style="color:var(--kat);">$284K</div><div class="dp-m-sub" style="color:var(--text-dim);">Total allocated</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Pending Distribution</div><div class="dp-m-val" style="color:var(--kat-sand);">$48K</div><div class="dp-m-sub" style="color:var(--text-dim);">POL-1142 settled</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Realized Profit</div><div class="dp-m-val" style="color:var(--green);">$21K</div><div class="dp-m-sub" style="color:var(--green);">+8.2% avg margin</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Trade Level Stage (WHL-2280)</span><span class="dp-row-val">Level 2 → Transit</span></div>
+          <div class="dp-row"><span class="dp-row-key">Current Trade Status</span><span class="dp-row-val">3 lots active</span></div>
+          <div class="dp-row"><span class="dp-row-key">Next Settlement</span><span class="dp-row-val">WHL-2280 · 18–25 days</span></div>
+          <div class="dp-row"><span class="dp-row-key">Ledger Sync</span><span class="dp-row-val" style="color:var(--kat);">Real-time</span></div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--kat-earth),var(--blue));"></div>
+        <div class="dp-header"><div class="dp-title">Institutional Dashboard</div><div class="dp-tag" style="color:var(--kat);border-color:var(--kat-border);background:var(--kat-dim);">PRIME</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Commodity Allocation</div><div class="dp-m-val" style="color:var(--text);">$48M</div><div class="dp-m-sub" style="color:var(--text-dim);">22 active lots</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Realized (MTD)</div><div class="dp-m-val" style="color:var(--green);">$4.2M</div><div class="dp-m-sub" style="color:var(--green);">Avg 10.8% margin</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Regional Exposure</div><div class="dp-m-val" style="color:var(--kat-sand);">4 Regions</div><div class="dp-m-sub" style="color:var(--text-dim);">Diversified</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Margin Analysis</div><div class="dp-m-val" style="color:var(--blue-light);">Active</div><div class="dp-m-sub" style="color:var(--text-dim);">Full analytics</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Allocation Breakdown</span><span class="dp-row-val">5 commodity categories</span></div>
+          <div class="dp-row"><span class="dp-row-key">Counterparty Risk Dist.</span><span class="dp-row-val" style="color:var(--green);">All verified</span></div>
+          <div class="dp-row"><span class="dp-row-key">Trade Cycle Performance</span><span class="dp-row-val">22 completed cycles</span></div>
+          <div class="dp-row"><span class="dp-row-key">KFI Instruments Active</span><span class="dp-row-val">8 LC · 4 BG · 2 SBLC</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey kat" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Real Assets. Structured Trade. Ledger-Based Profit.</div>
+      <h2>Katoin Transforms Commercial<br>Commodity Flow into Governed Digital Participation.</h2>
+      <p>No synthetic exposure. No blind pools. No opaque pricing.</p>
+      <div class="fc-pillars">
+        <span class="fc-pill">Trade-Backed</span>
+        <span class="fc-pill" style="background:var(--kat-sand-dim);border-color:var(--kat-sand-border);color:var(--kat-sand);">Quantity-Defined</span>
+        <span class="fc-pill">Profit-Distributed on Execution</span>
+        <span class="fc-pill" style="background:var(--green-dim);border-color:var(--green-border);color:var(--green);">Ledger-Verified</span>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Participate in Katoin</button>
+        <button class="btn-final-out">View Active Commodity Lots</button>
+        <button class="btn-final-out">Access Trade Documentation</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="kapitor-smart-wallet.html">Smart Wallet</a></li><li><a href="kapitor-pay.html">Kapitor Pay</a></li><li><a href="kapitor-trade.html">Trade</a></li><li><a href="kapitor-earn.html">Earn</a></li><li><a href="kapitor-stake.html">Stake</a></li><li><a href="kapitor-vaults.html">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="kaloft-ept.html">Kaloft</a></li><li><a href="katoin.html" style="color:var(--kat);">Katoin</a></li><li><a href="digitalassets.html">Digital Assets</a></li><li><a href="rwa.html">Real-World Assets</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="custody.html">Custody</a></li><li><a href="fx.html">FX</a></li><li><a href="api.html">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Infrastructure</h5><ul><li><a href="compliance.html">Compliance</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="company.html">About Kapitor</a></li><li><a href="company.html">Contact</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Risk Disclosure</a><a href="#">Commodity Policy</a><a href="#">AML Policy</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  window.addEventListener("scroll",()=>{document.getElementById("hdr").style.padding=window.scrollY>60?"0.65rem 2.5rem":"1rem 2.5rem";});
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});},{threshold:0.06});
+  document.querySelectorAll(
+    ".tl-card,.al-row,.dlr-row,.fps-row,.ds-step,.ts-step,.tc-row,.pr-row,.gv-item,.ri-row,.dp-metric,.dp-row,.sc-node,.fc-pill,.ff-node"
+  ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
+
+  (function(){
+    const toggle=document.querySelector(".nav-mobile-toggle");
+    const nav=document.querySelector(".nav-wrap");
+    if(!toggle||!nav)return;
+    toggle.addEventListener("click",()=>{const open=nav.classList.toggle("is-open");toggle.setAttribute("aria-expanded",open?"true":"false");});
+    nav.querySelectorAll(".nav-item-wrap>.nav-trigger").forEach(btn=>{
+      btn.addEventListener("click",e=>{
+        if(window.innerWidth>900)return;
+        e.preventDefault();
+        const expanded=btn.getAttribute("aria-expanded")==="true";
+        btn.setAttribute("aria-expanded",expanded?"false":"true");
+        const dd=btn.nextElementSibling;
+        if(dd)dd.style.display=expanded?"none":"block";
+      });
+    });
+  })();
+</script>
+</body>
+</html>

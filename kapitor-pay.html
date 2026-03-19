@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitor Pay – Global Settlement Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+:root {
+  /* KAP light theme (overrides from style.css for this page) */
+  --bg: #FCF8E8;
+  --surface: #FFFFFF;
+  --surface2: #F5ECD6;
+  --surface3: #f0e6cc;
+  --border: rgba(15,23,42,0.08);
+  --border-md: rgba(15,23,42,0.16);
+  --border-hi: rgba(15,23,42,0.2);
+
+  --blue: #4a7fcb;
+  --blue-light: #6b9de0;
+  --blue-dim: rgba(74,127,203,0.09);
+  --blue-border: rgba(74,127,203,0.2);
+
+  --green: #3db87a;
+  --green-light: #5ed498;
+  --green-dim: rgba(61,184,122,0.09);
+  --green-border: rgba(61,184,122,0.2);
+
+  --amber: #f0a030;
+  --amber-light: #f5bc5a;
+  --amber-dim: rgba(240,160,48,0.09);
+  --amber-border: rgba(240,160,48,0.2);
+
+  --text: #111827;
+  --text-muted: #6B6B6B;
+  --text-dim: #9CA3AF;
+  --white: #ffffff;
+}
+*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 300;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* TYPE */
+h1,h2,h3 { font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+h1 { font-size:clamp(2.6rem,5.5vw,4.8rem); line-height:1.03; }
+h2 { font-size:clamp(1.7rem,3vw,2.5rem); line-height:1.1; }
+h3 { font-size:clamp(0.95rem,1.5vw,1.15rem); line-height:1.25; }
+p { color:var(--text-muted); font-size:0.87rem; line-height:1.85; }
+.mono { font-family:"JetBrains Mono",monospace; }
+.eyebrow {
+  font-family:"JetBrains Mono",monospace;
+  font-size:0.59rem; letter-spacing:0.16em; text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:10px; margin-bottom:1.4rem;
+}
+.eyebrow.b { color:var(--blue); }
+.eyebrow.b::before { content:""; width:20px; height:1px; background:var(--blue); display:block; }
+.eyebrow.g { color:var(--green); }
+.eyebrow.g::before { content:""; width:20px; height:1px; background:var(--green); display:block; }
+.eyebrow.a { color:var(--amber); }
+.eyebrow.a::before { content:""; width:20px; height:1px; background:var(--amber); display:block; }
+
+/* LAYOUT */
+.container { max-width:1320px; margin:0 auto; padding:0 2.5rem; }
+.section { padding:7rem 0; position:relative; }
+.section + .section { border-top:1px solid var(--border); }
+
+/* HEADER */
+header {
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  padding:1rem 2.5rem;
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(252,248,232,0.92);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  transition:padding 0.3s;
+}
+.logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.logo img { width:26px; height:26px; object-fit:contain; }
+.logo-text { font-family: 'Outfit', system-ui, sans-serif; font-size:1.2rem; font-weight:700; color:var(--text); }
+.nav-wrap { display:flex; align-items:center; gap:0.1rem; }
+nav a {
+  color:var(--text-muted); text-decoration:none; font-size:0.79rem;
+  padding:0.42rem 0.78rem; border-radius:4px; transition:color 0.2s;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight:400;
+}
+nav a:hover { color:var(--text); }
+nav a.active { color:var(--blue-light); }
+.hdr-right { display:flex; align-items:center; gap:0.75rem; }
+.btn-ghost {
+  background:transparent; border:1px solid var(--border-md);
+  color:var(--text-muted); padding:0.44rem 1.1rem; border-radius:5px;
+  font-size:0.77rem; cursor:pointer; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; transition:all 0.2s;
+}
+.btn-ghost:hover { border-color:var(--blue); color:var(--blue-light); }
+.btn-cta {
+  background:var(--blue); color:var(--white); border:none;
+  padding:0.48rem 1.3rem; border-radius:5px;
+  font-size:0.77rem; font-weight:500; cursor:pointer;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif; transition:all 0.2s;
+}
+.btn-cta:hover { background:var(--blue-light); filter:brightness(1.05); }
+select.region {
+  background:transparent; border:1px solid var(--border);
+  color:var(--text-muted); padding:0.38rem 0.65rem;
+  border-radius:4px; font-size:0.72rem; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; cursor:pointer;
+}
+
+/* HERO */
+.hero {
+  min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding-top:80px; position:relative; overflow:hidden;
+}
+.hero-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 75% 55% at 55% 28%, rgba(74,127,203,0.1) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 50% at 10% 70%, rgba(61,184,122,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 90% 80%, rgba(240,160,48,0.04) 0%, transparent 45%);
+}
+.hero-grid-bg {
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.016) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.016) 1px, transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 85% 70% at 50% 40%, black 10%, transparent 75%);
+}
+/* diagonal accent */
+.hero-diag {
+  position:absolute; top:0; right:-200px; width:600px; height:100vh;
+  background:linear-gradient(135deg, transparent 30%, rgba(74,127,203,0.03) 50%, transparent 70%);
+  transform:skewX(-15deg);
+  pointer-events:none;
+}
+
+.hero-content { position:relative; z-index:2; max-width:900px; }
+.live-pill {
+  display:inline-flex; align-items:center; gap:8px; margin-bottom:2rem;
+  padding:0.35rem 0.9rem;
+  border:1px solid rgba(74,127,203,0.28); border-radius:3px;
+  background:rgba(74,127,203,0.07);
+  font-family:"JetBrains Mono",monospace;
+  font-size:0.59rem; letter-spacing:0.14em; color:var(--blue-light);
+}
+.ld { width:5px; height:5px; border-radius:50%; background:var(--green); animation:blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.hero h1 { color:var(--text); margin-bottom:1.75rem; }
+.hero h1 .w-b { color:var(--blue-light); }
+.hero h1 .w-g { color:var(--green); }
+.hero-sub { font-size:0.98rem; max-width:560px; color:rgba(216,232,240,0.5); margin-bottom:0.9rem; line-height:1.8; }
+.hero-tagline {
+  font-family:"JetBrains Mono",monospace; font-size:0.72rem; letter-spacing:0.08em;
+  color:var(--text-dim); margin-bottom:2.5rem;
+  display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+}
+.hero-tagline span { color:var(--text-muted); }
+.hero-tagline .sep { color:var(--text-dim); }
+
+.hero-btns { display:flex; gap:1rem; flex-wrap:wrap; }
+.btn-hero {
+  background:var(--blue); color:var(--white); border:none;
+  padding:0.82rem 1.9rem; border-radius:5px;
+  font-size:0.85rem; font-weight:500; cursor:pointer;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif; letter-spacing:0.02em;
+  transition:all 0.25s; display:flex; align-items:center; gap:8px;
+}
+.btn-hero:hover { background:var(--blue-light); transform:translateY(-1px); box-shadow:0 8px 30px rgba(74,127,203,0.28); }
+.btn-hero-out {
+  background:transparent; color:var(--text-muted); border:1px solid var(--border-md);
+  padding:0.82rem 1.9rem; border-radius:5px; font-size:0.85rem; cursor:pointer;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif; transition:all 0.25s;
+}
+.btn-hero-out:hover { border-color:var(--blue-border); color:var(--blue-light); }
+
+/* HERO METRICS */
+.hero-metrics {
+  margin-top:5rem; padding-top:2.5rem; border-top:1px solid var(--border);
+  display:grid; grid-template-columns:repeat(5,1fr); gap:0;
+}
+.hm-item { padding:0 2rem 0 0; border-right:1px solid var(--border); }
+.hm-item:first-child { padding-left:0; }
+.hm-item:last-child { border-right:none; padding:0 0 0 2rem; }
+.hm-item:not(:first-child):not(:last-child) { padding:0 2rem; }
+.hm-label { font-family:"JetBrains Mono",monospace; font-size:0.57rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.5rem; }
+.hm-val { font-family: 'Outfit', system-ui, sans-serif; font-size:1.5rem; font-weight:700; color:var(--text); line-height:1; margin-bottom:0.3rem; }
+.hm-val.b { color:var(--blue-light); }
+.hm-val.g { color:var(--green); }
+.hm-val.a { color:var(--amber); }
+.hm-sub { font-size:0.63rem; color:var(--text-dim); font-family:"JetBrains Mono",monospace; }
+.hm-sub .up { color:var(--green); }
+
+/* TICKER */
+.ticker { border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:0.6rem 0; overflow:hidden; background:var(--surface); }
+.t-track { display:flex; gap:3.5rem; animation:marquee 40s linear infinite; white-space:nowrap; }
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.t-item { display:inline-flex; align-items:center; gap:0.5rem; font-family:"JetBrains Mono",monospace; font-size:0.64rem; color:var(--text-dim); }
+.t-item .sym { color:var(--text-muted); }
+.t-item .up { color:var(--green); }
+.t-item .dn { color:#c05050; }
+.t-sep { color:var(--text-dim); opacity:0.2; }
+
+/* SECTION INTRO */
+.s-intro { max-width:640px; margin-bottom:4rem; }
+.s-intro h2 { color:var(--text); margin-bottom:0.85rem; }
+
+/* ── 2-COL LAYOUT ── */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+.two-col-rev { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+
+/* ── PAYMENT ARCHITECTURE OVERVIEW ── */
+.arch-banner {
+  padding:3rem; border:1px solid var(--border-md); border-radius:12px;
+  background:var(--surface); position:relative; overflow:hidden;
+}
+.arch-banner::before {
+  content:"";
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 50%, rgba(74,127,203,0.05) 0%, transparent 65%);
+}
+.arch-layers {
+  display:grid; grid-template-columns:repeat(6,1fr); gap:1px;
+  background:var(--border); border:1px solid var(--border); border-radius:8px;
+  overflow:hidden; position:relative; z-index:2; margin-top:2rem;
+}
+.arch-layer {
+  background:var(--surface2); padding:1.25rem 1rem; text-align:center;
+  transition:background 0.2s;
+}
+.arch-layer:hover { background:var(--surface3); }
+.al-icon { font-size:1rem; margin-bottom:0.5rem; }
+.al-label { font-family:"JetBrains Mono",monospace; font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); }
+
+/* ── GLOBAL TRANSFERS ── */
+.rails-panel {
+  background:var(--surface); border:1px solid var(--border-md); border-radius:10px; overflow:hidden;
+}
+.rails-top {
+  padding:1.25rem 1.75rem; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.rails-title { font-family: 'Outfit', system-ui, sans-serif; font-size:0.9rem; font-weight:600; color:var(--text); }
+.rails-count { font-family:"JetBrains Mono",monospace; font-size:0.58rem; color:var(--text-dim); }
+.rails-grid-vis { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); }
+.rail-item {
+  background:var(--surface); padding:1.25rem 1.4rem; transition:background 0.2s;
+}
+.rail-item:hover { background:var(--surface2); }
+.ri-flag { font-size:1.1rem; margin-bottom:0.4rem; }
+.ri-country { font-family:"JetBrains Mono",monospace; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--blue-light); margin-bottom:0.5rem; }
+.ri-methods { font-family:"JetBrains Mono",monospace; font-size:0.62rem; color:var(--text-muted); line-height:2; }
+.ri-methods span { display:block; }
+.rails-bottom {
+  padding:1.1rem 1.75rem; border-top:1px solid var(--border); background:rgba(0,0,0,0.2);
+  display:flex; gap:1.5rem; flex-wrap:wrap;
+}
+.rb-item { font-family:"JetBrains Mono",monospace; font-size:0.58rem; color:var(--text-dim); display:flex; align-items:center; gap:5px; }
+.rb-dot { width:4px; height:4px; border-radius:50%; }
+
+/* transfer capabilities */
+.transfer-caps { display:grid; grid-template-columns:1fr; gap:0.6rem; margin-top:2rem; }
+.tc-item {
+  display:flex; align-items:flex-start; gap:12px; padding:0.85rem 1.1rem;
+  background:var(--surface); border:1px solid var(--border); border-radius:6px; transition:border-color 0.2s;
+}
+.tc-item:hover { border-color:var(--border-md); }
+.tc-icon { color:var(--blue); font-size:0.8rem; flex-shrink:0; margin-top:2px; }
+.tc-text h4 { font-size:0.8rem; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight:500; color:var(--text); margin-bottom:0.18rem; }
+.tc-text p { font-size:0.73rem; }
+.transfer-trail {
+  margin-top:1.75rem; background:var(--surface); border:1px solid var(--border-md); border-radius:8px; overflow:hidden;
+}
+.tt-hdr { padding:0.8rem 1.5rem; border-bottom:1px solid var(--border); font-family:"JetBrains Mono",monospace; font-size:0.57rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); }
+.tt-row {
+  display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr;
+  padding:0.75rem 1.5rem; border-bottom:1px solid var(--border);
+  font-family:"JetBrains Mono",monospace; font-size:0.63rem; align-items:center; transition:background 0.15s;
+}
+.tt-row:last-child { border-bottom:none; }
+.tt-row:hover { background:rgba(255,255,255,0.02); }
+.tt-row.hdr-row { background:rgba(0,0,0,0.25); }
+.tt-cell { color:var(--text-muted); }
+.tt-cell.hdr { color:var(--text-dim); font-size:0.53rem; letter-spacing:0.1em; text-transform:uppercase; }
+.tt-status { padding:0.18rem 0.55rem; border-radius:2px; font-size:0.55rem; letter-spacing:0.08em; display:inline-block; }
+.st-ok { background:var(--green-dim); color:var(--green); border:1px solid var(--green-border); }
+.st-proc { background:var(--amber-dim); color:var(--amber); border:1px solid var(--amber-border); }
+.st-pend { background:var(--blue-dim); color:var(--blue-light); border:1px solid var(--blue-border); }
+
+/* ── QR & P2P ── */
+.qr-layout { display:grid; grid-template-columns:1fr 1.1fr; gap:5rem; align-items:start; }
+.qr-mockup {
+  background:var(--surface); border:1px solid var(--border-md); border-radius:10px; overflow:hidden;
+}
+.qm-top { height:2px; background:linear-gradient(90deg,var(--green),var(--blue)); }
+.qm-header { padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.qm-title { font-family: 'Outfit', system-ui, sans-serif; font-size:0.88rem; font-weight:600; color:var(--text); }
+.qm-badge { font-family:"JetBrains Mono",monospace; font-size:0.57rem; letter-spacing:0.1em; padding:0.22rem 0.6rem; border-radius:3px; background:var(--green-dim); color:var(--green); border:1px solid var(--green-border); }
+.qr-vis {
+  padding:2rem; display:flex; flex-direction:column; align-items:center; gap:1.25rem;
+  border-bottom:1px solid var(--border);
+}
+.qr-code-mock {
+  width:120px; height:120px;
+  border:1px solid var(--border-md); border-radius:8px;
+  background:var(--surface2); display:grid; grid-template-columns:repeat(10,1fr); gap:1px; padding:10px;
+  flex-shrink:0;
+}
+.qr-cell { border-radius:1px; }
+.qr-info { text-align:center; }
+.qr-addr { font-family:"JetBrains Mono",monospace; font-size:0.62rem; color:var(--text-dim); margin-bottom:0.3rem; }
+.qr-name { font-family: 'Outfit', system-ui, sans-serif; font-size:1.1rem; font-weight:600; color:var(--text); }
+.qr-amount-input {
+  width:100%; background:var(--surface2); border:1px solid var(--border-md); border-radius:6px;
+  padding:0.85rem 1rem; display:flex; justify-content:space-between; align-items:center;
+}
+.qai-label { font-family:"JetBrains Mono",monospace; font-size:0.58rem; color:var(--text-dim); }
+.qai-val { font-family: 'Outfit', system-ui, sans-serif; font-size:1.2rem; font-weight:700; color:var(--text); }
+.qr-sources { padding:1.25rem 1.75rem; }
+.qrs-title { font-family:"JetBrains Mono",monospace; font-size:0.57rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.75rem; }
+.qrs-items { display:flex; flex-wrap:wrap; gap:0.5rem; }
+.qrs-chip {
+  display:flex; align-items:center; gap:6px; padding:0.35rem 0.75rem;
+  border:1px solid var(--border); border-radius:4px;
+  font-family:"JetBrains Mono",monospace; font-size:0.6rem; color:var(--text-muted);
+  background:var(--bg); transition:border-color 0.2s;
+}
+.qrs-chip:hover { border-color:var(--border-md); }
+.qrs-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.p2p-features { display:flex; flex-direction:column; gap:0.6rem; margin-top:2rem; }
+.p2pf {
+  display:flex; align-items:flex-start; gap:10px; padding:0.8rem 1rem;
+  background:var(--surface); border:1px solid var(--border); border-radius:6px;
+  font-size:0.78rem; color:var(--text-muted); transition:border-color 0.2s;
+}
+.p2pf:hover { border-color:var(--border-md); }
+.p2pf::before { content:"◈"; color:var(--green); font-size:0.7rem; flex-shrink:0; margin-top:1px; }
+.p2p-note { margin-top:1.5rem; padding:0.85rem 1.2rem; border:1px solid var(--green-border); border-radius:5px; background:var(--green-dim); font-family:"JetBrains Mono",monospace; font-size:0.7rem; color:var(--green); }
+
+/* ── CARDS ── */
+.cards-layout { display:grid; grid-template-columns:1.1fr 1fr; gap:5rem; align-items:start; }
+.card-vis {
+  background:var(--surface); border:1px solid var(--border-md); border-radius:10px; overflow:hidden;
+}
+.cv-top { height:2px; background:linear-gradient(90deg,var(--blue),var(--amber)); }
+.cv-hdr { padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.cv-title { font-family: 'Outfit', system-ui, sans-serif; font-size:0.88rem; font-weight:600; color:var(--text); }
+.card-deck { padding:1.75rem; display:flex; flex-direction:column; gap:1rem; }
+/* physical card mockup */
+.card-mockup {
+  border-radius:12px; padding:1.5rem; position:relative; overflow:hidden;
+  height:140px; display:flex; flex-direction:column; justify-content:space-between;
+}
+.card-mockup.physical { background:linear-gradient(135deg,#1a2e4a 0%,#0f1e30 60%,#162840 100%); border:1px solid rgba(74,127,203,0.3); }
+.card-mockup.virtual { background:linear-gradient(135deg,#1a3a2a 0%,#0f2018 60%,#162b20 100%); border:1px solid rgba(61,184,122,0.3); }
+.cm-glow {
+  position:absolute; top:-20px; right:-20px; width:140px; height:140px;
+  border-radius:50%; opacity:0.12;
+}
+.card-mockup.physical .cm-glow { background:var(--blue); }
+.card-mockup.virtual .cm-glow { background:var(--green); }
+.cm-top { display:flex; justify-content:space-between; align-items:center; }
+.cm-brand { font-family: 'Outfit', system-ui, sans-serif; font-size:0.78rem; font-weight:700; color:var(--text); }
+.cm-type { font-family:"JetBrains Mono",monospace; font-size:0.55rem; letter-spacing:0.12em; color:rgba(255,255,255,0.4); }
+.cm-chip { width:28px; height:20px; border-radius:4px; background:linear-gradient(135deg,rgba(240,160,48,0.6),rgba(240,160,48,0.3)); border:1px solid rgba(240,160,48,0.4); }
+.cm-number { font-family:"JetBrains Mono",monospace; font-size:0.72rem; color:rgba(255,255,255,0.6); letter-spacing:0.1em; margin-bottom:0.2rem; }
+.cm-holder { font-family:"JetBrains Mono",monospace; font-size:0.6rem; color:rgba(255,255,255,0.4); letter-spacing:0.08em; }
+.cv-controls { padding:0 1.75rem 1.5rem; display:grid; grid-template-columns:repeat(2,1fr); gap:0.5rem; }
+.cvc-item {
+  padding:0.75rem 0.9rem; background:var(--bg); border:1px solid var(--border); border-radius:5px;
+}
+.cvc-label { font-family:"JetBrains Mono",monospace; font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.3rem; }
+.cvc-val { font-size:0.78rem; color:var(--text-muted); font-weight:400; }
+.cv-recent { padding:1.25rem 1.75rem; border-top:1px solid var(--border); }
+.cvr-title { font-family:"JetBrains Mono",monospace; font-size:0.57rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.75rem; }
+.cvr-row { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0; border-top:1px solid var(--border); }
+.cvr-row:first-of-type { border-top:none; }
+.cvr-merchant { font-size:0.75rem; color:var(--text-muted); }
+.cvr-meta { font-family:"JetBrains Mono",monospace; font-size:0.58rem; color:var(--text-dim); }
+.cvr-amount { font-family:"JetBrains Mono",monospace; font-size:0.75rem; color:var(--text); }
+.cards-features { display:flex; flex-direction:column; gap:0.6rem; margin-top:2rem; }
+.cf { padding:1rem 1.1rem; background:var(--surface); border:1px solid var(--border); border-radius:6px; border-left:2px solid var(--blue); }
+.cf h4 { font-size:0.8rem; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight:500; color:var(--text); margin-bottom:0.2rem; }
+.cf p { font-size:0.73rem; }
+.settlement-logic {
+  margin-top:2rem; padding:1.25rem 1.5rem; border:1px solid var(--border-md); border-radius:6px; background:var(--surface2);
+}
+.sl-title { font-family:"JetBrains Mono",monospace; font-size:0.57rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.75rem; }
+.sl-items { display:flex; flex-direction:column; gap:0.35rem; }
+.sl-item { display:flex; align-items:center; gap:8px; font-family:"JetBrains Mono",monospace; font-size:0.65rem; color:var(--text-muted); }
+.sl-item::before { content:"→"; color:var(--amber); font-size:0.6rem; }
+
+/* ── PAYROLL ── */
+.payroll-layout { display:grid; grid-template-columns:1fr 1.1fr; gap:5rem; align-items:start; }
+.payroll-panel {
+  background:var(--surface); border:1px solid var(--border-md); border-radius:10px; overflow:hidden;
+}
+.pp-top { height:2px; background:linear-gradient(90deg,var(--amber),var(--green)); }
+.pp-header { padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.pp-title { font-family: 'Outfit', system-ui, sans-serif; font-size:0.88rem; font-weight:600; color:var(--text); }
+.pp-period { font-family:"JetBrains Mono",monospace; font-size:0.58rem; color:var(--text-dim); }
+.pp-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); }
+.pp-sum-item { background:var(--surface); padding:1.1rem 1.25rem; }
+.pp-sum-label { font-family:"JetBrains Mono",monospace; font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.4rem; }
+.pp-sum-val { font-family: 'Outfit', system-ui, sans-serif; font-size:1.1rem; font-weight:700; }
+.pp-roster { padding:0.5rem 0; }
+.pp-row {
+  display:grid; grid-template-columns:2fr 1fr 1fr 1fr;
+  padding:0.72rem 1.75rem; border-bottom:1px solid var(--border);
+  font-family:"JetBrains Mono",monospace; font-size:0.63rem; align-items:center; transition:background 0.15s;
+}
+.pp-row:last-child { border-bottom:none; }
+.pp-row:hover { background:rgba(255,255,255,0.02); }
+.pp-row.hdr { background:rgba(0,0,0,0.25); }
+.pp-cell { color:var(--text-muted); }
+.pp-cell.hdr { color:var(--text-dim); font-size:0.52rem; letter-spacing:0.1em; text-transform:uppercase; }
+.pp-emp { display:flex; align-items:center; gap:8px; }
+.pp-avatar { width:22px; height:22px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.6rem; font-family: 'Outfit', system-ui, sans-serif; font-weight:700; flex-shrink:0; }
+.pp-status { padding:0.16rem 0.5rem; border-radius:2px; font-size:0.52rem; letter-spacing:0.08em; }
+.pp-features { display:flex; flex-direction:column; gap:0.6rem; margin-top:2rem; }
+.pf-item {
+  display:flex; align-items:flex-start; gap:10px; padding:0.85rem 1.1rem;
+  background:var(--surface); border:1px solid var(--border); border-radius:6px; transition:border-color 0.2s;
+}
+.pf-item:hover { border-color:var(--border-md); }
+.pf-icon { color:var(--amber); font-size:0.8rem; flex-shrink:0; margin-top:1px; }
+.pf-body h4 { font-size:0.8rem; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight:500; color:var(--text); margin-bottom:0.18rem; }
+.pf-body p { font-size:0.73rem; }
+.payroll-note { margin-top:1.75rem; padding:0.85rem 1.2rem; border:1px solid var(--amber-border); border-radius:5px; background:var(--amber-dim); font-family:"JetBrains Mono",monospace; font-size:0.7rem; color:var(--amber-light); }
+
+/* ── INT SETTLEMENT ── */
+.settlement-layout { display:grid; grid-template-columns:1.1fr 1fr; gap:5rem; align-items:start; }
+.settlement-flow {
+  background:var(--surface); border:1px solid var(--border-md); border-radius:10px; overflow:hidden;
+}
+.sf-top { height:2px; background:linear-gradient(90deg,var(--blue),var(--green),var(--amber)); }
+.sf-header { padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.sf-title { font-family: 'Outfit', system-ui, sans-serif; font-size:0.88rem; font-weight:600; color:var(--text); }
+.sf-live { display:flex; align-items:center; gap:6px; font-family:"JetBrains Mono",monospace; font-size:0.58rem; color:var(--green); }
+.sf-steps { padding:1.5rem 1.75rem; display:flex; flex-direction:column; gap:0; }
+.sf-step {
+  display:flex; align-items:flex-start; gap:1rem; padding-bottom:1.25rem; position:relative;
+}
+.sf-step:not(:last-child)::after {
+  content:""; position:absolute; left:14px; top:28px; bottom:0; width:1px;
+  background:linear-gradient(var(--border), transparent);
+}
+.sf-num {
+  width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+  font-family:"JetBrains Mono",monospace; font-size:0.6rem; font-weight:500; flex-shrink:0;
+}
+.sf-body h4 { font-size:0.8rem; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight:500; color:var(--text); margin-bottom:0.2rem; margin-top:3px; }
+.sf-body p { font-size:0.72rem; }
+.sf-corridors { padding:0 1.75rem 1.5rem; display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem; }
+.sf-corr {
+  padding:0.65rem 0.75rem; background:var(--bg); border:1px solid var(--border); border-radius:5px; text-align:center;
+  font-family:"JetBrains Mono",monospace; font-size:0.58rem; color:var(--text-dim);
+  transition:border-color 0.2s;
+}
+.sf-corr:hover { border-color:var(--border-md); }
+.sf-corr .flag { font-size:0.9rem; display:block; margin-bottom:0.2rem; }
+.settlement-caps { display:flex; flex-direction:column; gap:0.6rem; margin-top:2rem; }
+.sc-item {
+  padding:0.85rem 1.1rem; background:var(--surface); border:1px solid var(--border); border-radius:6px;
+  border-left:2px solid var(--blue);
+}
+.sc-item h4 { font-size:0.8rem; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight:500; color:var(--text); margin-bottom:0.2rem; }
+.sc-item p { font-size:0.73rem; }
+.settlement-note { margin-top:1.75rem; padding:0.85rem 1.2rem; border:1px solid var(--border-md); border-radius:5px; background:var(--surface2); font-family:"JetBrains Mono",monospace; font-size:0.7rem; color:var(--text-muted); }
+
+/* ── GBPS ── */
+.gbps-layout { display:grid; grid-template-columns:1fr 1.1fr; gap:5rem; align-items:start; }
+.gbps-panel {
+  background:var(--surface); border:1px solid var(--border-md); border-radius:10px; overflow:hidden;
+}
+.gp-top { height:2px; background:linear-gradient(90deg,var(--green),var(--blue)); }
+.gp-header { padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.gp-title { font-family: 'Outfit', system-ui, sans-serif; font-size:0.88rem; font-weight:600; color:var(--text); }
+.gp-categories { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); }
+.gp-cat { background:var(--surface); padding:1.1rem 0.9rem; text-align:center; transition:background 0.2s; }
+.gp-cat:hover { background:var(--surface2); }
+.gp-cat-icon { font-size:1.1rem; margin-bottom:0.3rem; }
+.gp-cat-label { font-family:"JetBrains Mono",monospace; font-size:0.53rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); }
+.gp-recent { padding:1rem 1.75rem; }
+.gpr-title { font-family:"JetBrains Mono",monospace; font-size:0.57rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.75rem; }
+.gpr-row { display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0; border-bottom:1px solid var(--border); }
+.gpr-row:last-child { border-bottom:none; }
+.gpr-left { display:flex; align-items:center; gap:8px; }
+.gpr-icon { font-size:0.85rem; }
+.gpr-name { font-size:0.75rem; color:var(--text-muted); }
+.gpr-freq { font-family:"JetBrains Mono",monospace; font-size:0.56rem; color:var(--text-dim); }
+.gpr-amount { font-family:"JetBrains Mono",monospace; font-size:0.75rem; color:var(--text); }
+.gpr-status { font-family:"JetBrains Mono",monospace; font-size:0.56rem; }
+.gp-sources { padding:0 1.75rem 1.5rem; }
+.gps-title { font-family:"JetBrains Mono",monospace; font-size:0.57rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.6rem; }
+.gps-chips { display:flex; flex-wrap:wrap; gap:0.5rem; }
+.gps-chip { padding:0.3rem 0.75rem; border:1px solid var(--border); border-radius:3px; font-family:"JetBrains Mono",monospace; font-size:0.58rem; color:var(--text-dim); background:var(--bg); }
+.gbps-features { display:flex; flex-direction:column; gap:0.6rem; margin-top:2rem; }
+.gbpsf { padding:0.85rem 1.1rem; background:var(--surface); border:1px solid var(--border); border-radius:6px; border-left:2px solid var(--green); }
+.gbpsf h4 { font-size:0.8rem; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight:500; color:var(--text); margin-bottom:0.2rem; }
+.gbpsf p { font-size:0.73rem; }
+.gbps-note { margin-top:1.75rem; padding:0.85rem 1.2rem; border:1px solid var(--green-border); border-radius:5px; background:var(--green-dim); font-family:"JetBrains Mono",monospace; font-size:0.7rem; color:var(--green); }
+
+/* DASHBOARD */
+.dash-split { display:grid; grid-template-columns:1fr 1fr; gap:3rem; }
+.dash-panel {
+  background:var(--surface); border:1px solid var(--border-md); border-radius:10px; overflow:hidden;
+}
+.dp-top { height:2px; }
+.dp-header { padding:1.1rem 1.5rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.dp-title { font-family: 'Outfit', system-ui, sans-serif; font-size:0.85rem; font-weight:600; color:var(--text); }
+.dp-type { font-family:"JetBrains Mono",monospace; font-size:0.55rem; letter-spacing:0.1em; color:var(--text-dim); padding:0.2rem 0.55rem; border:1px solid var(--border); border-radius:3px; }
+.dp-metrics { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--border); }
+.dp-metric { background:var(--surface); padding:1rem 1.25rem; }
+.dp-m-label { font-family:"JetBrains Mono",monospace; font-size:0.54rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.4rem; }
+.dp-m-val { font-family: 'Outfit', system-ui, sans-serif; font-size:1.1rem; font-weight:700; line-height:1; }
+.dp-m-sub { font-family:"JetBrains Mono",monospace; font-size:0.57rem; margin-top:0.2rem; }
+.dp-rows { padding:0.25rem 0; }
+.dp-row { display:flex; justify-content:space-between; align-items:center; padding:0.6rem 1.5rem; border-bottom:1px solid var(--border); font-family:"JetBrains Mono",monospace; font-size:0.63rem; }
+.dp-row:last-child { border-bottom:none; }
+.dp-row-key { color:var(--text-muted); }
+.dp-row-val { color:var(--text); }
+
+/* FINAL CTA */
+.final-cta { text-align:center; padding:8rem 0; position:relative; overflow:hidden; }
+.final-cta::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse 70% 50% at 50% 50%, rgba(74,127,203,0.08) 0%, transparent 60%); }
+.fc-inner { position:relative; z-index:2; }
+.fc-inner h2 { color:var(--text); margin-bottom:0.75rem; max-width:580px; margin-left:auto; margin-right:auto; }
+.fc-inner p { max-width:480px; margin:0 auto 0.75rem; }
+.fc-tagline {
+  font-family:"JetBrains Mono",monospace; font-size:0.7rem; color:var(--text-dim); margin-bottom:2.5rem;
+  display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap;
+}
+.fc-tagline span { color:var(--text-muted); }
+.fc-btns { display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; }
+.btn-final { background:var(--blue); color:var(--white); border:none; padding:0.88rem 2.1rem; border-radius:5px; font-size:0.85rem; font-weight:500; cursor:pointer; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; transition:all 0.25s; display:flex; align-items:center; gap:8px; }
+.btn-final:hover { background:var(--blue-light); box-shadow:0 8px 30px rgba(74,127,203,0.28); }
+.btn-final-out { background:transparent; color:var(--text-muted); border:1px solid var(--border-md); padding:0.88rem 2.1rem; border-radius:5px; font-size:0.85rem; cursor:pointer; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; transition:all 0.25s; }
+.btn-final-out:hover { border-color:var(--blue-border); color:var(--blue-light); }
+
+/* FOOTER */
+footer { background:var(--surface); border-top:1px solid var(--border); padding:5rem 0 0; }
+.footer-grid { display:grid; grid-template-columns:1.8fr repeat(5,1fr); gap:3rem; margin-bottom:4rem; }
+.footer-brand p { font-size:0.77rem; color:var(--text-dim); margin-top:1rem; max-width:210px; }
+.footer-logo-row { display:flex; align-items:center; gap:9px; }
+.footer-logo-row img { width:24px; height:24px; object-fit:contain; }
+.footer-logo-row span { font-family: 'Outfit', system-ui, sans-serif; font-size:1.15rem; font-weight:700; color:var(--text); }
+.footer-col h5 { font-family:"JetBrains Mono",monospace; font-size:0.58rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim); margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border); }
+.footer-col ul { list-style:none; }
+.footer-col li { margin-bottom:0.5rem; }
+.footer-col a { font-size:0.78rem; color:var(--text-muted); text-decoration:none; transition:color 0.2s; font-weight:300; }
+.footer-col a:hover { color:var(--blue-light); }
+.footer-bottom { border-top:1px solid var(--border); padding:1.5rem 0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+.footer-legal { display:flex; gap:2rem; flex-wrap:wrap; }
+.footer-legal a { font-family:"JetBrains Mono",monospace; font-size:0.62rem; color:var(--text-dim); text-decoration:none; letter-spacing:0.04em; transition:color 0.2s; }
+.footer-legal a:hover { color:var(--text-muted); }
+.footer-copy { font-family:"JetBrains Mono",monospace; font-size:0.62rem; color:var(--text-dim); letter-spacing:0.04em; }
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-item-wrap.active .nav-trigger{color:var(--blue-light);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--blue-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media (max-width:1100px) {
+  .footer-grid { grid-template-columns:repeat(3,1fr); }
+  .footer-brand { grid-column:1/-1; }
+  .hero-metrics { grid-template-columns:repeat(3,1fr); }
+  .hm-item:nth-child(3) { border-right:none; }
+}
+@media (max-width:900px) {
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav { display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .two-col,.two-col-rev,.qr-layout,.cards-layout,.payroll-layout,.settlement-layout,.gbps-layout,.dash-split { grid-template-columns:1fr; }
+  .arch-layers { grid-template-columns:repeat(3,1fr); }
+  .rails-grid-vis { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:640px) {
+  h1 { font-size:2.2rem; }
+  .footer-grid { grid-template-columns:repeat(2,1fr); }
+  .hero-metrics { grid-template-columns:repeat(2,1fr); }
+  .gp-categories { grid-template-columns:repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo">
+    <img src="assets/kapitor.svg" alt="Kapitor">
+    <span class="logo-text">Kapitor</span>
+  </a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap active">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="hero-diag"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill">
+        <div class="ld"></div>
+        2.2 · KAPITOR PAY · ALL PAYMENT RAILS ACTIVE
+      </div>
+      <h1>Global Settlement.<br><span class="w-b">Unified</span><br><span class="w-g">Control.</span></h1>
+      <p class="hero-sub">Kapitor Pay connects regional payment rails, digital assets, and institutional settlement infrastructure into one governed ledger framework.</p>
+      <div class="hero-tagline">
+        <span>Payments</span><span class="sep">·</span>
+        <span>Payroll</span><span class="sep">·</span>
+        <span>Cards</span><span class="sep">·</span>
+        <span>Settlement</span><span class="sep">·</span>
+        <span>Bills</span>
+      </div>
+      <div style="margin-bottom:2.5rem; padding:0.9rem 1.25rem; border:1px solid var(--border); border-radius:5px; background:var(--surface); display:inline-block;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--text-dim); letter-spacing:0.06em;">This is not a payment app. </span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--blue-light); letter-spacing:0.06em;">It is a global settlement engine.</span>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="white" stroke-width="1.4" fill="none" opacity="0.5"/><circle cx="6.5" cy="6.5" r="2.5" fill="white"/></svg>
+          Open Smart Wallet
+        </button>
+        <button class="btn-hero-out">Request Institutional Access →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Daily Settlement Vol.</div>
+          <div class="hm-val b">$840M</div>
+          <div class="hm-sub"><span class="up">▲ 1.8%</span> 24h avg</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Active Payment Rails</div>
+          <div class="hm-val g">42</div>
+          <div class="hm-sub">Global + regional</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Jurisdictions</div>
+          <div class="hm-val">186</div>
+          <div class="hm-sub">Countries covered</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Avg Settlement</div>
+          <div class="hm-val a">T+0</div>
+          <div class="hm-sub">Internal instant</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Off-Ledger Routing</div>
+          <div class="hm-val" style="font-size:1.1rem;color:var(--green);">Zero</div>
+          <div class="hm-sub">Full traceability</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">USD/INR</span>83.42</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">EUR/USD</span><span class="dn">1.0821 ▼0.1%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">GBP/USD</span><span class="up">1.2640 ▲0.2%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USD/AED</span>3.6725</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SWIFT GPI</span><span class="up">LIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">UPI RAILS</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">FEDNOW</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SEPA INSTANT</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">PIX</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">FASTER PAYMENTS</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">BTC</span><span class="up">$68,420 ▲1.4%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USDT</span>$1.000</span>
+    <!-- dupe -->
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USD/INR</span>83.42</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">EUR/USD</span><span class="dn">1.0821 ▼0.1%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">GBP/USD</span><span class="up">1.2640 ▲0.2%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USD/AED</span>3.6725</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SWIFT GPI</span><span class="up">LIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">UPI RAILS</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">FEDNOW</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SEPA INSTANT</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">PIX</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">FASTER PAYMENTS</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">BTC</span><span class="up">$68,420 ▲1.4%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USDT</span>$1.000</span>
+  </div>
+</div>
+
+<!-- ═══ ARCHITECTURE OVERVIEW ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="arch-banner">
+      <div style="position:relative;z-index:2;">
+        <div class="eyebrow b">Pay Architecture</div>
+        <h2 style="color:var(--text);margin-bottom:0.85rem;">How Kapitor Pay Is Structured</h2>
+        <p style="max-width:560px;">Every payment event routes through a unified engine — from the Smart Wallet, through GIPS, the FX Engine, and the Compliance Engine — and records directly to the Unified Ledger. No off-ledger routing exists.</p>
+      </div>
+      <div class="arch-layers">
+        <div class="arch-layer"><div class="al-icon">◈</div><div class="al-label">Smart Wallet</div></div>
+        <div class="arch-layer"><div class="al-icon">⇄</div><div class="al-label">GIPS Rails</div></div>
+        <div class="arch-layer"><div class="al-icon">◉</div><div class="al-label">FX Engine</div></div>
+        <div class="arch-layer"><div class="al-icon">⬡</div><div class="al-label">Compliance</div></div>
+        <div class="arch-layer"><div class="al-icon">▣</div><div class="al-label">Treasury Layer</div></div>
+        <div class="arch-layer" style="background:var(--blue-dim);border:0;"><div class="al-icon" style="color:var(--blue-light);">§</div><div class="al-label" style="color:var(--blue);">Unified Ledger</div></div>
+      </div>
+      <div style="position:relative;z-index:2;margin-top:1.5rem;display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;">
+        <div style="padding:0.85rem 1rem;border:1px solid var(--border);border-radius:5px;text-align:center;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--text-dim);margin-bottom:0.3rem;">CREATES</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">Ledger Record</div>
+        </div>
+        <div style="padding:0.85rem 1rem;border:1px solid var(--border);border-radius:5px;text-align:center;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--text-dim);margin-bottom:0.3rem;">CREATES</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">Compliance Log</div>
+        </div>
+        <div style="padding:0.85rem 1rem;border:1px solid var(--border);border-radius:5px;text-align:center;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--text-dim);margin-bottom:0.3rem;">CREATES</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">Settlement Route</div>
+        </div>
+        <div style="padding:0.85rem 1rem;border:1px solid var(--border);border-radius:5px;text-align:center;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--text-dim);margin-bottom:0.3rem;">CREATES</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">Reserve Mapping</div>
+        </div>
+        <div style="padding:0.85rem 1rem;border:1px solid var(--blue-border);border-radius:5px;text-align:center;background:var(--blue-dim);">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--blue);margin-bottom:0.3rem;">CREATES</div>
+          <div style="font-size:0.75rem;color:var(--blue-light);">Confirmation Event</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 1. GLOBAL TRANSFERS ═══ -->
+<section class="section" id="transfers">
+  <div class="container">
+    <div class="two-col">
+      <div>
+        <div class="eyebrow b">Module 01 · Global Transfers</div>
+        <h2 style="color:var(--text);">Move Capital Across<br>Borders — Without<br>Fragmentation</h2>
+        <p style="margin-top:0.85rem;">Kapitor Pay connects directly to global and regional payment networks — routing each transfer through the optimal rail for cost, speed, and compliance.</p>
+        <div class="transfer-caps">
+          <div class="tc-item"><div class="tc-icon">◈</div><div class="tc-text"><h4>Local Currency Deposits</h4><p>Accept in 40+ local currencies via native rails. Zero conversion loss on deposit.</p></div></div>
+          <div class="tc-item"><div class="tc-icon">◈</div><div class="tc-text"><h4>Cross-Border Transfers</h4><p>SWIFT, FedWire, SEPA, and regional rail-connected corridors with T+0 to T+1 settlement.</p></div></div>
+          <div class="tc-item"><div class="tc-icon">◈</div><div class="tc-text"><h4>Multi-Currency Conversion</h4><p>Real-time FX conversion across 80+ currency pairs at institutional rates before or at settlement.</p></div></div>
+          <div class="tc-item"><div class="tc-icon">◈</div><div class="tc-text"><h4>Treasury Routing</h4><p>Automated treasury rebalancing and institutional payout management for corporate clients.</p></div></div>
+        </div>
+        <div style="margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--border-md);border-radius:5px;background:var(--surface2);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">No shadow routing. Full traceability. Every transfer generates: Ledger Entry · FX Rate Applied · Settlement Timestamp · Compliance Log</div>
+        <div class="transfer-trail" style="margin-top:1.75rem;">
+          <div class="tt-hdr">Live Transfer Ledger</div>
+          <div class="tt-row hdr-row">
+            <div class="tt-cell hdr">ROUTE</div>
+            <div class="tt-cell hdr">AMOUNT</div>
+            <div class="tt-cell hdr">FX RATE</div>
+            <div class="tt-cell hdr">RAIL</div>
+            <div class="tt-cell hdr">STATUS</div>
+          </div>
+          <div class="tt-row">
+            <div class="tt-cell">USD → INR</div>
+            <div class="tt-cell">$50,000</div>
+            <div class="tt-cell">83.42</div>
+            <div class="tt-cell">UPI</div>
+            <div class="tt-cell"><span class="tt-status st-ok">SETTLED</span></div>
+          </div>
+          <div class="tt-row">
+            <div class="tt-cell">EUR → GBP</div>
+            <div class="tt-cell">€28,000</div>
+            <div class="tt-cell">0.858</div>
+            <div class="tt-cell">SEPA INST</div>
+            <div class="tt-cell"><span class="tt-status st-ok">SETTLED</span></div>
+          </div>
+          <div class="tt-row">
+            <div class="tt-cell">USD → BRL</div>
+            <div class="tt-cell">$15,000</div>
+            <div class="tt-cell">4.968</div>
+            <div class="tt-cell">PIX</div>
+            <div class="tt-cell"><span class="tt-status st-proc">PROCESSING</span></div>
+          </div>
+          <div class="tt-row">
+            <div class="tt-cell">USD → USD (INT)</div>
+            <div class="tt-cell">$200,000</div>
+            <div class="tt-cell">1.000</div>
+            <div class="tt-cell">WIRE</div>
+            <div class="tt-cell"><span class="tt-status st-pend">PENDING</span></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="rails-panel">
+          <div class="rails-top">
+            <div class="rails-title">Payment Rails — GIPS</div>
+            <div class="rails-count">42 ACTIVE RAILS</div>
+          </div>
+          <div class="rails-grid-vis">
+            <div class="rail-item">
+              <div class="ri-flag">🇮🇳</div>
+              <div class="ri-country">India</div>
+              <div class="ri-methods"><span>UPI</span><span>IMPS</span><span>NEFT</span><span>RuPay</span></div>
+            </div>
+            <div class="rail-item">
+              <div class="ri-flag">🇺🇸</div>
+              <div class="ri-country">United States</div>
+              <div class="ri-methods"><span>ACH</span><span>FedNow</span><span>Fedwire</span><span>CHIPS</span></div>
+            </div>
+            <div class="rail-item">
+              <div class="ri-flag">🇪🇺</div>
+              <div class="ri-country">Europe</div>
+              <div class="ri-methods"><span>SEPA</span><span>SEPA Instant</span><span>TARGET2</span></div>
+            </div>
+            <div class="rail-item">
+              <div class="ri-flag">🇬🇧</div>
+              <div class="ri-country">United Kingdom</div>
+              <div class="ri-methods"><span>Faster Payments</span><span>BACS</span><span>CHAPS</span></div>
+            </div>
+            <div class="rail-item">
+              <div class="ri-flag">🇧🇷</div>
+              <div class="ri-country">Brazil</div>
+              <div class="ri-methods"><span>PIX</span><span>TED</span><span>DOC</span></div>
+            </div>
+            <div class="rail-item">
+              <div class="ri-flag">🌍</div>
+              <div class="ri-country">Africa</div>
+              <div class="ri-methods"><span>Mobile Money</span><span>M-Pesa</span><span>PAPSS</span></div>
+            </div>
+            <div class="rail-item">
+              <div class="ri-flag">🌐</div>
+              <div class="ri-country">SWIFT</div>
+              <div class="ri-methods"><span>SWIFT MT</span><span>SWIFT GPI</span><span>ISO 20022</span></div>
+            </div>
+            <div class="rail-item">
+              <div class="ri-flag">💳</div>
+              <div class="ri-country">Card Networks</div>
+              <div class="ri-methods"><span>Visa</span><span>Mastercard</span><span>Virtual Cards</span></div>
+            </div>
+          </div>
+          <div class="rails-bottom">
+            <div class="rb-item"><div class="rb-dot" style="background:var(--green);"></div>Real-Time Rails</div>
+            <div class="rb-item"><div class="rb-dot" style="background:var(--blue);"></div>Batch Rails</div>
+            <div class="rb-item"><div class="rb-dot" style="background:var(--amber);"></div>Institutional</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 2. QR & P2P ═══ -->
+<section class="section" id="p2p">
+  <div class="container">
+    <div class="qr-layout">
+      <div>
+        <div class="qr-mockup">
+          <div class="qm-top"></div>
+          <div class="qm-header">
+            <div class="qm-title">QR & P2P Payments</div>
+            <div class="qm-badge">INSTANT</div>
+          </div>
+          <div class="qr-vis">
+            <div class="qr-code-mock" id="qrGrid"></div>
+            <div class="qr-info">
+              <div class="qr-addr">kapitor.pay/merchant/RX-482</div>
+              <div class="qr-name">Merchant Account</div>
+            </div>
+            <div class="qr-amount-input">
+              <div class="qai-label">AMOUNT TO PAY</div>
+              <div class="qai-val">$2,400.00</div>
+            </div>
+          </div>
+          <div class="qr-sources">
+            <div class="qrs-title">Payment Source</div>
+            <div class="qrs-items">
+              <div class="qrs-chip"><div class="qrs-dot" style="background:var(--blue);"></div>Fiat Balance</div>
+              <div class="qrs-chip"><div class="qrs-dot" style="background:#4ac8c8;"></div>Stablecoins</div>
+              <div class="qrs-chip"><div class="qrs-dot" style="background:var(--green);"></div>Available Yield</div>
+              <div class="qrs-chip"><div class="qrs-dot" style="background:var(--amber);"></div>Katoin Profits</div>
+              <div class="qrs-chip"><div class="qrs-dot" style="background:#9b72db;"></div>EQOUIN Dividends</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow g">Module 02 · QR & P2P</div>
+        <h2 style="color:var(--text);">Real-Time Peer &<br>Merchant Payments</h2>
+        <p style="margin-top:0.85rem;">Kapitor Pay's QR layer integrates directly into GIPS infrastructure — enabling instant payments from any balance source to any merchant or peer in the network.</p>
+        <div class="p2p-features">
+          <div class="p2pf">QR-based merchant payments — generate or scan, settle instantly</div>
+          <div class="p2pf">Instant P2P transfers between Kapitor wallet holders</div>
+          <div class="p2pf">Wallet-to-wallet transfers with no external routing delay</div>
+          <div class="p2pf">Merchant settlement accounts with daily reconciliation reports</div>
+          <div class="p2pf">Internal token payments where permitted by compliance tier</div>
+        </div>
+        <div style="margin-top:2rem;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;">All P2P flows are</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;">
+            <div style="padding:0.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;gap:8px;font-size:0.75rem;color:var(--text-muted);">
+              <span style="color:var(--green);font-size:0.7rem;">✓</span> Instant within Kapitor
+            </div>
+            <div style="padding:0.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;gap:8px;font-size:0.75rem;color:var(--text-muted);">
+              <span style="color:var(--green);font-size:0.7rem;">✓</span> Ledger-synchronized
+            </div>
+            <div style="padding:0.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;gap:8px;font-size:0.75rem;color:var(--text-muted);">
+              <span style="color:var(--green);font-size:0.7rem;">✓</span> Compliance-verified
+            </div>
+            <div style="padding:0.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;gap:8px;font-size:0.75rem;color:var(--text-muted);">
+              <span style="color:var(--amber);font-size:0.7rem;">⟳</span> Governance-reversible
+            </div>
+          </div>
+        </div>
+        <div class="p2p-note" style="margin-top:1.5rem;">The QR layer integrates directly into GIPS infrastructure.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3. CARDS ═══ -->
+<section class="section" id="cards">
+  <div class="container">
+    <div class="cards-layout">
+      <div>
+        <div class="card-vis">
+          <div class="cv-top"></div>
+          <div class="cv-hdr">
+            <div class="cv-title">Card Infrastructure</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text-dim);">4 CARD TYPES ACTIVE</div>
+          </div>
+          <div class="card-deck">
+            <div class="card-mockup physical">
+              <div class="cm-glow"></div>
+              <div class="cm-top">
+                <div><div class="cm-brand">Kapitor</div><div class="cm-type">PHYSICAL DEBIT</div></div>
+                <div class="cm-chip"></div>
+              </div>
+              <div class="cm-bottom">
+                <div class="cm-number">4847 •••• •••• 2918</div>
+                <div class="cm-holder">ARJUN MEHTA · MULTI-CURRENCY</div>
+              </div>
+            </div>
+            <div class="card-mockup virtual">
+              <div class="cm-glow"></div>
+              <div class="cm-top">
+                <div><div class="cm-brand">Kapitor</div><div class="cm-type">VIRTUAL CARD</div></div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:rgba(255,255,255,0.4);">INSTANT GENERATE</div>
+              </div>
+              <div class="cm-bottom">
+                <div class="cm-number">5284 •••• •••• 7741</div>
+                <div class="cm-holder">ONLINE MERCHANT · USD ONLY</div>
+              </div>
+            </div>
+          </div>
+          <div class="cv-controls">
+            <div class="cvc-item"><div class="cvc-label">Spend Limit</div><div class="cvc-val">$5,000 / day</div></div>
+            <div class="cvc-item"><div class="cvc-label">Status</div><div class="cvc-val" style="color:var(--green);">Active ✓</div></div>
+            <div class="cvc-item"><div class="cvc-label">Geo Restrictions</div><div class="cvc-val">Global</div></div>
+            <div class="cvc-item"><div class="cvc-label">MCC Restrictions</div><div class="cvc-val">None set</div></div>
+          </div>
+          <div class="cv-recent">
+            <div class="cvr-title">Recent Transactions</div>
+            <div class="cvr-row">
+              <div><div class="cvr-merchant">AWS Cloud Services</div><div class="cvr-meta">Virtual · USD · 14:22</div></div>
+              <div class="cvr-amount">$840.00</div>
+            </div>
+            <div class="cvr-row">
+              <div><div class="cvr-merchant">Dubai Airport Lounge</div><div class="cvr-meta">Physical · AED → USD</div></div>
+              <div class="cvr-amount">$42.00</div>
+            </div>
+            <div class="cvr-row">
+              <div><div class="cvr-merchant">SaaS Subscription</div><div class="cvr-meta">Virtual · EUR → USD</div></div>
+              <div class="cvr-amount">$199.00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow a">Module 03 · Cards & Virtual Cards</div>
+        <h2 style="color:var(--text);">Controlled Spending<br>Infrastructure</h2>
+        <p style="margin-top:0.85rem;">Kapitor issues four card types — Physical Debit, Virtual, Multi-Currency, and Corporate Treasury — each with granular spend controls and ledger-level settlement.</p>
+        <div class="cards-features">
+          <div class="cf"><h4>Real-Time Freeze / Unfreeze</h4><p>Suspend or activate any card instantly via the Smart Wallet dashboard or API.</p></div>
+          <div class="cf"><h4>Merchant Category Restrictions</h4><p>Restrict spend by MCC code — essential for corporate treasury and employee card programmes.</p></div>
+          <div class="cf"><h4>Geographic Restrictions</h4><p>Enable or restrict card use by country, region, or IP zone in real time.</p></div>
+          <div class="cf"><h4>Virtual Card Generation</h4><p>Instantly generate single-use or recurring virtual cards for online spend with custom limits.</p></div>
+        </div>
+        <div class="settlement-logic">
+          <div class="sl-title">Settlement Logic — Cards settle against</div>
+          <div class="sl-items">
+            <div class="sl-item">Fiat balance (direct deduction)</div>
+            <div class="sl-item">Converted crypto (real-time FX conversion)</div>
+            <div class="sl-item">Yield-released funds (from eligible positions)</div>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;padding:0.85rem 1.2rem;border:1px solid var(--blue-border);border-radius:5px;background:var(--blue-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--blue-light);">Corporate clients can issue controlled employee cards under Kapitor Prime.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4. SALARY & PAYROLL ═══ -->
+<section class="section" id="payroll">
+  <div class="container">
+    <div class="payroll-layout">
+      <div>
+        <div class="eyebrow b">Module 04 · Salary & Payroll</div>
+        <h2 style="color:var(--text);">Enterprise-Grade<br>Disbursement Engine</h2>
+        <p style="margin-top:0.85rem;">Kapitor Pay's payroll engine handles domestic and cross-border salary disbursements, contractor payouts, and treasury batch payments — all ledger-recorded with compliance integration.</p>
+        <div class="payroll-features" style="display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;">
+          <div class="pf-item"><div class="pf-icon">◈</div><div class="pf-body"><h4>Multi-Currency Salary Distribution</h4><p>Pay employees in their local currency from a single funding source in any supported currency.</p></div></div>
+          <div class="pf-item"><div class="pf-icon">◈</div><div class="pf-body"><h4>Automated Conversion</h4><p>FX conversion at institutional rates on the payment day with rate locking available.</p></div></div>
+          <div class="pf-item"><div class="pf-icon">◈</div><div class="pf-body"><h4>Jurisdiction-Based Compliance</h4><p>KYB-integrated employer onboarding with per-jurisdiction payroll compliance rules enforced automatically.</p></div></div>
+          <div class="pf-item"><div class="pf-icon">◈</div><div class="pf-body"><h4>Audit-Ready Salary Logs</h4><p>Every disbursement generates a ledger entry, FX record, tax-routing log, and confirmation receipt.</p></div></div>
+        </div>
+        <div class="payroll-note">Fund payroll in fiat or stablecoins · Schedule recurring disbursements · Manage bulk payouts · Integrate via API. All payroll movements are ledger-recorded.</div>
+      </div>
+      <div>
+        <div class="payroll-panel">
+          <div class="pp-top"></div>
+          <div class="pp-header">
+            <div class="pp-title">Payroll Dashboard</div>
+            <div class="pp-period">FEB 2026 CYCLE</div>
+          </div>
+          <div class="pp-summary">
+            <div class="pp-sum-item">
+              <div class="pp-sum-label">Total Disbursed</div>
+              <div class="pp-sum-val" style="color:var(--green);">$284K</div>
+            </div>
+            <div class="pp-sum-item">
+              <div class="pp-sum-label">Recipients</div>
+              <div class="pp-sum-val" style="color:var(--blue-light);">142</div>
+            </div>
+            <div class="pp-sum-item">
+              <div class="pp-sum-label">Currencies</div>
+              <div class="pp-sum-val" style="color:var(--amber);">8</div>
+            </div>
+          </div>
+          <div class="pp-roster">
+            <div class="pp-row hdr">
+              <div class="pp-cell hdr">EMPLOYEE</div>
+              <div class="pp-cell hdr">CURRENCY</div>
+              <div class="pp-cell hdr">AMOUNT</div>
+              <div class="pp-cell hdr">STATUS</div>
+            </div>
+            <div class="pp-row">
+              <div class="pp-emp"><div class="pp-avatar" style="background:var(--blue-dim);color:var(--blue-light);">AM</div>Arjun Mehta</div>
+              <div class="pp-cell">USD</div>
+              <div class="pp-cell">$8,200</div>
+              <div class="pp-cell"><span class="pp-status" style="background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);">SETTLED</span></div>
+            </div>
+            <div class="pp-row">
+              <div class="pp-emp"><div class="pp-avatar" style="background:var(--green-dim);color:var(--green);">PR</div>Priya Rajan</div>
+              <div class="pp-cell">INR</div>
+              <div class="pp-cell">₹2,40,000</div>
+              <div class="pp-cell"><span class="pp-status" style="background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);">SETTLED</span></div>
+            </div>
+            <div class="pp-row">
+              <div class="pp-emp"><div class="pp-avatar" style="background:var(--amber-dim);color:var(--amber);">SK</div>Sofia Koch</div>
+              <div class="pp-cell">EUR</div>
+              <div class="pp-cell">€6,800</div>
+              <div class="pp-cell"><span class="pp-status" style="background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-border);">PROCESSING</span></div>
+            </div>
+            <div class="pp-row">
+              <div class="pp-emp"><div class="pp-avatar" style="background:rgba(155,114,219,0.1);color:#9b72db;">JO</div>James Osei</div>
+              <div class="pp-cell">GHS</div>
+              <div class="pp-cell">GHS 14,000</div>
+              <div class="pp-cell"><span class="pp-status" style="background:var(--blue-dim);color:var(--blue-light);border:1px solid var(--blue-border);">QUEUED</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5. INTERNATIONAL SETTLEMENT ═══ -->
+<section class="section" id="settlement">
+  <div class="container">
+    <div class="settlement-layout">
+      <div>
+        <div class="settlement-flow">
+          <div class="sf-top"></div>
+          <div class="sf-header">
+            <div class="sf-title">Settlement Flow Engine</div>
+            <div class="sf-live"><div class="ld"></div>LIVE PROCESSING</div>
+          </div>
+          <div class="sf-steps">
+            <div class="sf-step">
+              <div class="sf-num" style="background:var(--blue-dim);color:var(--blue-light);border:1px solid var(--blue-border);">01</div>
+              <div class="sf-body"><h4>Counterparty Validation</h4><p>Beneficiary identity, sanctions screening, and jurisdiction check before routing begins.</p></div>
+            </div>
+            <div class="sf-step">
+              <div class="sf-num" style="background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);">02</div>
+              <div class="sf-body"><h4>FX Mapping</h4><p>Real-time or locked FX rate applied. Conversion recorded with timestamp and rate source.</p></div>
+            </div>
+            <div class="sf-step">
+              <div class="sf-num" style="background:var(--blue-dim);color:var(--blue-light);border:1px solid var(--blue-border);">03</div>
+              <div class="sf-body"><h4>Compliance Screening</h4><p>AML transaction scoring, travel rule validation, and risk scoring applied to the payment.</p></div>
+            </div>
+            <div class="sf-step">
+              <div class="sf-num" style="background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-border);">04</div>
+              <div class="sf-body"><h4>Rail Routing</h4><p>Optimal rail selected from SWIFT, SEPA, ACH, or regional network based on cost and speed.</p></div>
+            </div>
+            <div class="sf-step" style="padding-bottom:0;">
+              <div class="sf-num" style="background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);">05</div>
+              <div class="sf-body"><h4>Final Settlement Confirmation</h4><p>Ledger entry created. Counterparty notified. Reserve mapping updated. Compliance log closed.</p></div>
+            </div>
+          </div>
+          <div class="sf-corridors">
+            <div class="sf-corr"><span class="flag">🇮🇳🇺🇸</span>IND–USA</div>
+            <div class="sf-corr"><span class="flag">🇬🇧🇪🇺</span>UK–EUR</div>
+            <div class="sf-corr"><span class="flag">🇺🇸🇦🇪</span>USA–UAE</div>
+            <div class="sf-corr"><span class="flag">🇸🇬🇯🇵</span>SGP–JPN</div>
+            <div class="sf-corr"><span class="flag">🇿🇦🇬🇧</span>AFR–UK</div>
+            <div class="sf-corr"><span class="flag">🌐</span>+180 more</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow g">Module 05 · International Settlement</div>
+        <h2 style="color:var(--text);">Institutional Cross-Border<br>Infrastructure</h2>
+        <p style="margin-top:0.85rem;">Kapitor Pay provides institutional-grade settlement infrastructure for cross-border invoices, trade settlement, treasury rebalancing, and multi-currency clearing.</p>
+        <div class="settlement-caps">
+          <div class="sc-item"><h4>Cross-Border Invoice Settlement</h4><p>Pay trade invoices in local currency to any supported corridor with compliance documentation.</p></div>
+          <div class="sc-item"><h4>Treasury Rebalancing</h4><p>Automated multi-currency treasury rebalancing with reserve-backed clearing and FX hedging.</p></div>
+          <div class="sc-item"><h4>Liquidity Routing Logic</h4><p>Intelligent routing minimises settlement cost while maintaining reserve requirements across corridors.</p></div>
+          <div class="sc-item"><h4>SWIFT-Connected Infrastructure</h4><p>SWIFT MT, SWIFT GPI, and ISO 20022-compliant messaging for institutional counterparty compatibility.</p></div>
+        </div>
+        <div class="settlement-note">Kapitor operates as a controlled settlement layer — not a remittance shortcut. Every international settlement includes full counterparty validation and compliance screening.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6. GBPS ═══ -->
+<section class="section" id="gbps">
+  <div class="container">
+    <div class="gbps-layout">
+      <div>
+        <div class="eyebrow a">Module 06 · Global Bill Payment System</div>
+        <h2 style="color:var(--text);">Pay Global Obligations<br>From One Wallet</h2>
+        <p style="margin-top:0.85rem;">Kapitor's GBPS routes bill payments through local payment rails while capital moves through the Unified Ledger — enabling cross-border bill settlement from a single balance source.</p>
+        <div class="gbps-features">
+          <div class="gbpsf"><h4>Recurring Billing</h4><p>Schedule recurring payments for utilities, subscriptions, and regular obligations with smart scheduling.</p></div>
+          <div class="gbpsf"><h4>Due Date Scheduling</h4><p>Automated pre-scheduling ensures payments arrive by due date regardless of rail settlement time.</p></div>
+          <div class="gbpsf"><h4>Cross-Border Bill Routing</h4><p>Pay international obligations in the biller's local currency, funded from any balance source.</p></div>
+          <div class="gbpsf"><h4>Automated FX Conversion</h4><p>Currency conversion at point of payment with rate confirmation and conversion receipt.</p></div>
+        </div>
+        <div style="margin-top:1.75rem;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;">Available Payment Sources</div>
+          <div class="gps-chips" style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+            <span style="padding:0.32rem 0.75rem;border:1px solid var(--blue-border);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--blue-light);background:var(--blue-dim);">Fiat Balance</span>
+            <span style="padding:0.32rem 0.75rem;border:1px solid var(--border);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);background:var(--bg);">Stablecoins (auto-converted)</span>
+            <span style="padding:0.32rem 0.75rem;border:1px solid var(--green-border);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--green);background:var(--green-dim);">Kaloft Yield Withdrawals</span>
+            <span style="padding:0.32rem 0.75rem;border:1px solid var(--amber-border);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--amber);background:var(--amber-dim);">Katoin Distributions</span>
+            <span style="padding:0.32rem 0.75rem;border:1px solid var(--border);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);background:var(--bg);">EQOUIN Income</span>
+          </div>
+        </div>
+        <div class="gbps-note" style="margin-top:1.75rem;">Bills are settled through local payment rails while capital moves through the Unified Ledger.</div>
+      </div>
+      <div>
+        <div class="gbps-panel">
+          <div class="gp-top"></div>
+          <div class="gp-header">
+            <div class="gp-title">Global Bill Payment System</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text-dim);">GBPS · LIVE</div>
+          </div>
+          <div class="gp-categories">
+            <div class="gp-cat"><div class="gp-cat-icon">⚡</div><div class="gp-cat-label">Utilities</div></div>
+            <div class="gp-cat"><div class="gp-cat-icon">🏠</div><div class="gp-cat-label">Rent</div></div>
+            <div class="gp-cat"><div class="gp-cat-icon">📱</div><div class="gp-cat-label">Telecom</div></div>
+            <div class="gp-cat"><div class="gp-cat-icon">🛡</div><div class="gp-cat-label">Insurance</div></div>
+            <div class="gp-cat"><div class="gp-cat-icon">🎓</div><div class="gp-cat-label">Education</div></div>
+            <div class="gp-cat"><div class="gp-cat-icon">🏛</div><div class="gp-cat-label">Gov. Dues</div></div>
+            <div class="gp-cat"><div class="gp-cat-icon">↻</div><div class="gp-cat-label">Subscriptions</div></div>
+            <div class="gp-cat" style="background:var(--blue-dim);"><div class="gp-cat-icon" style="color:var(--blue-light);">+</div><div class="gp-cat-label" style="color:var(--blue);">Add Biller</div></div>
+          </div>
+          <div class="gp-recent">
+            <div class="gpr-title">Upcoming Payments</div>
+            <div class="gpr-row">
+              <div class="gpr-left"><div class="gpr-icon">⚡</div><div><div class="gpr-name">DEWA Electricity</div><div class="gpr-freq">Monthly · AED</div></div></div>
+              <div style="text-align:right;"><div class="gpr-amount">AED 820</div><div class="gpr-status" style="color:var(--amber);">Due in 3d</div></div>
+            </div>
+            <div class="gpr-row">
+              <div class="gpr-left"><div class="gpr-icon">📱</div><div><div class="gpr-name">Jio Business Plan</div><div class="gpr-freq">Monthly · INR</div></div></div>
+              <div style="text-align:right;"><div class="gpr-amount">₹4,200</div><div class="gpr-status" style="color:var(--green);">Due in 8d</div></div>
+            </div>
+            <div class="gpr-row">
+              <div class="gpr-left"><div class="gpr-icon">🏠</div><div><div class="gpr-name">London Office Rent</div><div class="gpr-freq">Monthly · GBP</div></div></div>
+              <div style="text-align:right;"><div class="gpr-amount">£8,400</div><div class="gpr-status" style="color:var(--green);">Due in 12d</div></div>
+            </div>
+            <div class="gpr-row">
+              <div class="gpr-left"><div class="gpr-icon">🛡</div><div><div class="gpr-name">Corporate Insurance</div><div class="gpr-freq">Annual · USD</div></div></div>
+              <div style="text-align:right;"><div class="gpr-amount">$24,000</div><div class="gpr-status" style="color:var(--blue-light);">Due in 28d</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD VIEW ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="eyebrow b">Pay Dashboard</div>
+      <h2 style="color:var(--text);">Complete Payment Control<br>in One View</h2>
+      <p>Two dashboard modes — Personal and Enterprise — providing full payment control, settlement analytics, and compliance visibility from the same interface.</p>
+    </div>
+    <div class="dash-split">
+      <!-- PERSONAL -->
+      <div class="dash-panel">
+        <div class="dp-top" style="background:linear-gradient(90deg,var(--blue),var(--green));"></div>
+        <div class="dp-header">
+          <div class="dp-title">Personal Dashboard</div>
+          <div class="dp-type">RETAIL USER</div>
+        </div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Total Sent</div><div class="dp-m-val" style="color:var(--blue-light);">$124,800</div><div class="dp-m-sub" style="color:var(--text-dim);">All time</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Total Received</div><div class="dp-m-val" style="color:var(--green);">$98,400</div><div class="dp-m-sub" style="color:var(--text-dim);">All time</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Pending</div><div class="dp-m-val" style="color:var(--amber);">$15,000</div><div class="dp-m-sub" style="color:var(--text-dim);">2 transactions</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Active Cards</div><div class="dp-m-val">3</div><div class="dp-m-sub" style="color:var(--text-dim);">2 virtual · 1 physical</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Payroll Summary</span><span class="dp-row-val">$8,200 / mo</span></div>
+          <div class="dp-row"><span class="dp-row-key">Recurring Bills</span><span class="dp-row-val">7 active</span></div>
+          <div class="dp-row"><span class="dp-row-key">FX Conversions (30d)</span><span class="dp-row-val">12 · $48,200</span></div>
+          <div class="dp-row"><span class="dp-row-key">P2P Transfers (30d)</span><span class="dp-row-val">28 · $14,800</span></div>
+        </div>
+      </div>
+      <!-- ENTERPRISE -->
+      <div class="dash-panel">
+        <div class="dp-top" style="background:linear-gradient(90deg,var(--amber),var(--blue));"></div>
+        <div class="dp-header">
+          <div class="dp-title">Enterprise Dashboard</div>
+          <div class="dp-type">KAPITOR PRIME</div>
+        </div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Treasury Balance</div><div class="dp-m-val" style="color:var(--amber);">$4.2M</div><div class="dp-m-sub" style="color:var(--text-dim);">8 currencies</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Monthly Payroll</div><div class="dp-m-val" style="color:var(--green);">$284K</div><div class="dp-m-sub" style="color:var(--text-dim);">142 recipients</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Employee Cards</div><div class="dp-m-val" style="color:var(--blue-light);">48</div><div class="dp-m-sub" style="color:var(--text-dim);">3 suspended</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Compliance Alerts</div><div class="dp-m-val" style="color:var(--green);">0</div><div class="dp-m-sub" style="color:var(--green);">All clear</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Bulk Disbursements (30d)</span><span class="dp-row-val">6 batches · $842K</span></div>
+          <div class="dp-row"><span class="dp-row-key">Settlement Analytics</span><span class="dp-row-val">T+0: 84% · T+1: 16%</span></div>
+          <div class="dp-row"><span class="dp-row-key">Card Spend (MTD)</span><span class="dp-row-val">$128,400 · 48 cards</span></div>
+          <div class="dp-row"><span class="dp-row-key">API Calls (24h)</span><span class="dp-row-val">24,820 · 99.8% success</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="eyebrow b" style="justify-content:center;display:flex;margin-bottom:1.5rem;">One Global Payment Layer</div>
+      <h2>Payments. Payroll. Cards.<br>Settlement. Bills.</h2>
+      <p>Kapitor Pay unifies local rails, cross-border infrastructure, and digital assets into one settlement engine governed by the Unified Ledger.</p>
+      <div class="fc-tagline">
+        <span>All reconciled</span>
+        <span class="sep" style="color:var(--text-dim);">·</span>
+        <span>All traceable</span>
+        <span class="sep" style="color:var(--text-dim);">·</span>
+        <span>Zero off-ledger routing</span>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="white" stroke-width="1.4" fill="none" opacity="0.5"/><circle cx="6.5" cy="6.5" r="2.5" fill="white"/></svg>
+          Open Smart Wallet
+        </button>
+        <button class="btn-final-out">Request Institutional Access</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row">
+          <img src="assets/kapitor.svg" alt="Kapitor">
+          <span>Kapitor</span>
+        </div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="index.html">Smart Wallet</a></li><li><a href="kapitor-pay.html">Pay</a></li><li><a href="index.html#trade">Trade</a></li><li><a href="kapitor-earn.html">Earn</a></li><li><a href="index.html#stake">Stake</a></li><li><a href="rwa.html">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="digitalassets.html">Kaloft (EPT)</a></li><li><a href="digitalassets.html">Katoin</a></li><li><a href="digitalassets.html">EQOUIN</a></li><li><a href="digitalassets.html">KFI</a></li><li><a href="rwa.html">RWA</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="custody.html">Custody</a></li><li><a href="compliance.html">Compliance</a></li><li><a href="fx.html">FX</a></li><li><a href="api.html">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="company.html">About</a></li><li><a href="company.html">Careers</a></li><li><a href="company.html">Contact</a></li><li><a href="compliance.html">Compliance</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal">
+        <a href="#">Terms of Service</a><a href="#">Privacy Policy</a><a href="#">Risk Disclosure</a><a href="#">AML Policy</a><a href="#">Cookie Policy</a>
+      </div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  // QR code pattern
+  const g = document.getElementById("qrGrid");
+  if(g) {
+    const pattern = [1,1,1,1,1,1,1,0,1,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,0,1,0,0,0,0,0,0,1,0,1,0];
+    pattern.forEach(v => {
+      const c = document.createElement("div");
+      c.className = "qr-cell";
+      c.style.background = v ? "rgba(74,127,203,0.7)" : "transparent";
+      g.appendChild(c);
+    });
+  }
+
+  window.addEventListener("scroll", () => {
+    document.getElementById("hdr").style.padding = window.scrollY > 60 ? "0.65rem 2.5rem" : "1rem 2.5rem";
+  });
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        e.target.style.opacity = "1";
+        e.target.style.transform = "translateY(0)";
+      }
+    });
+  }, { threshold: 0.07 });
+
+  document.querySelectorAll(
+    ".rail-item,.tc-item,.tt-row,.sf-step,.sc-item,.gbpsf,.pf-item,.cf,.arch-layer,.dp-metric,.dp-row,.gp-cat,.gpr-row,.pp-row,.p2pf,.qrs-chip,.cvr-row"
+  ).forEach(el => {
+    el.style.opacity = "0";
+    el.style.transform = "translateY(10px)";
+    el.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+    obs.observe(el);
+  });
+
+  (function(){
+    var header=document.getElementById("hdr");
+    var mobileToggle=document.querySelector(".nav-mobile-toggle");
+    function isMobile(){return window.innerWidth<=900;}
+    if(mobileToggle&&header){
+      mobileToggle.addEventListener("click",function(){
+        header.classList.toggle("header-mobile-open");
+        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+      });
+    }
+    document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+      btn.addEventListener("click",function(e){
+        if(isMobile()){
+          e.preventDefault();
+          var wrap=btn.closest(".nav-item-wrap");
+          wrap.classList.toggle("open");
+          btn.setAttribute("aria-expanded",wrap.classList.contains("open"));
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

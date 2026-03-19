@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KFI – Kapitor Financial Instruments</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+:root {
+  /* KAP light theme */
+  --bg:#FCF8E8;
+  --surface:#FFFFFF;
+  --surface2:#F5ECD6;
+  --surface3:#F5ECD6;
+  --border:rgba(15,23,42,0.08);
+  --border-md:rgba(15,23,42,0.16);
+
+  --green:#3db87a;  --green-light:#5ed498;
+  --green-dim:rgba(61,184,122,0.09);  --green-border:rgba(61,184,122,0.2);
+
+  --amber:#f0a030;  --amber-light:#f5bc5a;
+  --amber-dim:rgba(240,160,48,0.09);  --amber-border:rgba(240,160,48,0.2);
+
+  /* KFI: steel-blue institutional palette */
+  --kfi:#1e90c8;      --kfi-light:#42aadc;
+  --kfi-dim:rgba(30,144,200,0.09);    --kfi-border:rgba(30,144,200,0.22);
+  --kfi-steel:#9ab8d0; --kfi-steel-dim:rgba(154,184,208,0.07); --kfi-steel-border:rgba(154,184,208,0.18);
+  --kfi-gold:#b8962a;  --kfi-gold-dim:rgba(184,150,42,0.09);  --kfi-gold-border:rgba(184,150,42,0.2);
+  --kfi-chain:#2a4458;
+
+  --bg-col:#1e90c8;   --sblc-col:#9b59b6;   --lc-col:#27ae60;   --pg-col:#e67e22;
+
+  --text:#111827;  --text-muted:#6B6B6B;  --text-dim:#9CA3AF;  --white:#ffffff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:300;line-height:1.65;overflow-x:hidden;}
+
+h1,h2,h3{font-family:'Outfit',system-ui,sans-serif;font-weight:700;letter-spacing:-0.03em;color:var(--text);}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.kfi{color:var(--kfi-light);}  .ey.kfi::before{background:var(--kfi-light);}
+.ey.steel{color:var(--kfi-steel);}.ey.steel::before{background:var(--kfi-steel);}
+.ey.gold{color:var(--kfi-gold);}  .ey.gold::before{background:var(--kfi-gold);}
+.ey.g{color:var(--green);}        .ey.g::before{background:var(--green);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--text);margin-bottom:0.85rem;}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--kfi-light);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--kfi);color:var(--kfi-light);}
+.btn-cta{background:var(--kfi);color:#04080c;border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-cta:hover{background:var(--kfi-light);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 52% 26%,rgba(30,144,200,0.1) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 8% 70%,rgba(42,68,88,0.15) 0%,transparent 50%),
+    radial-gradient(ellipse 35% 35% at 92% 68%,rgba(184,150,42,0.04) 0%,transparent 45%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.013) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.013) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 65% at 50% 40%,black 10%,transparent 75%);}
+/* circuit board micro-pattern */
+.hero-circuit{position:absolute;top:8%;right:0;width:580px;height:580px;opacity:0.018;pointer-events:none;}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(30,144,200,0.3);border-radius:3px;background:rgba(30,144,200,0.08);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--kfi-light);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--kfi);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero-content{position:relative;z-index:2;max-width:900px;}
+.hero h1{color:var(--text);margin-bottom:0.6rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.64rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:580px;color:var(--text-muted);margin-bottom:2rem;line-height:1.8;}
+/* instrument type badges */
+.instr-badges{display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:2rem;}
+.ib{display:flex;align-items:center;gap:7px;padding:0.42rem 0.9rem;border-radius:4px;font-family:"JetBrains Mono",monospace;font-size:0.62rem;letter-spacing:0.08em;border:1px solid;}
+.ib-bg{background:rgba(30,144,200,0.1);border-color:rgba(30,144,200,0.25);color:var(--kfi-light);}
+.ib-sblc{background:rgba(155,89,182,0.1);border-color:rgba(155,89,182,0.25);color:#c39bd3;}
+.ib-lc{background:rgba(39,174,96,0.1);border-color:rgba(39,174,96,0.25);color:#82e6aa;}
+.ib-pg{background:rgba(230,126,34,0.1);border-color:rgba(230,126,34,0.25);color:#f0a05a;}
+.ib-dot{width:5px;height:5px;border-radius:50%;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--kfi);color:#04080c;border:none;padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:var(--kfi-light);transform:translateY(-1px);box-shadow:0 8px 30px rgba(30,144,200,0.22);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--kfi-border);color:var(--kfi-light);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--kfi-light);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 46s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--kfi-light);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* INSTRUMENTS GRID */
+.instr-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.ig-card{background:var(--surface);padding:0;position:relative;overflow:hidden;transition:background 0.25s;}
+.ig-card:hover{background:var(--surface2);}
+.igc-topbar{height:2px;}
+.igc-header{padding:1.75rem 1.75rem 1.1rem;}
+.igc-num{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.igc-icon-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;}
+.igc-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:0.72rem;font-weight:500;letter-spacing:0.06em;flex-shrink:0;}
+.igc-count{text-align:right;font-family:"JetBrains Mono",monospace;}
+.igc-count-num{font-family:'Outfit',system-ui,sans-serif;font-size:1.4rem;font-weight:800;line-height:1;}
+.igc-count-label{font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-top:2px;}
+.igc-name{font-family:'Outfit',system-ui,sans-serif;font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:0.22rem;}
+.igc-sub{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.06em;margin-bottom:0.75rem;}
+.igc-desc{font-size:0.77rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.1rem;}
+.igc-body{padding:0 1.75rem;}
+/* use cases */
+.igc-usecases{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;}
+.igc-uc{font-family:"JetBrains Mono",monospace;font-size:0.55rem;padding:0.2rem 0.55rem;border-radius:3px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text-muted);}
+/* lifecycle */
+.igc-lifecycle{margin-bottom:1.25rem;}
+.igc-lc-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.igc-lc-steps{display:flex;gap:0;align-items:center;overflow-x:auto;}
+.igc-lc-step{font-family:"JetBrains Mono",monospace;font-size:0.54rem;color:var(--text-muted);padding:0.28rem 0.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:3px;white-space:nowrap;flex-shrink:0;}
+.igc-lc-arrow{font-size:0.58rem;color:var(--text-dim);padding:0 0.2rem;flex-shrink:0;opacity:0.4;}
+/* fields */
+.igc-fields{display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;margin-bottom:1.25rem;}
+.igc-field{background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:4px;padding:0.5rem 0.65rem;}
+.igc-f-label{font-family:"JetBrains Mono",monospace;font-size:0.5rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.18rem;}
+.igc-f-val{font-family:"JetBrains Mono",monospace;font-size:0.64rem;}
+.igc-btn{display:block;margin:0 1.75rem 1.75rem;padding:0.6rem;text-align:center;border-radius:5px;font-family:"JetBrains Mono",monospace;font-size:0.62rem;letter-spacing:0.1em;cursor:pointer;border:1px solid;background:transparent;transition:all 0.2s;}
+
+/* DIGITAL ISSUANCE */
+.issuance-layout{display:grid;grid-template-columns:1.05fr 1fr;gap:5rem;align-items:start;}
+.issuance-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.ip-topbar{height:2px;background:linear-gradient(90deg,var(--kfi),var(--kfi-steel));}
+.ip-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.ip-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.ip-badge{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--kfi-dim);color:var(--kfi-light);border:1px solid var(--kfi-border);}
+/* issuance steps */
+.iss-steps{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.iss-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.iss-flow{display:flex;flex-direction:column;gap:0.38rem;}
+.iss-step{display:flex;align-items:center;gap:10px;padding:0.55rem 0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:5px;border-left:2px solid var(--kfi);}
+.iss-num{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--kfi-light);width:18px;flex-shrink:0;}
+.iss-text{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.iss-check{font-family:"JetBrains Mono",monospace;font-size:0.55rem;color:var(--green);margin-left:auto;flex-shrink:0;}
+/* digital attributes */
+.iss-attrs{padding:1.25rem 1.75rem;}
+.issa-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.issa-rows{display:flex;flex-direction:column;gap:0;}
+.issa-row{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border);}
+.issa-row:last-child{border-bottom:none;}
+.issa-key{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);}
+.issa-val{font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+/* issuance features */
+.issuance-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.if-item{display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--kfi);transition:border-color 0.2s;}
+.if-item:hover{border-color:var(--border-md);}
+.if-body h4{font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.if-body p{font-size:0.73rem;}
+
+/* BLOCKCHAIN */
+.chain-layout{display:grid;grid-template-columns:1fr 1.05fr;gap:5rem;align-items:start;}
+.chain-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.cp-topbar{height:2px;background:linear-gradient(90deg,var(--kfi-chain),var(--kfi));}
+.cp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.cp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.cp-status{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--green);}
+/* block records */
+.chain-blocks{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.cb-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.cb-record{background:var(--surface2);border:1px solid var(--kfi-border);border-radius:6px;padding:0.85rem 1rem;margin-bottom:0.5rem;}
+.cb-record:last-child{margin-bottom:0;}
+.cb-hash{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--kfi-light);margin-bottom:0.45rem;word-break:break-all;opacity:0.8;}
+.cb-rows{display:flex;flex-direction:column;gap:0.28rem;}
+.cb-row{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:0.58rem;}
+.cb-key{color:var(--text-dim);}
+.cb-val{color:var(--text-muted);}
+.cb-val.active{color:var(--green);}
+/* ledger vs chain */
+.chain-compare{padding:1.25rem 1.75rem;}
+.cc-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.cc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;}
+.cc-item{padding:0.75rem 0.85rem;border-radius:5px;background:var(--surface2);border:1px solid var(--border);}
+.cc-item-title{font-family:"JetBrains Mono",monospace;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.4rem;}
+.cc-item-desc{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);}
+.cc-eq{text-align:center;font-family:"JetBrains Mono",monospace;font-size:0.68rem;color:var(--kfi-light);padding:0.5rem 0;margin-top:0.25rem;}
+/* chain features */
+.chain-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.cf-item{display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid rgba(42,68,88,0.8);transition:border-color 0.2s;}
+.cf-item:hover{border-color:var(--kfi-border);}
+.cf-body h4{font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.cf-body p{font-size:0.73rem;}
+
+/* RISK & GOV */
+.risk-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.risk-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.rp-topbar{height:2px;}
+.rp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);}
+.rp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.rp-rows{padding:0.25rem 0;}
+.rp-row{display:flex;justify-content:space-between;align-items:center;padding:0.62rem 1.6rem;border-bottom:1px solid var(--border);}
+.rp-row:last-child{border-bottom:none;}
+.rp-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.rp-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;}
+
+/* ACTIVE INSTRUMENTS TABLE */
+.instr-table-wrap{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;margin-top:3rem;}
+.itw-topbar{height:2px;background:linear-gradient(90deg,var(--bg-col),var(--sblc-col),var(--lc-col),var(--pg-col));}
+.itw-header{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.itw-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.itw-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--kfi-light);}
+.instr-table{padding:0.25rem 0;}
+.it-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;padding:0.68rem 1.75rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;align-items:center;transition:background 0.15s;}
+.it-row.hdr{background:rgba(0,0,0,0.2);}
+.it-row:last-child{border-bottom:none;}
+.it-row:hover{background:rgba(255,255,255,0.02);}
+.it-cell{color:var(--text-muted);}
+.it-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.it-instr{display:flex;align-items:center;gap:7px;}
+.it-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.it-name{color:var(--text);}
+.it-status{padding:0.16rem 0.5rem;border-radius:2px;font-size:0.52rem;letter-spacing:0.08em;display:inline-block;}
+.st-active{background:rgba(30,144,200,0.12);color:var(--kfi-light);border:1px solid var(--kfi-border);}
+.st-issued{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.st-expired{background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);}
+.st-pending{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-border);}
+
+/* INTEGRATION */
+.integrations-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.int-item{background:var(--surface);padding:1.5rem 1.4rem;transition:background 0.2s;}
+.int-item:hover{background:var(--surface2);}
+.int-icon{font-size:0.9rem;color:var(--kfi-light);margin-bottom:0.5rem;}
+.int-title{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:var(--text);margin-bottom:0.3rem;}
+.int-desc{font-size:0.73rem;color:var(--text-muted);}
+/* what updates */
+.int-updates{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:1px;}
+.iu-item{background:var(--surface);padding:1rem 1.1rem;}
+.iu-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.3rem;}
+.iu-val{font-family:"JetBrains Mono",monospace;font-size:0.68rem;color:var(--kfi-light);}
+
+/* DASHBOARD */
+.dash-panels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.dash-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp-topbar{height:2px;}
+.dp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.dp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.dp-metric{background:var(--surface);padding:1rem 1.1rem;}
+.dp-m-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.dp-m-val{font-family:'Outfit',system-ui,sans-serif;font-size:1rem;font-weight:700;}
+.dp-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-top:0.18rem;}
+.dp-rows{padding:0.25rem 0;}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.6rem;border-bottom:1px solid var(--border);}
+.dp-row:last-child{border-bottom:none;}
+.dp-row-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.dp-row-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);}
+
+/* FINAL CTA */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(30,144,200,0.07) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--text);margin-bottom:0.75rem;max-width:600px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:480px;margin:0 auto 2rem;}
+.fc-trio{display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;margin:2rem 0;}
+.fct-item{font-family:"JetBrains Mono",monospace;font-size:0.65rem;color:var(--text-muted);display:flex;flex-direction:column;align-items:center;gap:0.3rem;}
+.fct-val{color:var(--kfi-light);font-size:0.75rem;}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:2.5rem;}
+.btn-final{background:var(--kfi);color:#04080c;border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{background:var(--kfi-light);box-shadow:0 8px 30px rgba(30,144,200,0.22);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--kfi-border);color:var(--kfi-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:'Outfit',system-ui,sans-serif;font-size:1.15rem;font-weight:700;color:var(--text);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--kfi-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-item-wrap.active .nav-trigger{color:var(--kfi-light);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--kfi-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .integrations-grid{grid-template-columns:repeat(2,1fr);}
+  .int-updates{grid-template-columns:repeat(2,1fr);}
+  .it-row{grid-template-columns:2fr 1fr 1fr 1fr;}
+  .it-row>*:nth-child(5),.it-row>*:nth-child(6),.it-row.hdr>*:nth-child(5),.it-row.hdr>*:nth-child(6){display:none;}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .instr-grid,.issuance-layout,.chain-layout,.risk-layout,.dash-panels{grid-template-columns:1fr;}
+  .igc-fields{grid-template-columns:1fr;}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .integrations-grid,.int-updates{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap active">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>3.4 · KFI · KAPITOR FINANCIAL INSTRUMENTS · ISSUANCE ACTIVE</div>
+      <h1 style="color:var(--text);">Institutional Trade<br><span style="color:var(--kfi-light);">Finance. Digitized.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip" style="background:var(--kfi-dim);border:1px solid var(--kfi-border);color:var(--kfi-light);">KFI</span>
+        <span class="token-chip" style="background:var(--kfi-steel-dim);border:1px solid var(--kfi-steel-border);color:var(--kfi-steel);">STRUCTURED TRADE FINANCE</span>
+        <span style="color:var(--text-dim);">Digitally Issued · Ledger Settled · Blockchain Verified</span>
+      </div>
+      <p class="hero-sub">The structured trade-finance layer of Kapitor — enabling digital issuance, recording, transfer, and lifecycle management of classical financial instruments: Bank Guarantees, SBLCs, Letters of Credit, and Performance Guarantees. Institutional finance infrastructure — digitized properly.</p>
+      <div class="instr-badges">
+        <div class="ib ib-bg"><div class="ib-dot" style="background:#1e90c8;"></div>Bank Guarantee (BG)</div>
+        <div class="ib ib-sblc"><div class="ib-dot" style="background:#9b59b6;"></div>SBLC</div>
+        <div class="ib ib-lc"><div class="ib-dot" style="background:#27ae60;"></div>Letter of Credit (LC)</div>
+        <div class="ib ib-pg"><div class="ib-dot" style="background:#e67e22;"></div>Performance Guarantee (PG)</div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Request KFI Issuance</button>
+        <button class="btn-out">Access Trade Finance Desk →</button>
+        <button class="btn-out">View Instrument Documentation →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Active Instruments</div>
+          <div class="hm-val" style="color:var(--kfi-light);">1,284</div>
+          <div class="hm-sub">Across 4 types</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Total Exposure</div>
+          <div class="hm-val" style="color:var(--kfi-steel);">$4.8B</div>
+          <div class="hm-sub"><span class="up">▲ 8.4%</span> MTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Collateral Backed</div>
+          <div class="hm-val" style="color:var(--green);">100%</div>
+          <div class="hm-sub">All instruments</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Blockchain Records</div>
+          <div class="hm-val" style="color:var(--text);">1,284</div>
+          <div class="hm-sub">Immutable · All hashed</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Paper Dependency</div>
+          <div class="hm-val" style="color:var(--kfi-light);font-size:1.1rem;">Zero</div>
+          <div class="hm-sub">Full digital trace</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">BG-KFI-2280</span><span class="up">ACTIVE · $12M</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SBLC-KFI-0841</span>ISSUED · $48M</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">LC-KFI-1142</span><span class="up">IN SETTLEMENT</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">PG-KFI-3310</span>ACTIVE · $84M</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TOTAL EXPOSURE</span>$4.8B</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">BLOCKCHAIN VERIFIED</span><span class="up">1,284 RECORDS</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">COLLATERAL STATUS</span><span class="up">100% BACKED</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">PAPER DEPENDENCY</span>ZERO</span>
+    <!-- dupe -->
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">BG-KFI-2280</span><span class="up">ACTIVE · $12M</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SBLC-KFI-0841</span>ISSUED · $48M</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TOTAL EXPOSURE</span>$4.8B</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">COLLATERAL STATUS</span><span class="up">100% BACKED</span></span>
+  </div>
+</div>
+
+<!-- ═══ INSTRUMENT CARDS ═══ -->
+<section class="section" id="instruments">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey kfi">Four Instrument Types</div>
+      <h2 style="color:var(--text);">Classical Finance Infrastructure.<br>Modern Digital Execution.</h2>
+      <p>Each KFI instrument is digitally issued, compliance-verified, blockchain-recorded, and Unified Ledger settled. Traditional structure — modern infrastructure — full traceability.</p>
+    </div>
+    <div class="instr-grid">
+
+      <!-- BG -->
+      <div class="ig-card">
+        <div class="igc-topbar" style="background:var(--bg-col);"></div>
+        <div class="igc-header">
+          <div class="igc-num">INSTRUMENT 01</div>
+          <div class="igc-icon-row">
+            <div class="igc-icon" style="background:rgba(30,144,200,0.12);border:1px solid rgba(30,144,200,0.25);color:var(--kfi-light);">BG</div>
+            <div class="igc-count"><div class="igc-count-num" style="color:var(--kfi-light);">284</div><div class="igc-count-label">ACTIVE</div></div>
+          </div>
+          <div class="igc-name">Bank Guarantee</div>
+          <div class="igc-sub" style="color:var(--kfi-light);">ASSURED PAYMENT OBLIGATION</div>
+          <p class="igc-desc">Structured undertaking to cover financial liability if the applicant defaults. Applicant-verified, collateral-mapped, beneficiary-registered with full expiry tracking under the KFI framework.</p>
+        </div>
+        <div class="igc-body">
+          <div class="igc-usecases">
+            <span class="igc-uc">Project Contracts</span>
+            <span class="igc-uc">Infrastructure Bids</span>
+            <span class="igc-uc">Commercial Supply</span>
+            <span class="igc-uc">Large Procurement</span>
+          </div>
+          <div class="igc-lifecycle">
+            <div class="igc-lc-label">Lifecycle</div>
+            <div class="igc-lc-steps">
+              <span class="igc-lc-step">KYB Verify</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Risk Score</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Collateral</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Issuance</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Beneficiary</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Expiry</span>
+            </div>
+          </div>
+          <div class="igc-fields">
+            <div class="igc-field"><div class="igc-f-label">Avg. Value</div><div class="igc-f-val" style="color:var(--kfi-light);">$8–50M</div></div>
+            <div class="igc-field"><div class="igc-f-label">Collateral</div><div class="igc-f-val" style="color:var(--green);">100% mapped</div></div>
+            <div class="igc-field"><div class="igc-f-label">Expiry Track</div><div class="igc-f-val">Calendar sync</div></div>
+            <div class="igc-field"><div class="igc-f-label">Dashboard</div><div class="igc-f-val">BG# · Coverage</div></div>
+          </div>
+        </div>
+        <button class="igc-btn" style="border-color:rgba(30,144,200,0.3);color:var(--kfi-light);background:rgba(30,144,200,0.07);">REQUEST BG ISSUANCE →</button>
+      </div>
+
+      <!-- SBLC -->
+      <div class="ig-card">
+        <div class="igc-topbar" style="background:var(--sblc-col);"></div>
+        <div class="igc-header">
+          <div class="igc-num">INSTRUMENT 02</div>
+          <div class="igc-icon-row">
+            <div class="igc-icon" style="background:rgba(155,89,182,0.12);border:1px solid rgba(155,89,182,0.25);color:#c39bd3;">SBLC</div>
+            <div class="igc-count"><div class="igc-count-num" style="color:#c39bd3;">420</div><div class="igc-count-label">ACTIVE</div></div>
+          </div>
+          <div class="igc-name">Standby Letter of Credit</div>
+          <div class="igc-sub" style="color:#c39bd3;">SECONDARY PAYMENT ASSURANCE</div>
+          <p class="igc-desc">Contingent payment mechanism activated in case of non-performance or default. Defined trigger conditions, compliance-reviewed counterparty screening, unique blockchain record hash per instrument.</p>
+        </div>
+        <div class="igc-body">
+          <div class="igc-usecases">
+            <span class="igc-uc">Non-Performance Default</span>
+            <span class="igc-uc">Cross-Border Trade</span>
+            <span class="igc-uc">Corporate Finance</span>
+            <span class="igc-uc">Project Finance</span>
+          </div>
+          <div class="igc-lifecycle">
+            <div class="igc-lc-label">Lifecycle</div>
+            <div class="igc-lc-steps">
+              <span class="igc-lc-step">Issuer Setup</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Trigger Define</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Compliance</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Issue</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Monitor</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Activation/Expiry</span>
+            </div>
+          </div>
+          <div class="igc-fields">
+            <div class="igc-field"><div class="igc-f-label">Avg. Value</div><div class="igc-f-val" style="color:#c39bd3;">$20–200M</div></div>
+            <div class="igc-field"><div class="igc-f-label">Trigger Valid.</div><div class="igc-f-val" style="color:var(--green);">Protocol gated</div></div>
+            <div class="igc-field"><div class="igc-f-label">Blockchain Hash</div><div class="igc-f-val">Per instrument</div></div>
+            <div class="igc-field"><div class="igc-f-label">Dashboard</div><div class="igc-f-val">Inst. tier only</div></div>
+          </div>
+        </div>
+        <button class="igc-btn" style="border-color:rgba(155,89,182,0.3);color:#c39bd3;background:rgba(155,89,182,0.07);">REQUEST SBLC ISSUANCE →</button>
+      </div>
+
+      <!-- LC -->
+      <div class="ig-card">
+        <div class="igc-topbar" style="background:var(--lc-col);"></div>
+        <div class="igc-header">
+          <div class="igc-num">INSTRUMENT 03</div>
+          <div class="igc-icon-row">
+            <div class="igc-icon" style="background:rgba(39,174,96,0.12);border:1px solid rgba(39,174,96,0.25);color:#82e6aa;">LC</div>
+            <div class="igc-count"><div class="igc-count-num" style="color:#82e6aa;">480</div><div class="igc-count-label">ACTIVE</div></div>
+          </div>
+          <div class="igc-name">Letter of Credit</div>
+          <div class="igc-sub" style="color:#82e6aa;">TRADE SETTLEMENT INSTRUMENT</div>
+          <p class="igc-desc">Secure international trade settlement across four LC types — Sight, Usance, Confirmed, and Transferable. Full lifecycle tracking from issuance through document verification, settlement, and closure.</p>
+        </div>
+        <div class="igc-body">
+          <div class="igc-usecases">
+            <span class="igc-uc" style="border-color:rgba(39,174,96,0.2);color:#82e6aa;background:rgba(39,174,96,0.07);">Sight LC</span>
+            <span class="igc-uc" style="border-color:rgba(39,174,96,0.2);color:#82e6aa;background:rgba(39,174,96,0.07);">Usance LC</span>
+            <span class="igc-uc" style="border-color:rgba(39,174,96,0.2);color:#82e6aa;background:rgba(39,174,96,0.07);">Confirmed LC</span>
+            <span class="igc-uc" style="border-color:rgba(39,174,96,0.2);color:#82e6aa;background:rgba(39,174,96,0.07);">Transferable LC</span>
+          </div>
+          <div class="igc-lifecycle">
+            <div class="igc-lc-label">Trade Flow</div>
+            <div class="igc-lc-steps">
+              <span class="igc-lc-step">Exporter</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">LC Issue</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Shipment</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Docs</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Payment</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Closure</span>
+            </div>
+          </div>
+          <div class="igc-fields">
+            <div class="igc-field"><div class="igc-f-label">Settlement</div><div class="igc-f-val" style="color:#82e6aa;">GIPS rails</div></div>
+            <div class="igc-field"><div class="igc-f-label">Paper Dep.</div><div class="igc-f-val" style="color:var(--green);">Zero</div></div>
+            <div class="igc-field"><div class="igc-f-label">Doc. Verify</div><div class="igc-f-val">Compliance Eng.</div></div>
+            <div class="igc-field"><div class="igc-f-label">Ledger Rec.</div><div class="igc-f-val">Full trace</div></div>
+          </div>
+        </div>
+        <button class="igc-btn" style="border-color:rgba(39,174,96,0.3);color:#82e6aa;background:rgba(39,174,96,0.07);">REQUEST LC ISSUANCE →</button>
+      </div>
+
+      <!-- PG -->
+      <div class="ig-card">
+        <div class="igc-topbar" style="background:var(--pg-col);"></div>
+        <div class="igc-header">
+          <div class="igc-num">INSTRUMENT 04</div>
+          <div class="igc-icon-row">
+            <div class="igc-icon" style="background:rgba(230,126,34,0.12);border:1px solid rgba(230,126,34,0.25);color:#f0a05a;">PG</div>
+            <div class="igc-count"><div class="igc-count-num" style="color:#f0a05a;">100</div><div class="igc-count-label">ACTIVE</div></div>
+          </div>
+          <div class="igc-name">Performance Guarantee</div>
+          <div class="igc-sub" style="color:#f0a05a;">CONTRACTUAL OBLIGATION ASSURANCE</div>
+          <p class="igc-desc">Performance guarantees for construction, infrastructure, government tenders, and corporate procurement. Defined trigger event mapping with liability ceiling, capital reserve backing, and contract verification.</p>
+        </div>
+        <div class="igc-body">
+          <div class="igc-usecases">
+            <span class="igc-uc">Construction Contracts</span>
+            <span class="igc-uc">Infrastructure Projects</span>
+            <span class="igc-uc">Government Tenders</span>
+            <span class="igc-uc">Corporate Procurement</span>
+          </div>
+          <div class="igc-lifecycle">
+            <div class="igc-lc-label">Guarantee Structure</div>
+            <div class="igc-lc-steps">
+              <span class="igc-lc-step">Scope Define</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Trigger Map</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Liability Cap</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Reserve Back</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Issue</span><span class="igc-lc-arrow">→</span>
+              <span class="igc-lc-step">Validity</span>
+            </div>
+          </div>
+          <div class="igc-fields">
+            <div class="igc-field"><div class="igc-f-label">Avg. Value</div><div class="igc-f-val" style="color:#f0a05a;">$5–500M</div></div>
+            <div class="igc-field"><div class="igc-f-label">Reserve Back.</div><div class="igc-f-val" style="color:var(--green);">Enforced</div></div>
+            <div class="igc-field"><div class="igc-f-label">Digital Sig.</div><div class="igc-f-val">Ledger + chain</div></div>
+            <div class="igc-field"><div class="igc-f-label">Audit</div><div class="igc-f-val">Retrievable</div></div>
+          </div>
+        </div>
+        <button class="igc-btn" style="border-color:rgba(230,126,34,0.3);color:#f0a05a;background:rgba(230,126,34,0.07);">REQUEST PG ISSUANCE →</button>
+      </div>
+    </div>
+
+    <!-- ACTIVE INSTRUMENTS TABLE -->
+    <div class="instr-table-wrap">
+      <div class="itw-topbar"></div>
+      <div class="itw-header">
+        <div class="itw-title">Active Instruments — Live Overview</div>
+        <div class="itw-live"><div class="ld"></div>LEDGER SYNC ACTIVE</div>
+      </div>
+      <div class="instr-table">
+        <div class="it-row hdr">
+          <span class="it-cell hdr">INSTRUMENT</span>
+          <span class="it-cell hdr">VALUE</span>
+          <span class="it-cell hdr">BENEFICIARY</span>
+          <span class="it-cell hdr">EXPIRY</span>
+          <span class="it-cell hdr">COLLATERAL</span>
+          <span class="it-cell hdr">STATUS</span>
+        </div>
+        <div class="it-row">
+          <div class="it-instr"><div class="it-dot" style="background:var(--kfi-light);"></div><span class="it-name">BG-KFI-2280 · Bank Guarantee</span></div>
+          <span class="it-cell">$12.0M</span>
+          <span class="it-cell">HDFC Infrastructure</span>
+          <span class="it-cell">Dec 2025</span>
+          <span class="it-cell" style="color:var(--green);">100% mapped</span>
+          <span><span class="it-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="it-row">
+          <div class="it-instr"><div class="it-dot" style="background:#c39bd3;"></div><span class="it-name">SBLC-KFI-0841 · Standby LC</span></div>
+          <span class="it-cell">$48.0M</span>
+          <span class="it-cell">SBI Trade Desk</span>
+          <span class="it-cell">Mar 2026</span>
+          <span class="it-cell" style="color:var(--green);">100% mapped</span>
+          <span><span class="it-status st-issued">ISSUED</span></span>
+        </div>
+        <div class="it-row">
+          <div class="it-instr"><div class="it-dot" style="background:#82e6aa;"></div><span class="it-name">LC-KFI-1142 · Letter of Credit</span></div>
+          <span class="it-cell">$8.4M</span>
+          <span class="it-cell">Dubai Commodity Co.</span>
+          <span class="it-cell">In settlement</span>
+          <span class="it-cell" style="color:var(--green);">Verified</span>
+          <span><span class="it-status st-pending">IN SETTLEMENT</span></span>
+        </div>
+        <div class="it-row">
+          <div class="it-instr"><div class="it-dot" style="background:#f0a05a;"></div><span class="it-name">PG-KFI-3310 · Performance Guar.</span></div>
+          <span class="it-cell">$84.0M</span>
+          <span class="it-cell">NHAI Project Office</span>
+          <span class="it-cell">Sep 2026</span>
+          <span class="it-cell" style="color:var(--green);">100% backed</span>
+          <span><span class="it-status st-active">ACTIVE</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DIGITAL ISSUANCE ═══ -->
+<section class="section" id="issuance">
+  <div class="container">
+    <div class="issuance-layout">
+      <div>
+        <div class="issuance-panel">
+          <div class="ip-topbar"></div>
+          <div class="ip-header">
+            <div class="ip-title">Digital Issuance Engine</div>
+            <div class="ip-badge">FULLY DIGITAL</div>
+          </div>
+          <div class="iss-steps">
+            <div class="iss-label">Issuance Sequence — Required for All Instruments</div>
+            <div class="iss-flow">
+              <div class="iss-step"><div class="iss-num">01</div><div class="iss-text">Applicant onboarding — KYC / KYB verification</div><div class="iss-check">✓</div></div>
+              <div class="iss-step"><div class="iss-num">02</div><div class="iss-text">Risk assessment — Credit scoring + exposure check</div><div class="iss-check">✓</div></div>
+              <div class="iss-step"><div class="iss-num">03</div><div class="iss-text">Collateral evaluation — Reserve mapping confirmed</div><div class="iss-check">✓</div></div>
+              <div class="iss-step"><div class="iss-num">04</div><div class="iss-text">Compliance approval — AML + jurisdictional review</div><div class="iss-check">✓</div></div>
+              <div class="iss-step"><div class="iss-num">05</div><div class="iss-text">Instrument generation — Unique ID + smart contract</div><div class="iss-check">✓</div></div>
+              <div class="iss-step"><div class="iss-num">06</div><div class="iss-text">Ledger registration — Unified Ledger allocation</div><div class="iss-check">✓</div></div>
+              <div class="iss-step"><div class="iss-num">07</div><div class="iss-text">Blockchain hash record — Immutable timestamp</div><div class="iss-check">✓</div></div>
+            </div>
+          </div>
+          <div class="iss-attrs">
+            <div class="issa-label">Digital Instrument Attributes</div>
+            <div class="issa-rows">
+              <div class="issa-row"><span class="issa-key">Unique Instrument ID</span><span class="issa-val" style="color:var(--kfi-light);">KFI-[TYPE]-[SERIAL]</span></div>
+              <div class="issa-row"><span class="issa-key">Smart Contract Linkage</span><span class="issa-val" style="color:var(--green);">ACTIVE</span></div>
+              <div class="issa-row"><span class="issa-key">Expiry Logic</span><span class="issa-val">Auto-enforced</span></div>
+              <div class="issa-row"><span class="issa-key">Trigger Conditions</span><span class="issa-val">Instrument-defined</span></div>
+              <div class="issa-row"><span class="issa-key">Transfer Eligibility</span><span class="issa-val">Compliance-gated</span></div>
+              <div class="issa-row"><span class="issa-key">Manual Issuance Ambiguity</span><span class="issa-val" style="color:var(--kfi-light);">ZERO</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey kfi">Digital Issuance</div>
+        <h2 style="color:var(--text);">No Manual Ambiguity.<br>Everything Recorded.</h2>
+        <p style="margin-top:0.85rem;">All KFI instruments are digitally issued through a seven-step structured sequence. No instrument can be issued without collateral mapping, risk scoring, governance approval, and ledger allocation. No exceptions.</p>
+        <div class="issuance-features">
+          <div class="if-item"><div class="if-body"><h4>Unique Instrument ID + Smart Contract</h4><p>Every instrument receives a unique ID with embedded smart contract linkage — expiry logic, trigger conditions, and transfer eligibility are code-enforced, not manually administered.</p></div></div>
+          <div class="if-item"><div class="if-body"><h4>No Collateral — No Instrument</h4><p>Collateral mapping is a prerequisite, not a checkbox. The issuance engine cannot generate an instrument until the reserve allocation is confirmed in the Unified Ledger.</p></div></div>
+          <div class="if-item"><div class="if-body"><h4>AML + Jurisdictional Screening</h4><p>Every applicant and counterparty is screened against AML databases and jurisdictional restrictions before issuance approval is granted.</p></div></div>
+          <div class="if-item"><div class="if-body"><h4>Instantly Auditable</h4><p>From the moment of issuance, every instrument is audit-retrievable via both the Unified Ledger and blockchain hash record. No reconstruction required.</p></div></div>
+        </div>
+        <div style="margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--kfi-border);border-radius:5px;background:var(--kfi-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--kfi-light);">No manual issuance ambiguity. Everything is recorded and traceable from instrument creation to expiry or settlement.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BLOCKCHAIN RECORD ═══ -->
+<section class="section" id="blockchain">
+  <div class="container">
+    <div class="chain-layout">
+      <div>
+        <div class="ey steel">Blockchain Record Layer</div>
+        <h2 style="color:var(--text);">Ledger is Operational Truth.<br>Blockchain is Verification.</h2>
+        <p style="margin-top:0.85rem;">The blockchain layer does not replace the Unified Ledger — it reinforces auditability. Every KFI instrument generates an immutable hash record with timestamp verification, counterparty reference, document checksum, and real-time status updates. Both systems operate together.</p>
+        <div class="chain-features">
+          <div class="cf-item"><div class="cf-body"><h4>Tamper Resistance</h4><p>Once recorded, the instrument hash cannot be altered. Any document tampering is immediately detectable by comparing the stored checksum against the current document state.</p></div></div>
+          <div class="cf-item"><div class="cf-body"><h4>Timestamp Verification</h4><p>Issuance date, activation events, and status changes are independently verifiable via blockchain timestamp — no reliance on Kapitor's own records for verification.</p></div></div>
+          <div class="cf-item"><div class="cf-body"><h4>Cross-Border Trust</h4><p>Counterparties in different jurisdictions can independently verify instrument authenticity and status without requiring direct access to Kapitor's internal systems.</p></div></div>
+          <div class="cf-item"><div class="cf-body"><h4>Regulatory Reporting Support</h4><p>Blockchain records provide independently verifiable audit trails for regulatory reporting in all supported jurisdictions — reducing reconciliation burden for compliance teams.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="chain-panel">
+          <div class="cp-topbar"></div>
+          <div class="cp-header">
+            <div class="cp-title">Blockchain Record — Live</div>
+            <div class="cp-status"><div style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;"></div>CHAIN SYNCED</div>
+          </div>
+          <div class="chain-blocks">
+            <div class="cb-label">Recent Instrument Records</div>
+            <div class="cb-record">
+              <div class="cb-hash">0x3f8a2d1c9e4b...KFI-BG-2280</div>
+              <div class="cb-rows">
+                <div class="cb-row"><span class="cb-key">Instrument ID</span><span class="cb-val">BG-KFI-2280</span></div>
+                <div class="cb-row"><span class="cb-key">Issuance Timestamp</span><span class="cb-val">2025-12-01 09:42:18 UTC</span></div>
+                <div class="cb-row"><span class="cb-key">Counterparty Ref</span><span class="cb-val">HDFC-INFRA-002280</span></div>
+                <div class="cb-row"><span class="cb-key">Doc. Checksum</span><span class="cb-val">sha256:a4f7c...</span></div>
+                <div class="cb-row"><span class="cb-key">Status</span><span class="cb-val active">ACTIVE</span></div>
+              </div>
+            </div>
+            <div class="cb-record" style="border-color:rgba(155,89,182,0.3);">
+              <div class="cb-hash" style="color:#c39bd3;">0x7b2e5a8d3f1c...KFI-SBLC-0841</div>
+              <div class="cb-rows">
+                <div class="cb-row"><span class="cb-key">Instrument ID</span><span class="cb-val">SBLC-KFI-0841</span></div>
+                <div class="cb-row"><span class="cb-key">Issuance Timestamp</span><span class="cb-val">2025-11-14 14:22:05 UTC</span></div>
+                <div class="cb-row"><span class="cb-key">Counterparty Ref</span><span class="cb-val">SBI-TRADE-000841</span></div>
+                <div class="cb-row"><span class="cb-key">Doc. Checksum</span><span class="cb-val">sha256:c9d2e...</span></div>
+                <div class="cb-row"><span class="cb-key">Status</span><span class="cb-val active">ISSUED</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="chain-compare">
+            <div class="cc-label">Dual-Layer Architecture</div>
+            <div class="cc-grid">
+              <div class="cc-item" style="border-color:var(--kfi-border);">
+                <div class="cc-item-title" style="color:var(--kfi-light);">Unified Ledger</div>
+                <div class="cc-item-desc">Operational truth · Capital allocation · Real-time positions · Settlement source</div>
+              </div>
+              <div class="cc-item" style="border-color:rgba(42,68,88,0.5);">
+                <div class="cc-item-title" style="color:var(--kfi-steel);">Blockchain</div>
+                <div class="cc-item-desc">Verification layer · Tamper resistance · Independent audit · Cross-border trust</div>
+              </div>
+            </div>
+            <div class="cc-eq">Both operate together — neither replaces the other.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RISK & GOVERNANCE ═══ -->
+<section class="section" id="governance">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey kfi">Risk & Governance</div>
+      <h2 style="color:var(--text);">No Instrument Issued<br>Without Four Gates.</h2>
+    </div>
+    <div class="risk-layout">
+      <div class="risk-panel">
+        <div class="rp-topbar" style="background:linear-gradient(90deg,var(--kfi),var(--kfi-steel));"></div>
+        <div class="rp-header"><div class="rp-title">Governance Framework</div></div>
+        <div class="rp-rows">
+          <div class="rp-row"><span class="rp-key">Counterparty Credit Scoring</span><span class="rp-val" style="color:var(--kfi-light);">MANDATORY</span></div>
+          <div class="rp-row"><span class="rp-key">Capital Reserve Requirements</span><span class="rp-val" style="color:var(--kfi-light);">ENFORCED</span></div>
+          <div class="rp-row"><span class="rp-key">Exposure Limits</span><span class="rp-val" style="color:var(--kfi-light);">PER INSTRUMENT TYPE</span></div>
+          <div class="rp-row"><span class="rp-key">Jurisdictional Compliance</span><span class="rp-val" style="color:var(--kfi-light);">ALL SUPPORTED REGIONS</span></div>
+          <div class="rp-row"><span class="rp-key">AML Screening</span><span class="rp-val" style="color:var(--kfi-light);">EVERY COUNTERPARTY</span></div>
+          <div class="rp-row"><span class="rp-key">Transaction Monitoring</span><span class="rp-val" style="color:var(--kfi-light);">CONTINUOUS</span></div>
+          <div class="rp-row"><span class="rp-key">Instruments w/o Collateral Map</span><span class="rp-val" style="color:var(--green);">ZERO — PROHIBITED</span></div>
+        </div>
+      </div>
+      <div class="risk-panel">
+        <div class="rp-topbar" style="background:linear-gradient(90deg,var(--kfi-gold),var(--kfi));"></div>
+        <div class="rp-header"><div class="rp-title">Four Mandatory Gates</div></div>
+        <div class="rp-rows">
+          <div class="rp-row">
+            <span class="rp-key">Gate 1 — Collateral Mapping</span>
+            <span class="rp-val" style="color:var(--green);">✓ REQUIRED</span>
+          </div>
+          <div class="rp-row">
+            <span class="rp-key">Gate 2 — Risk Scoring</span>
+            <span class="rp-val" style="color:var(--green);">✓ REQUIRED</span>
+          </div>
+          <div class="rp-row">
+            <span class="rp-key">Gate 3 — Governance Approval</span>
+            <span class="rp-val" style="color:var(--green);">✓ REQUIRED</span>
+          </div>
+          <div class="rp-row">
+            <span class="rp-key">Gate 4 — Ledger Allocation</span>
+            <span class="rp-val" style="color:var(--green);">✓ REQUIRED</span>
+          </div>
+          <div class="rp-row"><span class="rp-key">Off-System Liability</span><span class="rp-val" style="color:var(--kfi-light);">ZERO</span></div>
+          <div class="rp-row"><span class="rp-key">Manual Override</span><span class="rp-val" style="color:var(--kfi-light);">NONE</span></div>
+          <div class="rp-row"><span class="rp-key">Risk Engine Monitoring</span><span class="rp-val" style="color:var(--kfi-light);">CONTINUOUS</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INTEGRATION LAYER ═══ -->
+<section class="section" id="integration">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey steel">Integration Layer</div>
+      <h2 style="color:var(--text);">KFI Integrates Directly With<br>the Full Kapitor Stack.</h2>
+    </div>
+    <div class="integrations-grid">
+      <div class="int-item"><div class="int-icon">◈</div><div class="int-title">Kapitor Prime</div><p class="int-desc">Institutional clients access KFI issuance directly through the Prime platform with full treasury analytics integration.</p></div>
+      <div class="int-item"><div class="int-icon" style="color:var(--kfi-gold);">§</div><div class="int-title">Trade Finance Vault</div><p class="int-desc">KFI instruments serve as the financing backbone for Trade Finance Vault capital deployment and commodity transaction flows.</p></div>
+      <div class="int-item"><div class="int-icon" style="color:#f0a05a;">⇄</div><div class="int-title">Katoin Commodity Engine</div><p class="int-desc">LC and BG instruments issued via KFI directly underpin Katoin commodity lot financing and cross-border trade settlement.</p></div>
+      <div class="int-item"><div class="int-icon" style="color:var(--green);">⬡</div><div class="int-title">GIPS Payment Infrastructure</div><p class="int-desc">LC settlements and instrument payments route through the Global Institutional Payment System (GIPS) rails for cross-border execution.</p></div>
+      <div class="int-item"><div class="int-icon" style="color:var(--kfi-light);">▣</div><div class="int-title">Unified Ledger</div><p class="int-desc">Every instrument issuance, transfer, activation, and expiry is recorded in the Unified Ledger — no off-system entries.</p></div>
+      <div class="int-item"><div class="int-icon" style="color:var(--amber);">⊘</div><div class="int-title">Risk Engine</div><p class="int-desc">Continuous risk engine monitoring of all active KFI instruments — exposure, collateral adequacy, and counterparty risk scoring updated in real time.</p></div>
+    </div>
+    <!-- what each movement updates -->
+    <div style="margin-top:0.75rem;padding:1rem 1.75rem;background:var(--surface);border:1px solid var(--border);border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text-muted);display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+      <span style="color:var(--kfi-light);">Every instrument movement updates →</span>
+      <span>Capital Lock Status</span>
+      <span>·</span>
+      <span>Exposure Mapping</span>
+      <span>·</span>
+      <span>Reserve Allocation</span>
+      <span>·</span>
+      <span>Risk Score</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey kfi">Dashboard Overview</div>
+      <h2 style="color:var(--text);">Institutional & Treasury<br>KFI Views</h2>
+    </div>
+    <div class="dash-panels">
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--kfi),var(--kfi-steel));"></div>
+        <div class="dp-header"><div class="dp-title">Institutional Dashboard</div><div class="dp-tag">PRIME / INSTITUTIONAL</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Active Instruments</div><div class="dp-m-val" style="color:var(--text);">14</div><div class="dp-m-sub" style="color:var(--text-dim);">BG · SBLC · LC · PG</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Total Exposure</div><div class="dp-m-val" style="color:var(--kfi-light);">$284M</div><div class="dp-m-sub" style="color:var(--text-dim);">Across 4 types</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Collateral Allocation</div><div class="dp-m-val" style="color:var(--green);">$284M</div><div class="dp-m-sub" style="color:var(--green);">100% backed</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Compliance Status</div><div class="dp-m-val" style="color:var(--green);">CLEAR</div><div class="dp-m-sub" style="color:var(--text-dim);">0 flags MTD</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Expiry Calendar (next 30d)</span><span class="dp-row-val">2 BG · 1 SBLC expiring</span></div>
+          <div class="dp-row"><span class="dp-row-key">Trigger Conditions (pending)</span><span class="dp-row-val">1 SBLC monitor active</span></div>
+          <div class="dp-row"><span class="dp-row-key">Beneficiary Records</span><span class="dp-row-val">14 registered · KYB verified</span></div>
+          <div class="dp-row"><span class="dp-row-key">Blockchain Records</span><span class="dp-row-val" style="color:var(--green);">14 hashed · All verified</span></div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--kfi-gold),var(--kfi));"></div>
+        <div class="dp-header"><div class="dp-title">Treasury View</div><div class="dp-tag" style="color:var(--kfi-gold);border-color:var(--kfi-gold-border);background:var(--kfi-gold-dim);">TREASURY</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Aggregate Guarantee Exp.</div><div class="dp-m-val" style="color:var(--text);">$4.8B</div><div class="dp-m-sub" style="color:var(--text-dim);">Portfolio-wide</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Capital Adequacy Ratio</div><div class="dp-m-val" style="color:var(--green);">128%</div><div class="dp-m-sub" style="color:var(--green);">Above minimum</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Sector Distribution</div><div class="dp-m-val" style="color:var(--kfi-steel);">6 Sectors</div><div class="dp-m-sub" style="color:var(--text-dim);">Diversified</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Counterparty Risk Heat</div><div class="dp-m-val" style="color:var(--kfi-light);">LOW</div><div class="dp-m-sub" style="color:var(--text-dim);">All screened</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Aggregate BG Exposure</span><span class="dp-row-val">$1.84B · 284 instruments</span></div>
+          <div class="dp-row"><span class="dp-row-key">Aggregate SBLC Exposure</span><span class="dp-row-val">$1.96B · 420 instruments</span></div>
+          <div class="dp-row"><span class="dp-row-key">Aggregate LC Exposure</span><span class="dp-row-val">$0.64B · 480 instruments</span></div>
+          <div class="dp-row"><span class="dp-row-key">Aggregate PG Exposure</span><span class="dp-row-val">$0.36B · 100 instruments</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey kfi" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Institutional Trade Finance — Digitally Structured</div>
+      <h2>KFI Transforms Classical Financial<br>Instruments for the Digital Age.</h2>
+      <p>Traditional structure. Modern infrastructure. Full traceability. No paper dependency.</p>
+      <div class="fc-trio">
+        <div class="fct-item"><span class="fct-val">Traditional Structure</span><span style="color:var(--text-dim);font-size:0.58rem;">BG · SBLC · LC · PG</span></div>
+        <div class="fct-item"><span class="fct-val" style="color:var(--kfi-steel);">Modern Infrastructure</span><span style="color:var(--text-dim);font-size:0.58rem;">Digital · Blockchain · Ledger</span></div>
+        <div class="fct-item"><span class="fct-val" style="color:var(--green);">Full Traceability</span><span style="color:var(--text-dim);font-size:0.58rem;">Every action recorded</span></div>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Request KFI Issuance</button>
+        <button class="btn-final-out">Access Trade Finance Desk</button>
+        <button class="btn-final-out">View Instrument Documentation</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="kapitor-smart-wallet.html">Smart Wallet</a></li><li><a href="kapitor-pay.html">Kapitor Pay</a></li><li><a href="kapitor-trade.html">Trade</a></li><li><a href="kapitor-earn.html">Earn</a></li><li><a href="kapitor-stake.html">Stake</a></li><li><a href="kapitor-vaults.html">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="kaloft-ept.html">Kaloft</a></li><li><a href="katoin.html">Katoin</a></li><li><a href="kfi.html" style="color:var(--kfi-light);">KFI</a></li><li><a href="digitalassets.html">Digital Assets</a></li><li><a href="rwa.html">Real-World Assets</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="custody.html">Custody</a></li><li><a href="fx.html">FX</a></li><li><a href="api.html">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Infrastructure</h5><ul><li><a href="compliance.html">Compliance</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="company.html">About Kapitor</a></li><li><a href="company.html">Contact</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Risk Disclosure</a><a href="#">KFI Documentation</a><a href="#">AML Policy</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  window.addEventListener("scroll",()=>{document.getElementById("hdr").style.padding=window.scrollY>60?"0.65rem 2.5rem":"1rem 2.5rem";});
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});},{threshold:0.06});
+  document.querySelectorAll(
+    ".ig-card,.iss-step,.issa-row,.igc-field,.cb-row,.rp-row,.it-row,.int-item,.iu-item,.dp-metric,.dp-row,.cf-item,.if-item,.fct-item"
+  ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
+
+  (function(){
+    var header=document.getElementById("hdr");
+    var mobileToggle=document.querySelector(".nav-mobile-toggle");
+    function isMobile(){return window.innerWidth<=900;}
+    if(mobileToggle&&header){
+      mobileToggle.addEventListener("click",function(){
+        header.classList.toggle("header-mobile-open");
+        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+      });
+    }
+    document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+      btn.addEventListener("click",function(e){
+        if(isMobile()){
+          e.preventDefault();
+          var wrap=btn.closest(".nav-item-wrap");
+          wrap.classList.toggle("open");
+          btn.setAttribute("aria-expanded",wrap.classList.contains("open"));
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

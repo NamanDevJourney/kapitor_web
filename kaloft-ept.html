@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaloft (EPT) – Economic Participation Token</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+:root {
+  /* KAP light theme */
+  --bg:#FCF8E8;
+  --surface:#FFFFFF;
+  --surface2:#F5ECD6;
+  --surface3:#F5ECD6;
+  --border:rgba(15,23,42,0.08);
+  --border-md:rgba(15,23,42,0.16);
+
+  --blue:#4a7fcb;   --blue-light:#6b9de0;
+  --blue-dim:rgba(74,127,203,0.09);   --blue-border:rgba(74,127,203,0.2);
+
+  --green:#33B269;  --green-light:#5ed498;
+  --green-dim:rgba(51,178,105,0.12);  --green-border:rgba(51,178,105,0.2);
+
+  --amber:#F7AE40;  --amber-light:#f5bc5a;
+  --amber-dim:rgba(247,174,64,0.14);  --amber-border:rgba(247,174,64,0.22);
+
+  /* Kaloft primary — teal-gold */
+  --kal:#28b880;    --kal-deep:#1e9a6b;
+  --kal-dim:rgba(64,224,168,0.12);    --kal-border:rgba(64,224,168,0.22);
+  --kal-gold:#d4a843; --kal-gold-dim:rgba(212,168,67,0.12); --kal-gold-border:rgba(212,168,67,0.22);
+
+  --text:#111827;  --text-muted:#6B6B6B;  --text-dim:#9CA3AF;  --white:#fff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:300;line-height:1.65;overflow-x:hidden;}
+body::after{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+h1,h2,h3{font-family:'Outfit',system-ui,sans-serif;font-weight:700;letter-spacing:-0.03em;color:var(--text);}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.kal{color:var(--kal);}    .ey.kal::before{background:var(--kal);}
+.ey.g{color:var(--green);}    .ey.g::before{background:var(--green);}
+.ey.gold{color:var(--kal-gold);} .ey.gold::before{background:var(--kal-gold);}
+.ey.b{color:var(--blue);}     .ey.b::before{background:var(--blue);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--text);margin-bottom:0.85rem;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+.two-col-r{display:grid;grid-template-columns:1.15fr 1fr;gap:5rem;align-items:start;}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--kal);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--kal-border);color:var(--kal);}
+.btn-cta{background:var(--kal);color:var(--white);border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-cta:hover{filter:brightness(1.15);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 55% 28%,rgba(64,224,168,0.1) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 8% 72%,rgba(74,127,203,0.04) 0%,transparent 50%),
+    radial-gradient(ellipse 35% 35% at 92% 68%,rgba(212,168,67,0.05) 0%,transparent 45%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.014) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.014) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 65% at 50% 40%,black 10%,transparent 75%);}
+
+/* NAV HEX PATTERN */
+.hero-hex{position:absolute;top:10%;right:3%;width:480px;height:480px;opacity:0.035;pointer-events:none;}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(64,224,168,0.3);border-radius:3px;background:rgba(64,224,168,0.07);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--kal);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--kal);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+.hero-content{position:relative;z-index:2;max-width:900px;}
+.hero h1{color:var(--text);margin-bottom:0.5rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.65rem;letter-spacing:0.12em;color:var(--text-dim);margin-bottom:1.75rem;display:flex;align-items:center;gap:0.75rem;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;background:var(--kal-dim);border:1px solid var(--kal-border);color:var(--kal);font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:540px;color:rgba(196,216,204,0.5);margin-bottom:2rem;line-height:1.8;}
+.hero-not{display:flex;gap:0.75rem;margin-bottom:1.75rem;flex-wrap:wrap;}
+.not-pill{font-family:"JetBrains Mono",monospace;font-size:0.63rem;letter-spacing:0.08em;padding:0.38rem 0.9rem;border-radius:3px;}
+.not-pill.no{border:1px solid rgba(224,80,80,0.2);color:rgba(224,80,80,0.55);background:rgba(224,80,80,0.05);text-decoration:line-through;}
+.not-pill.yes{border:1px solid var(--kal-border);color:var(--kal);background:var(--kal-dim);}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--kal);color:var(--white);border:none;padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:var(--green-light);transform:translateY(-1px);box-shadow:0 8px 30px rgba(64,224,168,0.2);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--kal-border);color:var(--kal);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--kal);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 42s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--kal);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* POOL MATRIX */
+.pool-matrix{overflow:hidden;border:1px solid var(--border-md);border-radius:10px;}
+.pm-topbar{height:2px;background:linear-gradient(90deg,var(--kal),var(--kal-gold),var(--kal));}
+.pm-header{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.pm-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.pm-legend{display:flex;gap:1.5rem;}
+.pm-leg-item{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);}
+.pm-leg-dot{width:6px;height:6px;border-radius:50%;}
+
+/* pool tier tabs */
+.pool-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.pt-tab{
+  padding:0.65rem 1.25rem;font-family:"JetBrains Mono",monospace;font-size:0.6rem;letter-spacing:0.1em;
+  cursor:pointer;background:transparent;border:none;color:var(--text-dim);transition:all 0.2s;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.pt-tab.active{color:var(--kal);border-bottom-color:var(--kal);background:rgba(64,224,168,0.04);}
+.pt-tab:hover:not(.active){color:var(--text-muted);}
+
+/* pool table */
+.pool-table-wrap{overflow-x:auto;}
+.pool-table{width:100%;border-collapse:collapse;}
+.pool-table th{
+  font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text-dim);padding:0.65rem 1.75rem;text-align:left;background:rgba(0,0,0,0.2);
+  border-bottom:1px solid var(--border);
+}
+.pool-table td{padding:0.75rem 1.75rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-muted);}
+.pool-table tr:last-child td{border-bottom:none;}
+.pool-table tr:hover td{background:rgba(64,224,168,0.02);}
+.td-pool{color:var(--text);font-weight:500;}
+.td-lock{color:var(--text);}
+.td-mult{
+  font-family:'Outfit',system-ui,sans-serif;font-size:0.95rem;font-weight:700;
+}
+.td-mult.high{color:var(--kal);}
+.td-mult.mid{color:var(--kal-gold);}
+.td-mult.base{color:var(--green-light);}
+.td-uplift{color:var(--text-muted);}
+.td-status{padding:0.18rem 0.55rem;border-radius:2px;font-size:0.52rem;letter-spacing:0.08em;display:inline-block;}
+.st-open{background:var(--kal-dim);color:var(--kal);border:1px solid var(--kal-border);}
+.st-inst{background:var(--kal-gold-dim);color:var(--kal-gold);border:1px solid var(--kal-gold-border);}
+.st-pri{background:var(--blue-dim);color:var(--blue-light);border:1px solid var(--blue-border);}
+
+/* FULL MATRIX TABLE */
+.full-matrix{overflow:auto;}
+.fm-table{width:100%;border-collapse:collapse;}
+.fm-table th,.fm-table td{padding:0.7rem 1.25rem;border:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;text-align:center;}
+.fm-table th{background:rgba(0,0,0,0.25);color:var(--text-dim);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;}
+.fm-table .row-head{color:var(--text);font-weight:500;text-align:left;background:rgba(0,0,0,0.15);}
+.fm-cell{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.fm-mult{font-family:'Outfit',system-ui,sans-serif;font-size:0.95rem;font-weight:800;line-height:1;}
+.fm-upside{font-size:0.55rem;color:var(--text-dim);}
+
+/* NAV DASHBOARD */
+.nav-dash{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.nd-topbar{height:2px;background:var(--kal);}
+.nd-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.nd-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.nd-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--kal);}
+.nd-overview{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.ndo-item{background:var(--surface);padding:1rem 1.25rem;}
+.ndo-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.ndo-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.05rem;font-weight:700;line-height:1;margin-bottom:0.15rem;}
+.ndo-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;}
+/* NAV chart */
+.nd-chart{padding:1.25rem 1.6rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.ndc-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.ndc-chart svg{width:100%;display:block;}
+/* pool positions */
+.nd-positions{padding:0.25rem 0;}
+.ndp-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;padding:0.65rem 1.6rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;align-items:center;transition:background 0.15s;}
+.ndp-row:last-child{border-bottom:none;}
+.ndp-row:hover{background:rgba(255,255,255,0.02);}
+.ndp-row.hdr{background:rgba(0,0,0,0.2);}
+.ndp-cell{color:var(--text-muted);}
+.ndp-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.ndp-growth{color:var(--kal);}
+.ndp-status{padding:0.16rem 0.5rem;border-radius:2px;font-size:0.52rem;letter-spacing:0.08em;display:inline-block;}
+
+/* EPM & PRINCIPLES */
+.epm-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:3rem;}
+.epm-item{background:var(--surface);padding:1.75rem 1.5rem;transition:background 0.2s;}
+.epm-item:hover{background:var(--surface2);}
+.epm-icon{font-size:1rem;margin-bottom:0.65rem;color:var(--kal);}
+.epm-title{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:0.85rem;font-weight:500;color:var(--text);margin-bottom:0.35rem;}
+.epm-desc{font-size:0.74rem;color:var(--text-muted);}
+
+/* LOCK PERIODS */
+.lock-wrap{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+.lock-cards{display:flex;flex-direction:column;gap:1rem;}
+.lock-card{background:var(--surface);border:1px solid var(--border-md);border-radius:8px;overflow:hidden;transition:border-color 0.25s;}
+.lock-card:hover{border-color:var(--kal-border);}
+.lc-bar{height:2px;}
+.lc-body{padding:1.25rem 1.5rem;}
+.lc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;}
+.lc-duration{font-family:'Outfit',system-ui,sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);}
+.lc-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;color:var(--text-dim);margin-top:2px;}
+.lc-mult-range{text-align:right;}
+.lc-mult-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.1rem;font-weight:700;}
+.lc-mult-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.08em;color:var(--text-dim);}
+.lc-desc{font-size:0.78rem;color:var(--text-muted);margin-bottom:0.75rem;line-height:1.7;}
+.lc-pools{display:flex;flex-wrap:wrap;gap:0.4rem;}
+.lc-pool-tag{font-family:"JetBrains Mono",monospace;font-size:0.57rem;padding:0.2rem 0.55rem;border-radius:3px;background:var(--kal-dim);color:var(--kal);border:1px solid var(--kal-border);}
+.lock-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.lf-item{display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;transition:border-color 0.2s;}
+.lf-item:hover{border-color:var(--border-md);}
+.lf-icon{color:var(--kal);font-size:0.8rem;flex-shrink:0;margin-top:2px;}
+.lf-body h4{font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.lf-body p{font-size:0.73rem;}
+.early-exit-note{margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--kal-gold-border);border-radius:5px;background:var(--kal-gold-dim);font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--kal-gold);}
+
+/* REDEMPTION */
+.redeem-layout{display:grid;grid-template-columns:1fr 1.1fr;gap:5rem;align-items:start;}
+.redeem-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.rp-topbar{height:2px;background:linear-gradient(90deg,var(--kal),var(--kal-gold));}
+.rp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.rp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.rp-badge{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--kal-dim);color:var(--kal);border:1px solid var(--kal-border);}
+/* redemption calculator */
+.redeem-calc{padding:1.5rem 1.75rem;border-bottom:1px solid var(--border);}
+.rc-field{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:0.9rem 1.1rem;margin-bottom:0.65rem;}
+.rc-label{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.3rem;}
+.rc-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.2rem;font-weight:700;}
+.rc-row{display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;}
+.rc-output{background:rgba(64,224,168,0.06);border:1px solid var(--kal-border);border-radius:6px;padding:1rem 1.25rem;}
+.rco-label{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--kal);margin-bottom:0.3rem;opacity:0.7;}
+.rco-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.5rem;font-weight:800;color:var(--kal);}
+.rco-sub{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--kal);opacity:0.6;margin-top:0.2rem;}
+/* redemption steps */
+.redeem-steps{padding:1.25rem 1.75rem;}
+.rs-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.rs-step{display:flex;align-items:flex-start;gap:10px;padding:0.55rem 0;border-bottom:1px solid var(--border);}
+.rs-step:last-child{border-bottom:none;}
+.rs-num{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--kal);flex-shrink:0;width:18px;}
+.rs-text{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+/* redemption features */
+.redeem-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.rf-item{display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--kal);transition:border-color 0.2s;}
+.rf-item:hover{border-color:var(--border-md);}
+.rf-body h4{font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.rf-body p{font-size:0.73rem;}
+
+/* GOVERNANCE */
+.gov-wrap{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.gov-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.gv-topbar{height:2px;}
+.gv-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);}
+.gv-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.gv-items{padding:0.25rem 0;}
+.gv-item{display:flex;justify-content:space-between;align-items:center;padding:0.62rem 1.6rem;border-bottom:1px solid var(--border);}
+.gv-item:last-child{border-bottom:none;}
+.gv-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.gv-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;}
+
+/* DASHBOARD */
+.dash-panels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.dash-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp-topbar{height:2px;}
+.dp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.dp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.dp-metric{background:var(--surface);padding:1rem 1.1rem;}
+.dp-m-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.dp-m-val{font-family:'Outfit',system-ui,sans-serif;font-size:1rem;font-weight:700;}
+.dp-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-top:0.18rem;}
+.dp-rows{padding:0.25rem 0;}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.6rem;border-bottom:1px solid var(--border);}
+.dp-row:last-child{border-bottom:none;}
+.dp-row-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.dp-row-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);}
+
+/* FINAL CTA */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(64,224,168,0.07) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--white);margin-bottom:0.75rem;max-width:580px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:460px;margin:0 auto 0.75rem;}
+.fc-four{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin:2rem 0;}
+.fc-pillar{font-family:"JetBrains Mono",monospace;font-size:0.65rem;display:flex;flex-direction:column;align-items:center;gap:0.3rem;}
+.fc-pillar .fcp-val{color:var(--kal);font-size:0.75rem;}
+.fc-pillar .fcp-label{color:var(--text-dim);font-size:0.58rem;}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:2.5rem;}
+.btn-final{background:var(--kal);color:var(--white);border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{background:var(--green-light);box-shadow:0 8px 30px rgba(64,224,168,0.2);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--kal-border);color:var(--kal);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:'Outfit',system-ui,sans-serif;font-size:1.15rem;font-weight:700;color:var(--text);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--kal);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-item-wrap.active .nav-trigger{color:var(--kal);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--kal);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .epm-grid{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .two-col,.two-col-r,.lock-wrap,.redeem-layout,.gov-wrap,.dash-panels{grid-template-columns:1fr;}
+  .ndp-row{grid-template-columns:2fr 1fr 1fr;}
+  .ndp-row>*:nth-child(4),.ndp-row>*:nth-child(5),.ndp-row.hdr>*:nth-child(4),.ndp-row.hdr>*:nth-child(5){display:none;}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .epm-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap active">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>3.1 · KALOFT (EPT) · NAV TRACKING LIVE · ALL POOLS ACTIVE</div>
+      <h1 style="color:var(--text);">Economic Participation<br><span style="color:var(--kal);">Token.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip">KALOFT</span>
+        <span class="token-chip" style="background:var(--kal-gold-dim);border-color:var(--kal-gold-border);color:var(--kal-gold);">EPT</span>
+        <span>NAV-Based · Contract-Locked · Ledger-Recorded</span>
+      </div>
+      <p class="hero-sub">Structured participation in Kapitor's trading, commodity, yield, and treasury infrastructure. Defined pools. Defined lock periods. NAV-tracked growth. Not a speculative token — governed capital participation.</p>
+      <div class="hero-not">
+        <span class="not-pill no">Speculative Token</span>
+        <span class="not-pill no">Variable Promises</span>
+        <span class="not-pill no">Blind Pools</span>
+        <span class="not-pill yes">Governed Capital Participation</span>
+        <span class="not-pill yes">NAV-Tracked</span>
+        <span class="not-pill yes">Redemption-Defined</span>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Allocate to Kaloft</button>
+        <button class="btn-out">View Pool Documentation →</button>
+        <button class="btn-out">Request Institutional Participation →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Total Capital in Pools</div>
+          <div class="hm-val" style="color:var(--kal);">$840M</div>
+          <div class="hm-sub"><span class="up">▲ 2.1%</span> NAV MTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Current NAV</div>
+          <div class="hm-val" style="color:var(--kal-gold);">$105.20</div>
+          <div class="hm-sub">Entry: $100.00</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Pool Tiers Available</div>
+          <div class="hm-val">5</div>
+          <div class="hm-sub">1M – 100M tiers</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Max Multiplier</div>
+          <div class="hm-val" style="color:var(--kal-gold);">225%</div>
+          <div class="hm-sub">100M · 5Y lock</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Artificial NAV Inflation</div>
+          <div class="hm-val" style="font-size:1.1rem;color:var(--kal);">Zero</div>
+          <div class="hm-sub">Real activity only</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">KALOFT NAV</span><span class="up">$105.20 ▲0.8%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">1M POOL · 1Y</span>125% MULT</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">1M POOL · 3Y</span>145% MULT</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">1M POOL · 5Y</span>175% MULT</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">25M POOL · 1Y</span>145% MULT</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">25M POOL · 5Y</span>200% MULT</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">100M POOL · 5Y</span><span class="up">225% MULT</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TOTAL POOLS AUM</span>$840M</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">NAV INFLATION</span>ZERO</span>
+    <!-- dupe -->
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">KALOFT NAV</span><span class="up">$105.20 ▲0.8%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">1M POOL · 1Y</span>125% MULT</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">100M POOL · 5Y</span><span class="up">225% MULT</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TOTAL POOLS AUM</span>$840M</span>
+  </div>
+</div>
+
+<!-- ═══ ECONOMIC PARTICIPATION MODEL ═══ -->
+<section class="section" id="epm">
+  <div class="container">
+    <div class="two-col">
+      <div>
+        <div class="ey kal">Economic Participation Model</div>
+        <h2 style="color:var(--white);">Structured Capital<br>Participation</h2>
+        <p style="margin-top:0.85rem;">Kaloft allows users to allocate capital into predefined participation pools that fund Kapitor's core infrastructure — trading, commodities, yield deployment, treasury, and institutional settlement. Capital is locked for a defined duration. NAV grows based on pool performance. All capital flows are reconciled with the Unified Ledger.</p>
+        <div class="lock-features" style="margin-top:2rem;">
+          <div class="lf-item"><div class="lf-icon">◈</div><div class="lf-body"><h4>Pool ID & Entry NAV</h4><p>Each participant receives a unique Pool ID with entry NAV locked at time of allocation.</p></div></div>
+          <div class="lf-item"><div class="lf-icon">◈</div><div class="lf-body"><h4>Lock Duration Selected at Entry</h4><p>1Y, 3Y, or 5Y. Duration is fixed at participation. Cannot be changed after capital is committed.</p></div></div>
+          <div class="lf-item"><div class="lf-icon">◈</div><div class="lf-body"><h4>Redemption NAV Entitlement</h4><p>Maturity value is calculated from entry NAV × participation multiplier, subject to pool performance and compliance conditions.</p></div></div>
+          <div class="lf-item"><div class="lf-icon">◈</div><div class="lf-body"><h4>No Variable Promises</h4><p>Returns are structured, not promised. All participation terms are documented prior to entry and cannot be modified.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="nav-dash">
+          <div class="nd-topbar"></div>
+          <div class="nd-header">
+            <div class="nd-title">Live NAV Dashboard</div>
+            <div class="nd-live"><div class="ld"></div>NAV UPDATING</div>
+          </div>
+          <div class="nd-overview">
+            <div class="ndo-item">
+              <div class="ndo-label">Current NAV</div>
+              <div class="ndo-val" style="color:var(--kal);">$105.20</div>
+              <div class="ndo-sub" style="color:var(--kal);font-size:0.55rem;">+5.2% from entry</div>
+            </div>
+            <div class="ndo-item">
+              <div class="ndo-label">NAV Growth (MTD)</div>
+              <div class="ndo-val" style="color:var(--kal-gold);">+$0.84</div>
+              <div class="ndo-sub" style="color:var(--text-dim);font-size:0.55rem;">+0.81% this month</div>
+            </div>
+            <div class="ndo-item">
+              <div class="ndo-label">Total Pools AUM</div>
+              <div class="ndo-val" style="color:var(--white);">$840M</div>
+              <div class="ndo-sub" style="color:var(--text-dim);font-size:0.55rem;">Across all tiers</div>
+            </div>
+          </div>
+          <!-- NAV CHART -->
+          <div class="nd-chart">
+            <div class="ndc-label">NAV Growth Curve — 12 Months</div>
+            <svg viewBox="0 0 600 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#40e0a8" stop-opacity="0.25"/>
+                  <stop offset="100%" stop-color="#40e0a8" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="nav2Grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#d4a843" stop-opacity="0.15"/>
+                  <stop offset="100%" stop-color="#d4a843" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- 100 entry line -->
+              <line x1="0" y1="75" x2="600" y2="75" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="4,4"/>
+              <!-- 1Y pool NAV area -->
+              <path d="M0 72 L50 70 L100 67 L150 64 L200 61 L250 57 L300 54 L350 51 L400 47 L450 43 L500 39 L550 35 L600 31 L600 100 L0 100 Z" fill="url(#navGrad)" opacity="0.6"/>
+              <path d="M0 72 L50 70 L100 67 L150 64 L200 61 L250 57 L300 54 L350 51 L400 47 L450 43 L500 39 L550 35 L600 31" stroke="#40e0a8" stroke-width="1.5" fill="none"/>
+              <!-- 3Y pool NAV (projected, dashed) -->
+              <path d="M0 72 L50 69 L100 65 L150 61 L200 57 L250 52 L300 47 L350 42 L400 37 L450 31 L500 25 L550 19 L600 13" stroke="#d4a843" stroke-width="1" fill="none" stroke-dasharray="5,4" opacity="0.5"/>
+              <!-- labels -->
+              <text x="4" y="90" fill="rgba(255,255,255,0.12)" font-family="JetBrains Mono" font-size="7">$100</text>
+              <text x="4" y="35" fill="rgba(64,224,168,0.4)" font-family="JetBrains Mono" font-size="7">1Y POOL</text>
+              <text x="4" y="20" fill="rgba(212,168,67,0.5)" font-family="JetBrains Mono" font-size="7">3Y POOL (PROJ.)</text>
+              <text x="548" y="94" fill="rgba(255,255,255,0.1)" font-family="JetBrains Mono" font-size="7">M12</text>
+            </svg>
+          </div>
+          <!-- POOL POSITIONS -->
+          <div class="nd-positions">
+            <div class="ndp-row hdr">
+              <span class="ndp-cell hdr">POOL / TIER</span>
+              <span class="ndp-cell hdr">ENTRY NAV</span>
+              <span class="ndp-cell hdr">CURR. NAV</span>
+              <span class="ndp-cell hdr">GROWTH</span>
+              <span class="ndp-cell hdr">STATUS</span>
+            </div>
+            <div class="ndp-row">
+              <span class="ndp-cell" style="color:var(--text);">1M Pool · 3Y</span>
+              <span class="ndp-cell">$100.00</span>
+              <span class="ndp-cell">$105.20</span>
+              <span class="ndp-growth">+5.20%</span>
+              <span><span class="ndp-status st-open">LOCKED</span></span>
+            </div>
+            <div class="ndp-row">
+              <span class="ndp-cell" style="color:var(--text);">5M Pool · 1Y</span>
+              <span class="ndp-cell">$100.00</span>
+              <span class="ndp-cell">$105.20</span>
+              <span class="ndp-growth">+5.20%</span>
+              <span><span class="ndp-status st-open">LOCKED</span></span>
+            </div>
+            <div class="ndp-row">
+              <span class="ndp-cell" style="color:var(--text);">25M Pool · 5Y</span>
+              <span class="ndp-cell">$100.00</span>
+              <span class="ndp-cell">$105.20</span>
+              <span class="ndp-growth">+5.20%</span>
+              <span><span class="ndp-status st-inst">INST.</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EPM GRID -->
+    <div class="epm-grid">
+      <div class="epm-item"><div class="epm-icon">⇄</div><div class="epm-title">Trading Infrastructure</div><p class="epm-desc">Kapitor trading engine profits and spread income.</p></div>
+      <div class="epm-item"><div class="epm-icon" style="color:var(--kal-gold);">◈</div><div class="epm-title">Commodity Engines</div><p class="epm-desc">Katoin integration — commodity distribution profits flow into pool NAV.</p></div>
+      <div class="epm-item"><div class="epm-icon" style="color:var(--green);">§</div><div class="epm-title">Yield Deployment</div><p class="epm-desc">Structured earn and vault yield feeds back into NAV growth.</p></div>
+      <div class="epm-item"><div class="epm-icon" style="color:var(--blue-light);">▣</div><div class="epm-title">Treasury & Arbitrage</div><p class="epm-desc">Treasury allocation returns and arbitrage capture.</p></div>
+      <div class="epm-item"><div class="epm-icon" style="color:var(--amber);">⬡</div><div class="epm-title">Institutional Settlement</div><p class="epm-desc">Institutional settlement flow participation returns.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ POOL STRUCTURES ═══ -->
+<section class="section" id="pools">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey gold">Pool Structures</div>
+      <h2 style="color:var(--white);">Five Tiers. Three Lock Periods.<br>One Governed Framework.</h2>
+      <p>Larger pools receive higher participation multipliers due to longer-term capital commitment and strategic allocation priority. All participation structures are documented prior to entry.</p>
+    </div>
+
+    <!-- FULL MATRIX -->
+    <div class="pool-matrix">
+      <div class="pm-topbar"></div>
+      <div class="pm-header">
+        <div class="pm-title">Participation Multiplier Matrix</div>
+        <div class="pm-legend">
+          <div class="pm-leg-item"><div class="pm-leg-dot" style="background:var(--kal);"></div>Base (125%+)</div>
+          <div class="pm-leg-item"><div class="pm-leg-dot" style="background:var(--kal-gold);"></div>Premium (175%+)</div>
+          <div class="pm-leg-item"><div class="pm-leg-dot" style="background:var(--amber);"></div>Institutional (200%+)</div>
+        </div>
+      </div>
+      <div class="full-matrix">
+        <table class="fm-table">
+          <thead>
+            <tr>
+              <th style="text-align:left;">POOL TIER</th>
+              <th>1 YEAR LOCK</th>
+              <th>3 YEAR LOCK</th>
+              <th>5 YEAR LOCK</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="row-head">1M Pool — Retail / Standard</td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--kal);">125%</div><div class="fm-upside">+25% uplift</div></div></td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--kal);">145%</div><div class="fm-upside">+45% uplift</div></div></td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--kal-gold);">175%</div><div class="fm-upside">+75% uplift</div></div></td>
+            </tr>
+            <tr>
+              <td class="row-head">5M Pool — Qualified Investor</td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--kal);">125%</div><div class="fm-upside">+25% uplift</div></div></td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--kal);">145%</div><div class="fm-upside">+45% uplift</div></div></td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--kal-gold);">175%</div><div class="fm-upside">+75% uplift</div></div></td>
+            </tr>
+            <tr>
+              <td class="row-head">25M Pool — Institutional</td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--kal-gold);">145%</div><div class="fm-upside">+45% uplift</div></div></td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--kal-gold);">175%</div><div class="fm-upside">+75% uplift</div></div></td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--amber);">200%</div><div class="fm-upside">+100% uplift</div></div></td>
+            </tr>
+            <tr>
+              <td class="row-head">50M Pool — Institutional</td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--kal-gold);">145%</div><div class="fm-upside">+45% uplift</div></div></td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--kal-gold);">175%</div><div class="fm-upside">+75% uplift</div></div></td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--amber);">200%</div><div class="fm-upside">+100% uplift</div></div></td>
+            </tr>
+            <tr>
+              <td class="row-head">100M Pool — Strategic Institutional</td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--amber);">175%</div><div class="fm-upside">+75% uplift</div></div></td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--amber);">200%</div><div class="fm-upside">+100% uplift</div></div></td>
+              <td><div class="fm-cell"><div class="fm-mult" style="color:var(--amber-light);">225%</div><div class="fm-upside">+125% uplift</div></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:1rem 1.75rem;border-top:1px solid var(--border);background:var(--surface2);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text-muted);">
+          <span style="color:var(--kal-gold);">Multiplier Interpretation:</span> A 125% structure means capital plus 25% structured uplift at maturity under defined performance and compliance conditions. All participation structures are documented prior to entry.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LOCK PERIODS ═══ -->
+<section class="section" id="lock">
+  <div class="container">
+    <div class="lock-wrap">
+      <div>
+        <div class="ey kal">Lock Periods</div>
+        <h2 style="color:var(--white);">Defined Capital<br>Commitment</h2>
+        <p style="margin-top:0.85rem;">Participants select one of three lock durations at entry. Duration is fixed — capital is non-withdrawable during the lock period. NAV grows based on pool performance and remains visible in the Smart Wallet throughout.</p>
+        <div class="lock-cards" style="margin-top:2rem;">
+          <!-- 1Y -->
+          <div class="lock-card">
+            <div class="lc-bar" style="background:var(--kal);"></div>
+            <div class="lc-body">
+              <div class="lc-header">
+                <div><div class="lc-duration">1 Year</div><div class="lc-label">SHORT COMMITMENT</div></div>
+                <div class="lc-mult-range">
+                  <div class="lc-mult-val" style="color:var(--kal);">125% – 175%</div>
+                  <div class="lc-mult-label">MULTIPLIER RANGE</div>
+                </div>
+              </div>
+              <p class="lc-desc">Entry-level lock for capital participation. Available across all pool tiers with base multiplier range. Ideal for first-time Kaloft participants.</p>
+              <div class="lc-pools">
+                <span class="lc-pool-tag">1M: 125%</span>
+                <span class="lc-pool-tag">5M: 125%</span>
+                <span class="lc-pool-tag">25M: 145%</span>
+                <span class="lc-pool-tag">50M: 145%</span>
+                <span class="lc-pool-tag">100M: 175%</span>
+              </div>
+            </div>
+          </div>
+          <!-- 3Y -->
+          <div class="lock-card">
+            <div class="lc-bar" style="background:linear-gradient(90deg,var(--kal),var(--kal-gold));"></div>
+            <div class="lc-body">
+              <div class="lc-header">
+                <div><div class="lc-duration">3 Years</div><div class="lc-label">MEDIUM COMMITMENT</div></div>
+                <div class="lc-mult-range">
+                  <div class="lc-mult-val" style="color:var(--kal-gold);">145% – 200%</div>
+                  <div class="lc-mult-label">MULTIPLIER RANGE</div>
+                </div>
+              </div>
+              <p class="lc-desc">Elevated participation multipliers for medium-term capital commitment. Available across all tiers. Enhanced strategic allocation priority within the pool.</p>
+              <div class="lc-pools">
+                <span class="lc-pool-tag" style="border-color:var(--kal-gold-border);color:var(--kal-gold);background:var(--kal-gold-dim);">1M: 145%</span>
+                <span class="lc-pool-tag" style="border-color:var(--kal-gold-border);color:var(--kal-gold);background:var(--kal-gold-dim);">5M: 145%</span>
+                <span class="lc-pool-tag" style="border-color:var(--kal-gold-border);color:var(--kal-gold);background:var(--kal-gold-dim);">25M: 175%</span>
+                <span class="lc-pool-tag" style="border-color:var(--kal-gold-border);color:var(--kal-gold);background:var(--kal-gold-dim);">50M: 175%</span>
+                <span class="lc-pool-tag" style="border-color:var(--kal-gold-border);color:var(--kal-gold);background:var(--kal-gold-dim);">100M: 200%</span>
+              </div>
+            </div>
+          </div>
+          <!-- 5Y -->
+          <div class="lock-card">
+            <div class="lc-bar" style="background:var(--kal-gold);"></div>
+            <div class="lc-body">
+              <div class="lc-header">
+                <div><div class="lc-duration">5 Years</div><div class="lc-label">LONG COMMITMENT · MAX MULTIPLIER</div></div>
+                <div class="lc-mult-range">
+                  <div class="lc-mult-val" style="color:var(--amber-light);">175% – 225%</div>
+                  <div class="lc-mult-label">MULTIPLIER RANGE</div>
+                </div>
+              </div>
+              <p class="lc-desc">Maximum participation multipliers for long-term capital commitment. Highest strategic allocation priority. 100M pool at 5Y delivers the maximum 225% multiplier.</p>
+              <div class="lc-pools">
+                <span class="lc-pool-tag" style="border-color:var(--amber-border);color:var(--amber);background:var(--amber-dim);">1M: 175%</span>
+                <span class="lc-pool-tag" style="border-color:var(--amber-border);color:var(--amber);background:var(--amber-dim);">5M: 175%</span>
+                <span class="lc-pool-tag" style="border-color:var(--amber-border);color:var(--amber);background:var(--amber-dim);">25M: 200%</span>
+                <span class="lc-pool-tag" style="border-color:var(--amber-border);color:var(--amber);background:var(--amber-dim);">50M: 200%</span>
+                <span class="lc-pool-tag" style="border-color:var(--amber-border);color:var(--amber-light);background:var(--amber-dim);font-weight:700;">100M: 225%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="early-exit-note">Early redemption, if permitted, is subject to: Governance approval · Discounted NAV · Liquidity availability · Compliance review. Lock discipline protects pool stability.</div>
+      </div>
+      <div>
+        <div class="ey kal" style="margin-top:0;">During the Lock Period</div>
+        <div class="lock-features">
+          <div class="lf-item"><div class="lf-icon">◈</div><div class="lf-body"><h4>Capital is Non-Withdrawable</h4><p>Principal is locked for the selected duration. No early withdrawal outside governance approval process.</p></div></div>
+          <div class="lf-item"><div class="lf-icon">◈</div><div class="lf-body"><h4>NAV Grows Based on Pool Performance</h4><p>Real-time NAV updates reflect actual infrastructure activity — trading profits, yield, commodity distribution, and treasury returns.</p></div></div>
+          <div class="lf-item"><div class="lf-icon">◈</div><div class="lf-body"><h4>Position Visible in Smart Wallet</h4><p>Locked capital, current NAV, projected maturity value, and days remaining are all visible in the Smart Wallet throughout the lock period.</p></div></div>
+          <div class="lf-item"><div class="lf-icon">◈</div><div class="lf-body"><h4>Risk Scoring Continues</h4><p>Pool positions are continuously risk-scored by the Kapitor Risk Engine. Participants receive updates on pool risk status.</p></div></div>
+          <div class="lf-item"><div class="lf-icon">◈</div><div class="lf-body"><h4>No Artificial NAV Inflation</h4><p>NAV movement is tied exclusively to real infrastructure activity. No synthetic adjustments, no hidden smoothing.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ REDEMPTION FRAMEWORK ═══ -->
+<section class="section" id="redemption">
+  <div class="container">
+    <div class="redeem-layout">
+      <div>
+        <div class="ey gold">Redemption Framework</div>
+        <h2 style="color:var(--white);">Structured Maturity<br>Settlement</h2>
+        <p style="margin-top:0.85rem;">At maturity, the lock period ends, final NAV is calculated, the participation multiplier is applied, and funds are released to the Smart Wallet. Participants may redeem in fiat, stablecoins, or approved crypto assets.</p>
+        <div class="redeem-features">
+          <div class="rf-item"><div class="rf-body"><h4>Fiat Redemption</h4><p>Receive maturity value in USD, EUR, GBP, or other supported fiat currencies via GIPS payment rails.</p></div></div>
+          <div class="rf-item"><div class="rf-body"><h4>Stablecoin Redemption</h4><p>Receive in USDT, USDC, or other approved stablecoins directly to Smart Wallet balance.</p></div></div>
+          <div class="rf-item"><div class="rf-body"><h4>Crypto Asset Redemption</h4><p>Receive in BTC, ETH, or other approved digital assets at prevailing market rate at maturity.</p></div></div>
+          <div class="rf-item"><div class="rf-body"><h4>Ledger Settlement Records</h4><p>Every redemption generates: ledger settlement record, reserve mapping update, compliance log, and tax reporting record where applicable.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="redeem-panel">
+          <div class="rp-topbar"></div>
+          <div class="rp-header">
+            <div class="rp-title">Redemption Calculator</div>
+            <div class="rp-badge">AT MATURITY</div>
+          </div>
+          <div class="redeem-calc">
+            <div class="rc-row" style="margin-bottom:0.65rem;">
+              <div class="rc-field">
+                <div class="rc-label">Pool Tier</div>
+                <div class="rc-val" style="color:var(--text);font-size:1rem;">25M Pool</div>
+              </div>
+              <div class="rc-field">
+                <div class="rc-label">Lock Duration</div>
+                <div class="rc-val" style="color:var(--kal-gold);font-size:1rem;">3 Years</div>
+              </div>
+            </div>
+            <div class="rc-row" style="margin-bottom:0.65rem;">
+              <div class="rc-field">
+                <div class="rc-label">Capital Allocated</div>
+                <div class="rc-val" style="color:var(--white);">$25,000,000</div>
+              </div>
+              <div class="rc-field">
+                <div class="rc-label">Multiplier</div>
+                <div class="rc-val" style="color:var(--kal-gold);">175%</div>
+              </div>
+            </div>
+            <div class="rc-output">
+              <div class="rco-label">Maturity Redemption Value</div>
+              <div class="rco-val">$43,750,000</div>
+              <div class="rco-sub">+$18,750,000 · +75% structured uplift at maturity</div>
+            </div>
+          </div>
+          <div class="redeem-steps">
+            <div class="rs-label">Redemption Sequence at Maturity</div>
+            <div class="rs-step"><div class="rs-num">01</div><div class="rs-text">Lock period ends — position becomes eligible</div></div>
+            <div class="rs-step"><div class="rs-num">02</div><div class="rs-text">Final NAV calculated — Ledger reconciled</div></div>
+            <div class="rs-step"><div class="rs-num">03</div><div class="rs-text">Participation multiplier applied to NAV</div></div>
+            <div class="rs-step"><div class="rs-num">04</div><div class="rs-text">Redemption value determined — Compliance review</div></div>
+            <div class="rs-step"><div class="rs-num">05</div><div class="rs-text">Funds released to Smart Wallet in chosen currency</div></div>
+            <div class="rs-step"><div class="rs-num">06</div><div class="rs-text">Ledger settlement record + tax record generated</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GOVERNANCE ═══ -->
+<section class="section" id="governance">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey kal">Governance & Risk Controls</div>
+      <h2 style="color:var(--white);">No Pool Can Deploy Capital<br>Outside the Governance Framework.</h2>
+    </div>
+    <div class="gov-wrap">
+      <div class="gov-panel">
+        <div class="gv-topbar" style="background:linear-gradient(90deg,var(--kal),var(--kal-gold));"></div>
+        <div class="gv-header"><div class="gv-title">Governance Controls</div></div>
+        <div class="gv-items">
+          <div class="gv-item"><span class="gv-key">Unified Ledger Recording</span><span class="gv-val" style="color:var(--kal);">ACTIVE — ALL POOLS</span></div>
+          <div class="gv-item"><span class="gv-key">Risk Engine Oversight</span><span class="gv-val" style="color:var(--kal);">CONTINUOUS</span></div>
+          <div class="gv-item"><span class="gv-key">Pool Size Caps</span><span class="gv-val">1M · 5M · 25M · 50M · 100M</span></div>
+          <div class="gv-item"><span class="gv-key">Allocation Diversification</span><span class="gv-val" style="color:var(--kal);">ENFORCED</span></div>
+          <div class="gv-item"><span class="gv-key">Liquidity Buffers</span><span class="gv-val" style="color:var(--kal);">MAINTAINED</span></div>
+          <div class="gv-item"><span class="gv-key">Audit Verification</span><span class="gv-val">QUARTERLY</span></div>
+          <div class="gv-item"><span class="gv-key">NAV Artificial Inflation</span><span class="gv-val" style="color:var(--kal);">ZERO — PROHIBITED</span></div>
+        </div>
+      </div>
+      <div class="gov-panel">
+        <div class="gv-topbar" style="background:linear-gradient(90deg,var(--blue),var(--kal));"></div>
+        <div class="gv-header"><div class="gv-title">Position Records — Every Entry Generates</div></div>
+        <div class="gv-items">
+          <div class="gv-item"><span class="gv-key">Pool ID Assignment</span><span class="gv-val" style="color:var(--kal);">UNIQUE IDENTIFIER</span></div>
+          <div class="gv-item"><span class="gv-key">Entry NAV Lock Record</span><span class="gv-val" style="color:var(--kal);">LEDGER ENTRY</span></div>
+          <div class="gv-item"><span class="gv-key">Lock Duration Record</span><span class="gv-val" style="color:var(--kal);">CONTRACT ENFORCED</span></div>
+          <div class="gv-item"><span class="gv-key">Redemption NAV Entitlement</span><span class="gv-val" style="color:var(--kal);">DEFINED AT ENTRY</span></div>
+          <div class="gv-item"><span class="gv-key">Maturity Timeline</span><span class="gv-val" style="color:var(--kal);">FIXED</span></div>
+          <div class="gv-item"><span class="gv-key">Risk Score Assignment</span><span class="gv-val" style="color:var(--kal);">CONTINUOUS</span></div>
+          <div class="gv-item"><span class="gv-key">Compliance Log</span><span class="gv-val" style="color:var(--kal);">REAL-TIME</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey kal">Dashboard Overview</div>
+      <h2 style="color:var(--white);">Participant & Institutional<br>Views</h2>
+    </div>
+    <div class="dash-panels">
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--kal),var(--kal-gold));"></div>
+        <div class="dp-header"><div class="dp-title">Participant Dashboard</div><div class="dp-tag">RETAIL / QUALIFIED</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Active Pools</div><div class="dp-m-val" style="color:var(--white);">2</div><div class="dp-m-sub" style="color:var(--text-dim);">1M · 3Y and 5M · 1Y</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Total Locked Capital</div><div class="dp-m-val" style="color:var(--amber);">$6M</div><div class="dp-m-sub" style="color:var(--text-dim);">Across 2 pools</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Current NAV</div><div class="dp-m-val" style="color:var(--kal);">$105.20</div><div class="dp-m-sub" style="color:var(--kal);">+5.2% from entry</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Projected Maturity</div><div class="dp-m-val" style="color:var(--kal-gold);">$8.7M</div><div class="dp-m-sub" style="color:var(--text-dim);">At 145% multiplier</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Lock Duration (1M pool)</span><span class="dp-row-val">3 Years · 856 days remaining</span></div>
+          <div class="dp-row"><span class="dp-row-key">Risk Score</span><span class="dp-row-val" style="color:var(--kal);">LOW</span></div>
+          <div class="dp-row"><span class="dp-row-key">Redemption Eligibility</span><span class="dp-row-val">Not yet — locked</span></div>
+          <div class="dp-row"><span class="dp-row-key">Smart Wallet Sync</span><span class="dp-row-val" style="color:var(--kal);">Real-time</span></div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--kal-gold),var(--amber));"></div>
+        <div class="dp-header"><div class="dp-title">Institutional Dashboard</div><div class="dp-tag" style="color:var(--kal-gold);border-color:var(--kal-gold-border);background:var(--kal-gold-dim);">PRIME</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Pool Allocation</div><div class="dp-m-val" style="color:var(--white);">$125M</div><div class="dp-m-sub" style="color:var(--text-dim);">3 pools</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Projected Maturity</div><div class="dp-m-val" style="color:var(--kal-gold);">$218M</div><div class="dp-m-sub" style="color:var(--text-dim);">Blended multipliers</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Capital Efficiency</div><div class="dp-m-val" style="color:var(--kal);">+74.4%</div><div class="dp-m-sub" style="color:var(--text-dim);">Uplift on entry</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Performance Attribution</div><div class="dp-m-val" style="color:var(--blue-light);">Active</div><div class="dp-m-sub" style="color:var(--text-dim);">Full analytics</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Pool Allocation Breakdown</span><span class="dp-row-val">25M · 50M · 100M pools</span></div>
+          <div class="dp-row"><span class="dp-row-key">Capital Efficiency Metrics</span><span class="dp-row-val" style="color:var(--kal);">Enabled</span></div>
+          <div class="dp-row"><span class="dp-row-key">Risk Modeling</span><span class="dp-row-val">Quarterly stress test</span></div>
+          <div class="dp-row"><span class="dp-row-key">Compliance Status (MTD)</span><span class="dp-row-val" style="color:var(--kal);">0 flags</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey kal" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Structured Participation. Governed Capital.</div>
+      <h2>Kaloft provides defined capital participation<br>within the Kapitor Financial Operating System.</h2>
+      <div class="fc-four">
+        <div class="fc-pillar"><span class="fcp-val">Fixed Pool Structure</span><span class="fcp-label">Defined at entry</span></div>
+        <div class="fc-pillar"><span class="fcp-val" style="color:var(--kal-gold);">Defined Lock Period</span><span class="fcp-label">1Y · 3Y · 5Y</span></div>
+        <div class="fc-pillar"><span class="fcp-val">NAV-Tracked Growth</span><span class="fcp-label">Real activity only</span></div>
+        <div class="fc-pillar"><span class="fcp-val" style="color:var(--kal-gold);">Structured Redemption</span><span class="fcp-label">Multiplier-defined</span></div>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Allocate to Kaloft</button>
+        <button class="btn-final-out">View Pool Documentation</button>
+        <button class="btn-final-out">Request Institutional Participation</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="index.html">Smart Wallet</a></li><li><a href="index.html#pay">Pay</a></li><li><a href="index.html#trade">Trade</a></li><li><a href="index.html#earn">Earn</a></li><li><a href="index.html#stake">Stake</a></li><li><a href="rwa.html">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="kaloft-ept.html" style="color:var(--kal);">Kaloft (EPT)</a></li><li><a href="digitalassets.html">Katoin</a></li><li><a href="digitalassets.html">EQOUIN</a></li><li><a href="digitalassets.html">KFI</a></li><li><a href="rwa.html">RWA</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="custody.html">Custody</a></li><li><a href="#">Treasury</a></li><li><a href="fx.html">FX</a></li><li><a href="api.html">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Infrastructure</h5><ul><li><a href="#">Payment Rails</a></li><li><a href="#">Jurisdictions</a></li><li><a href="compliance.html">Compliance</a></li><li><a href="#">Proof of Reserves</a></li><li><a href="#">Security</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="company.html">About</a></li><li><a href="company.html">Careers</a></li><li><a href="company.html">Media</a></li><li><a href="company.html">Contact</a></li><li><a href="company.html">Whitepaper</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="company.html">Terms</a><a href="company.html">Privacy</a><a href="company.html">Risk Disclosure</a><a href="company.html">Token Documentation</a><a href="company.html">AML Policy</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+(function(){
+  var header=document.getElementById("hdr");
+  var mobileToggle=document.querySelector(".nav-mobile-toggle");
+  function isMobile(){return window.innerWidth<=900;}
+  if(mobileToggle&&header){
+    mobileToggle.addEventListener("click",function(){
+      header.classList.toggle("header-mobile-open");
+      mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+    });
+  }
+  document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+    btn.addEventListener("click",function(e){
+      if(isMobile()){e.preventDefault();var wrap=btn.closest(".nav-item-wrap");wrap.classList.toggle("open");btn.setAttribute("aria-expanded",wrap.classList.contains("open"));}
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Company | Kapitor</title>
+<link
+  href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap"
+  rel="stylesheet"
+>
+<style> 
+:root {
+  /* Core surfaces – match Kapitor brand light theme */
+  --bg: #FCF8E8;
+  --surface: #FFFFFF;
+  --surface2: #F5ECD6;
+  --surface3: #F5ECD6;
+
+  /* Borders & outlines */
+  --border: rgba(15, 23, 42, 0.08);
+  --border-md: rgba(15, 23, 42, 0.16);
+  --border-hi: rgba(15, 23, 42, 0.22);
+
+  /* Brand colors */
+  --blue: #1A6FB8;
+  --blue-light: #2B83D1;
+  --blue-dim: rgba(26, 111, 184, 0.10);
+  --blue-glow: rgba(26, 111, 184, 0.12);
+  --green: #33B269;
+  --green-dim: rgba(51, 178, 105, 0.12);
+  --green-border: rgba(51, 178, 105, 0.20);
+  --amber: #F7AE40;
+  --amber-dim: rgba(247, 174, 64, 0.14);
+  --amber-border: rgba(247, 174, 64, 0.22);
+
+  /* Semantic states */
+  --success: #0F9D58;
+  --warning: #F59E0B;
+  --error: #E53535;
+
+  /* Typography */
+  --text: #111827;
+  --text-muted: #6B6B6B;
+  --text-dim: #9CA3AF;
+  --white: #FFFFFF;
+
+  /* Company: parchment-white / institutional charcoal / signal gold */
+  --co:#d8ceb8;       --co-light:#eae4d4;
+  --co-dim:rgba(216,206,184,0.06);    --co-border:rgba(216,206,184,0.14);
+  --co-gold:#c8a030;  --co-gold-dim:rgba(200,160,48,0.09); --co-gold-border:rgba(200,160,48,0.2);
+  --co-iron:#484038;  --co-iron-light:#806848;
+  --co-slate:#b0a890; --co-slate-dim:rgba(176,168,144,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:300;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+body::after{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+h1,h2,h3{
+  font-family:'Outfit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:700;
+  letter-spacing:-0.03em;
+}
+h1{font-size:clamp(2.6rem,5.5vw,4.6rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.co{color:var(--co-light);}   .ey.co::before{background:var(--co-light);}
+.ey.gold{color:var(--co-gold);}  .ey.gold::before{background:var(--co-gold);}
+.ey.g{color:var(--green);}       .ey.g::before{background:var(--green);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--white);margin-bottom:0.85rem;}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--co-light);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--co-border);color:var(--co-light);}
+.btn-cta{background:var(--co-iron);color:var(--white);border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.2s;}
+.btn-cta:hover{background:var(--co-iron-light);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:"Epilogue",sans-serif;cursor:pointer;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;
+  background:radial-gradient(ellipse 55% 45% at 50% 32%,rgba(200,160,48,0.05) 0%,transparent 55%),
+  radial-gradient(ellipse 35% 35% at 6% 72%,rgba(216,206,184,0.04) 0%,transparent 50%),
+  radial-gradient(ellipse 28% 28% at 94% 68%,rgba(72,64,56,0.08) 0%,transparent 45%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(216,206,184,0.013) 1px,transparent 1px),linear-gradient(90deg,rgba(216,206,184,0.013) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 65% at 50% 40%,black 10%,transparent 72%);}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(216,206,184,0.2);border-radius:3px;background:rgba(216,206,184,0.05);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--co-light);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--co-gold);animation:blink 2.2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero-content{position:relative;z-index:2;max-width:900px;}
+.hero h1{color:var(--white);margin-bottom:0.6rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.64rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:580px;color:rgba(144,136,120,0.5);margin-bottom:2rem;line-height:1.8;}
+/* 5 principles strip */
+.principles-strip{display:flex;gap:0;margin-bottom:2rem;}
+.ps-item{flex:1;padding:0.65rem 0.85rem;border:1px solid var(--border-md);border-right:none;text-align:center;transition:all 0.2s;}
+.ps-item:first-child{border-radius:4px 0 0 4px;}
+.ps-item:last-child{border-right:1px solid var(--border-md);border-radius:0 4px 4px 0;}
+.ps-item:hover{background:rgba(255,255,255,0.02);border-color:var(--co-border);}
+.ps-label{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.18rem;}
+.ps-val{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--co-light);}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--co-iron);color:var(--white);border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:var(--co-iron-light);transform:translateY(-1px);box-shadow:0 10px 40px rgba(72,64,56,0.4);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--co-border);color:var(--co-light);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);gap:0;}
+.hm-item{padding:0 2.5rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2.5rem;}
+.hm-item:nth-child(2),.hm-item:nth-child(3){padding:0 2.5rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:"Syne",sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 55s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--co-light);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* ABOUT — split */
+.about-layout{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+.about-statement{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.as-topbar{height:2px;background:linear-gradient(90deg,var(--co-gold),var(--co-iron-light));}
+.as-body{padding:2rem 2rem;}
+.as-not{font-family:"JetBrains Mono",monospace;font-size:0.6rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.5rem;}
+.as-not-item{display:flex;align-items:center;gap:8px;padding:0.35rem 0;border-bottom:1px solid var(--border);}
+.as-not-item:last-child{border-bottom:none;}
+.as-not-sym{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--red,#c84848);width:14px;}
+.as-not-text{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);}
+.as-is{margin-top:1.25rem;}
+.as-is-item{display:flex;align-items:center;gap:8px;padding:0.38rem 0;border-bottom:1px solid var(--border);}
+.as-is-item:last-child{border-bottom:none;}
+.as-is-sym{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--green);width:14px;}
+.as-is-text{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text);}
+/* four pillars vertical list */
+.four-systems{display:flex;flex-direction:column;gap:0.5rem;margin-top:2rem;}
+.fs-item{padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--co-gold);transition:border-color 0.2s;}
+.fs-item:hover{border-color:var(--co-border);}
+.fs-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);margin-bottom:0.2rem;}
+.fs-desc{font-size:0.73rem;}
+
+/* GOVERNANCE / SECURITY two-col */
+.gov-sec-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.gov-panel,.sec-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.gp-topbar,.sp-topbar{height:2px;}
+.gp-header,.sp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.gp-title,.sp-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:600;color:var(--white);}
+.gp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.gov-rows,.sec-rows{padding:0.25rem 0;}
+.gov-row,.sec-row{display:flex;align-items:flex-start;gap:8px;padding:0.55rem 1.6rem;border-bottom:1px solid var(--border);}
+.gov-row:last-child,.sec-row:last-child{border-bottom:none;}
+.gov-key,.sec-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.gov-val,.sec-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);margin-left:auto;text-align:right;flex-shrink:0;}
+/* security three-section */
+.sec-section{padding:0 0 0.25rem;}
+.scs-label{padding:0.55rem 1.6rem;font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);background:rgba(0,0,0,0.18);}
+.scs-rows{padding:0.1rem 0;}
+.scsr-item{display:flex;align-items:center;gap:6px;padding:0.35rem 1.6rem;border-bottom:1px solid var(--border);}
+.scsr-item:last-child{border-bottom:none;}
+.scsr-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+.scsr-text{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);}
+
+/* REGULATORY PILLARS */
+.reg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.reg-item{background:var(--surface);padding:1.4rem 1.4rem;transition:background 0.2s;}
+.reg-item:hover{background:var(--surface2);}
+.ri-icon{font-family:"JetBrains Mono",monospace;font-size:0.68rem;color:var(--co-light);margin-bottom:0.45rem;}
+.ri-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);margin-bottom:0.3rem;}
+.ri-desc{font-size:0.72rem;color:var(--text-muted);}
+
+/* CAREERS + CULTURE */
+.careers-layout{display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:start;}
+.roles-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.role-item{background:var(--surface);padding:1.1rem 1.25rem;transition:background 0.2s;}
+.role-item:hover{background:var(--surface2);}
+.role-dept{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.3rem;}
+.role-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);margin-bottom:0.18rem;}
+.role-type{font-family:"JetBrains Mono",monospace;font-size:0.54rem;color:var(--text-muted);}
+/* culture principles */
+.culture-items{display:flex;flex-direction:column;gap:0.5rem;margin-top:2rem;}
+.ci-item{display:flex;align-items:center;gap:10px;padding:0.65rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--co-iron-light);}
+.ci-num{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--co-gold);width:20px;flex-shrink:0;}
+.ci-text{font-family:"Epilogue",sans-serif;font-size:0.8rem;color:var(--text);}
+
+/* CONTACT CHANNELS */
+.contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.cc-item{background:var(--surface);padding:1.5rem 1.5rem;transition:background 0.2s;}
+.cc-item:hover{background:var(--surface2);cursor:pointer;}
+.cc-icon{font-family:"JetBrains Mono",monospace;font-size:0.75rem;color:var(--co-gold);margin-bottom:0.5rem;}
+.cc-title{font-family:"Syne",sans-serif;font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:0.25rem;}
+.cc-desc{font-size:0.73rem;color:var(--text-muted);margin-bottom:0.6rem;}
+.cc-tag{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:0.53rem;letter-spacing:0.08em;padding:0.18rem 0.5rem;border-radius:3px;border:1px solid var(--border-md);color:var(--text-dim);}
+.cc-arrow{font-family:"JetBrains Mono",monospace;font-size:0.65rem;color:var(--text-dim);margin-top:0.6rem;display:block;}
+
+/* MEDIA */
+.media-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.mg-item{background:var(--surface);padding:1.25rem 1.25rem;transition:background 0.2s;}
+.mg-item:hover{background:var(--surface2);}
+.mg-type{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.mg-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);margin-bottom:0.22rem;}
+.mg-desc{font-size:0.7rem;color:var(--text-muted);margin-bottom:0.55rem;}
+.mg-date{font-family:"JetBrains Mono",monospace;font-size:0.54rem;color:var(--text-dim);}
+
+/* FINAL CTA */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(200,160,48,0.06) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--white);margin-bottom:0.75rem;max-width:600px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:480px;margin:0 auto 2rem;font-size:0.9rem;}
+.fc-statement{display:flex;justify-content:center;gap:0;margin:0 auto 2.5rem;max-width:420px;}
+.fcs{font-family:"JetBrains Mono",monospace;font-size:0.65rem;padding:0.68rem 1rem;border:1px solid var(--co-border);border-right:none;color:var(--co-light);background:var(--co-dim);text-align:center;}
+.fcs:first-child{border-radius:4px 0 0 4px;}
+.fcs:last-child{border-right:1px solid var(--co-border);border-radius:0 4px 4px 0;}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-final{background:var(--co-iron);color:var(--white);border:none;padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{background:var(--co-iron-light);box-shadow:0 10px 40px rgba(128,104,72,0.3);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--co-border);color:var(--co-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:"Syne",sans-serif;font-size:1.15rem;font-weight:700;color:var(--white);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--co-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--co-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(2,1fr);}
+  .hm-item:nth-child(2){border-right:none;}
+  .reg-grid{grid-template-columns:repeat(2,1fr);}
+  .contact-grid{grid-template-columns:repeat(2,1fr);}
+  .media-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .about-layout,.careers-layout,.gov-sec-layout{grid-template-columns:1fr;}
+  .principles-strip{flex-wrap:wrap;}
+  .ps-item{flex:1 1 30%;}
+  .ps-item:last-child{border-right:1px solid var(--border-md);}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .reg-grid,.contact-grid,.roles-grid{grid-template-columns:1fr;}
+  .media-grid{grid-template-columns:1fr;}
+  .fc-statement{flex-direction:column;max-width:200px;}
+  .fcs{border-right:1px solid var(--co-border);}
+}
+</style>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link active">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>COMPANY · KAPITOR TECHNOLOGIES · FINANCIAL INFRASTRUCTURE · NOT HYPE</div>
+      <h1 style="color:var(--white);">Not Hype.<br>Not Speculation.<br><span style="color:var(--co-light);">Infrastructure.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip" style="background:var(--co-dim);border:1px solid var(--co-border);color:var(--co-light);">COMPANY</span>
+        <span class="token-chip" style="background:var(--co-gold-dim);border:1px solid var(--co-gold-border);color:var(--co-gold);">INSTITUTIONAL</span>
+        <span style="color:var(--text-dim);">Governed · Ledger-Based · Compliance-First · Capital Discipline</span>
+      </div>
+      <p class="hero-sub">Kapitor is structured as a unified financial operating system integrating payments, digital assets, yield infrastructure, trade finance, and real-world assets under a governed ledger framework. This section defines the institution behind the system.</p>
+      <div class="principles-strip">
+        <div class="ps-item"><div class="ps-label">Principle</div><div class="ps-val">Ledger Reconciliation</div></div>
+        <div class="ps-item"><div class="ps-label">Principle</div><div class="ps-val">Risk Governance</div></div>
+        <div class="ps-item"><div class="ps-label">Principle</div><div class="ps-val">Compliance-First</div></div>
+        <div class="ps-item"><div class="ps-label">Principle</div><div class="ps-val">Capital Discipline</div></div>
+        <div class="ps-item"><div class="ps-label">Principle</div><div class="ps-val">Institutional Standards</div></div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Request Institutional Access</button>
+        <button class="btn-out">View Governance Framework →</button>
+        <button class="btn-out">Contact Kapitor →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Founded</div>
+          <div class="hm-val" style="color:var(--co-light);">2022</div>
+          <div class="hm-sub">Financial operating system</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Platform Modules</div>
+          <div class="hm-val" style="color:var(--white);">12+</div>
+          <div class="hm-sub">Unified ledger architecture</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Regulatory Framework</div>
+          <div class="hm-val" style="color:var(--co-light);">Active</div>
+          <div class="hm-sub">KYC · KYB · AML · Jurisdiction</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">What Kapitor Is</div>
+          <div class="hm-val" style="color:var(--co-gold);font-size:0.95rem;padding-top:0.22rem;">Financial OS</div>
+          <div class="hm-sub">Not a bank. Not an exchange.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">KAPITOR IS</span><span class="up">A FINANCIAL OPERATING SYSTEM</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">NOT</span>A CRYPTO EXCHANGE</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">NOT</span>A NEOBANK</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ONE</span><span class="up">UNIFIED LEDGER</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ONE</span><span class="up">RISK ENGINE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">COMPLIANCE</span>NON-NEGOTIABLE</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">GOVERNANCE</span><span class="up">ARCHITECTURE-LEVEL</span></span>
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">KAPITOR IS</span><span class="up">A FINANCIAL OPERATING SYSTEM</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">NOT</span>A CRYPTO EXCHANGE</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">COMPLIANCE</span>NON-NEGOTIABLE</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="about-layout">
+      <div>
+        <div class="ey co">About Kapitor</div>
+        <h2 style="color:var(--white);">Financial Infrastructure<br>for a Multi-Asset World.</h2>
+        <p style="margin-top:0.85rem;margin-bottom:1.5rem;">Kapitor was founded to unify fragmented financial systems into one governed platform. Traditional banking, digital assets, yield systems, trade finance, and tokenised assets operate in silos. Kapitor integrates them under one ledger, one wallet, one risk engine, and one compliance framework.</p>
+        <div class="four-systems">
+          <div class="fs-item">
+            <div class="fs-title">One Unified Ledger</div>
+            <p class="fs-desc">Every transaction, allocation, settlement, and reserve mapping records in a single source of financial truth. No shadow accounting. No off-ledger movements.</p>
+          </div>
+          <div class="fs-item">
+            <div class="fs-title">One Smart Wallet</div>
+            <p class="fs-desc">A single interface connecting fiat balances, digital assets, yield positions, staking, and payment rails — with full visibility into every position at once.</p>
+          </div>
+          <div class="fs-item">
+            <div class="fs-title">One Risk Engine</div>
+            <p class="fs-desc">Continuous, real-time risk scoring across every module and user. Dynamic — not quarterly. Automated safeguards, exposure limits, and governance triggers.</p>
+          </div>
+          <div class="fs-item">
+            <div class="fs-title">One Compliance Framework</div>
+            <p class="fs-desc">Identity verification, AML screening, jurisdiction controls, investment limits, and audit trails — embedded at architecture level, not bolted on.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="about-statement">
+          <div class="as-topbar"></div>
+          <div class="as-body">
+            <div class="as-not" style="font-family:'JetBrains Mono',monospace;font-size:0.54rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.7rem;">What Kapitor Is Not</div>
+            <div class="as-not-item"><span class="as-not-sym">✕</span><span class="as-not-text">Not a crypto exchange</span></div>
+            <div class="as-not-item"><span class="as-not-sym">✕</span><span class="as-not-text">Not a neobank</span></div>
+            <div class="as-not-item"><span class="as-not-sym">✕</span><span class="as-not-text">Not a trading gimmick</span></div>
+            <div class="as-not-item"><span class="as-not-sym">✕</span><span class="as-not-text">Not promotional hype</span></div>
+            <div class="as-not-item"><span class="as-not-sym">✕</span><span class="as-not-text">Not speculative infrastructure</span></div>
+            <div class="as-is" style="margin-top:1.5rem;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:0.54rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.7rem;">What Kapitor Is</div>
+              <div class="as-is-item"><span class="as-is-sym">✓</span><span class="as-is-text">A financial operating system</span></div>
+              <div class="as-is-item"><span class="as-is-sym">✓</span><span class="as-is-text">Institutional-grade infrastructure</span></div>
+              <div class="as-is-item"><span class="as-is-sym">✓</span><span class="as-is-text">Unified ledger architecture</span></div>
+              <div class="as-is-item"><span class="as-is-sym">✓</span><span class="as-is-text">Transparent, programmable, governed</span></div>
+              <div class="as-is-item"><span class="as-is-sym">✓</span><span class="as-is-text">Globally interoperable</span></div>
+            </div>
+            <!-- mission -->
+            <div style="margin-top:1.75rem;padding:1rem 1.1rem;background:rgba(200,160,48,0.06);border:1px solid var(--co-gold-border);border-radius:6px;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:0.54rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--co-gold);margin-bottom:0.5rem;">Core Mission</div>
+              <p style="font-size:0.78rem;color:var(--text-muted);line-height:1.7;">To build institutional-grade financial infrastructure that is transparent, programmable, and globally interoperable.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GOVERNANCE + SECURITY -->
+<section class="section" id="governance">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey gold">Governance & Security</div>
+      <h2 style="color:var(--white);">Leadership Accountability.<br>Architecture-Level Security.</h2>
+    </div>
+    <div class="gov-sec-layout">
+      <div class="gov-panel">
+        <div class="gp-topbar" style="background:linear-gradient(90deg,var(--co-gold),var(--co-iron-light));"></div>
+        <div class="gp-header"><div class="gp-title">Governance Structure</div><div class="gp-tag">INSTITUTIONAL REPORTING</div></div>
+        <div class="gov-rows">
+          <div class="gov-row"><span class="gov-key">Executive Management</span><span class="gov-val" style="color:var(--green);">Active</span></div>
+          <div class="gov-row"><span class="gov-key">Risk & Compliance Committee</span><span class="gov-val" style="color:var(--green);">Active</span></div>
+          <div class="gov-row"><span class="gov-key">Treasury Oversight</span><span class="gov-val" style="color:var(--green);">Active</span></div>
+          <div class="gov-row"><span class="gov-key">Technology & Security Committee</span><span class="gov-val" style="color:var(--green);">Active</span></div>
+          <div class="gov-row"><span class="gov-key">Independent Advisory Board</span><span class="gov-val" style="color:var(--green);">Active</span></div>
+          <div class="gov-row" style="border-bottom:none;padding-bottom:0.85rem;"><span class="gov-key">Leadership Accountability Standard</span><span class="gov-val" style="color:var(--co-light);">Institutional reporting</span></div>
+        </div>
+        <div style="border-top:1px solid var(--border);">
+          <div style="padding:0.75rem 1.6rem;font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);background:rgba(0,0,0,0.18);">Leadership Expertise</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);">
+            <div style="background:var(--surface);padding:0.55rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text-muted);">Banking & Treasury</div>
+            <div style="background:var(--surface);padding:0.55rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text-muted);">Digital Asset Infrastructure</div>
+            <div style="background:var(--surface);padding:0.55rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text-muted);">Risk Management</div>
+            <div style="background:var(--surface);padding:0.55rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text-muted);">Trade Finance</div>
+            <div style="background:var(--surface);padding:0.55rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text-muted);">Regulatory Compliance</div>
+            <div style="background:var(--surface);padding:0.55rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text-muted);">Enterprise Technology</div>
+          </div>
+        </div>
+      </div>
+      <div class="sec-panel">
+        <div class="sp-topbar" style="background:linear-gradient(90deg,rgba(72,64,56,0.8),var(--co-light));"></div>
+        <div class="sp-header"><div class="sp-title">Security Architecture</div><div class="gp-tag">EMBEDDED · NOT LAYERED</div></div>
+        <div class="sec-section">
+          <div class="scs-label">Infrastructure Security</div>
+          <div class="scs-rows">
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--co-light);"></div><span class="scsr-text">Network segmentation</span></div>
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--co-light);"></div><span class="scsr-text">Encrypted storage</span></div>
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--co-light);"></div><span class="scsr-text">Hardware Security Modules (HSM)</span></div>
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--co-light);"></div><span class="scsr-text">Continuous monitoring</span></div>
+          </div>
+        </div>
+        <div class="sec-section">
+          <div class="scs-label">Custody Controls</div>
+          <div class="scs-rows">
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--co-gold);"></div><span class="scsr-text">Multi-signature authorization</span></div>
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--co-gold);"></div><span class="scsr-text">Cold + controlled hot storage</span></div>
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--co-gold);"></div><span class="scsr-text">Role-based permissions</span></div>
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--co-gold);"></div><span class="scsr-text">Transaction policy enforcement</span></div>
+          </div>
+        </div>
+        <div class="sec-section">
+          <div class="scs-label">Application Security</div>
+          <div class="scs-rows">
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--green);"></div><span class="scsr-text">Secure API authentication</span></div>
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--green);"></div><span class="scsr-text">Rate limiting</span></div>
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--green);"></div><span class="scsr-text">Threat detection</span></div>
+            <div class="scsr-item"><div class="scsr-dot" style="background:var(--green);"></div><span class="scsr-text">Audit logging — immutable</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGULATORY FRAMEWORK -->
+<section class="section" id="regulatory">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey co">Regulatory Framework</div>
+      <h2 style="color:var(--white);">Compliance Embedded in Design.<br>Non-Negotiable.</h2>
+    </div>
+    <div class="reg-grid">
+      <div class="reg-item"><div class="ri-icon">◈</div><div class="ri-title">KYC — Know Your Customer</div><p class="ri-desc">Government-issued ID, biometric verification, address confirmation, sanctions screening, and PEP checks before any user gains access. Four access tiers enforced.</p></div>
+      <div class="reg-item"><div class="ri-icon" style="color:var(--co-gold);">§</div><div class="ri-title">KYB — Know Your Business</div><p class="ri-desc">Corporate registration, beneficial ownership declaration, board authorization, UBO identification, and jurisdictional compliance clearance for all institutional entities.</p></div>
+      <div class="reg-item"><div class="ri-icon" style="color:#e08080;">⊘</div><div class="ri-title">AML Monitoring</div><p class="ri-desc">Continuous AML framework across all modules — before execution, during settlement, and after reconciliation. Transaction pattern analysis, behavioral anomaly detection, velocity monitoring.</p></div>
+      <div class="reg-item"><div class="ri-icon" style="color:var(--green);">⬡</div><div class="ri-title">Jurisdiction Controls</div><p class="ri-desc">Region-based onboarding restrictions, sanctioned country blocking, product eligibility filtering, and tax reporting obligations. No product is universally accessible without regulatory review.</p></div>
+      <div class="reg-item"><div class="ri-icon" style="color:var(--amber);">▣</div><div class="ri-title">Risk Profiling</div><p class="ri-desc">Dynamic risk profiles assigned to every user — updated continuously with behavioral change. Governs derivative access, vault eligibility, leverage limits, and product participation.</p></div>
+      <div class="reg-item"><div class="ri-icon" style="color:var(--co-light);">⇄</div><div class="ri-title">Investment Limits</div><p class="ri-desc">Capital limits enforced by KYC tier, risk profile, jurisdiction, asset category, and product type. Maximum vault allocation, derivative caps, staking ceilings. No unlimited access.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CAREERS -->
+<section class="section" id="careers">
+  <div class="container">
+    <div class="careers-layout">
+      <div>
+        <div class="ey gold">Careers</div>
+        <h2 style="color:var(--white);">Build Financial<br>Infrastructure.</h2>
+        <p style="margin-top:0.85rem;margin-bottom:2rem;">Kapitor hires across financial engineering, treasury, risk, compliance, cybersecurity, backend infrastructure, payment systems, trade finance, and institutional sales. We build systems designed to withstand volatility and regulatory scrutiny.</p>
+        <div class="roles-grid">
+          <div class="role-item"><div class="role-dept">Engineering</div><div class="role-title">Financial Engineering</div><div class="role-type">Full-time · Remote / Hybrid</div></div>
+          <div class="role-item"><div class="role-dept">Risk</div><div class="role-title">Treasury & Risk</div><div class="role-type">Full-time · On-site preferred</div></div>
+          <div class="role-item"><div class="role-dept">Compliance</div><div class="role-title">Compliance Officer</div><div class="role-type">Full-time · Regulated regions</div></div>
+          <div class="role-item"><div class="role-dept">Security</div><div class="role-title">Cybersecurity Engineer</div><div class="role-type">Full-time · Remote</div></div>
+          <div class="role-item"><div class="role-dept">Infrastructure</div><div class="role-title">Backend Infrastructure</div><div class="role-type">Full-time · Remote</div></div>
+          <div class="role-item"><div class="role-dept">Payments</div><div class="role-title">Payment Systems Lead</div><div class="role-type">Full-time · On-site preferred</div></div>
+          <div class="role-item"><div class="role-dept">Finance</div><div class="role-title">Trade Finance Operations</div><div class="role-type">Full-time · On-site</div></div>
+          <div class="role-item"><div class="role-dept">Institutional</div><div class="role-title">Institutional Sales</div><div class="role-type">Full-time · Travel required</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="ey co">Culture</div>
+        <h2 style="color:var(--white);">Five Principles.<br>No Compromise.</h2>
+        <p style="margin-top:0.85rem;">We don't build for speculation. We build systems designed to withstand volatility, regulatory scrutiny, and institutional-level expectations.</p>
+        <div class="culture-items">
+          <div class="ci-item"><span class="ci-num">01</span><span class="ci-text">Accountability</span></div>
+          <div class="ci-item"><span class="ci-num">02</span><span class="ci-text">Capital Discipline</span></div>
+          <div class="ci-item"><span class="ci-num">03</span><span class="ci-text">Long-Term Thinking</span></div>
+          <div class="ci-item"><span class="ci-num">04</span><span class="ci-text">Regulatory Respect</span></div>
+          <div class="ci-item"><span class="ci-num">05</span><span class="ci-text">Technical Excellence</span></div>
+        </div>
+        <div style="margin-top:1.75rem;padding:0.85rem 1.1rem;border:1px solid var(--co-border);border-radius:5px;background:var(--co-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--co-light);line-height:1.6;">We build systems designed to withstand volatility and regulatory scrutiny. That requires people who think in those terms.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEDIA -->
+<section class="section" id="media">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey co">Media & Press</div>
+      <h2 style="color:var(--white);">Transparency Through<br>Communication. Institutional Tone Only.</h2>
+    </div>
+    <div class="media-grid">
+      <div class="mg-item"><div class="mg-type">Platform Update</div><div class="mg-title">GIPS Multi-Rail Architecture Live</div><p class="mg-desc">Seven payment rail integration now active across 28 corridors with real-time settlement.</p><div class="mg-date">Feb 2026</div></div>
+      <div class="mg-item"><div class="mg-type">Announcement</div><div class="mg-title">KFI Digital Instrument Issuance</div><p class="mg-desc">Blockchain-recorded BG, SBLC, and LC issuance infrastructure available to Prime clients.</p><div class="mg-date">Jan 2026</div></div>
+      <div class="mg-item"><div class="mg-type">Infrastructure</div><div class="mg-title">Institutional Custody Architecture</div><p class="mg-desc">Segregated custody with multi-signature authorization and cold storage management deployed.</p><div class="mg-date">Dec 2025</div></div>
+      <div class="mg-item"><div class="mg-type">Regulatory</div><div class="mg-title">Compliance Framework Disclosure</div><p class="mg-desc">Full KYC, KYB, AML, and jurisdiction governance framework documented and published.</p><div class="mg-date">Nov 2025</div></div>
+    </div>
+    <div style="margin-top:1.5rem;padding:0.85rem 1.5rem;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text-muted);">Press inquiries are routed through structured communication channels. No promotional hype language. Institutional tone only. → <span style="color:var(--co-light);">press@kapitor.com</span></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey gold">Contact</div>
+      <h2 style="color:var(--white);">Structured Communication<br>Channels.</h2>
+      <p>All communication is logged and routed through governance workflow. No unstructured inbound. Select the appropriate channel.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="cc-item">
+        <div class="cc-icon">◈</div>
+        <div class="cc-title">Institutional Desk</div>
+        <p class="cc-desc">Institutional onboarding, Prime access, custody, treasury, and FX infrastructure enquiries.</p>
+        <span class="cc-tag">KYB REQUIRED</span>
+        <span class="cc-arrow">institutional@kapitor.com →</span>
+      </div>
+      <div class="cc-item">
+        <div class="cc-icon" style="color:#e08080;">⊘</div>
+        <div class="cc-title">Compliance Desk</div>
+        <p class="cc-desc">Regulatory correspondence, audit access requests, compliance documentation, and regulatory authority enquiries.</p>
+        <span class="cc-tag">STRUCTURED ONLY</span>
+        <span class="cc-arrow">compliance@kapitor.com →</span>
+      </div>
+      <div class="cc-item">
+        <div class="cc-icon" style="color:var(--green);">{ }</div>
+        <div class="cc-title">Developer Support</div>
+        <p class="cc-desc">API integration support, sandbox access, SDK queries, and technical documentation assistance.</p>
+        <span class="cc-tag">SANDBOX AVAILABLE</span>
+        <span class="cc-arrow">dev@kapitor.com →</span>
+      </div>
+      <div class="cc-item">
+        <div class="cc-icon" style="color:var(--co-gold);">§</div>
+        <div class="cc-title">Media Relations</div>
+        <p class="cc-desc">Press enquiries, interview requests, editorial correspondence, and official statement requests.</p>
+        <span class="cc-tag">INSTITUTIONAL TONE</span>
+        <span class="cc-arrow">press@kapitor.com →</span>
+      </div>
+      <div class="cc-item">
+        <div class="cc-icon" style="color:var(--amber);">▣</div>
+        <div class="cc-title">Treasury Access</div>
+        <p class="cc-desc">Corporate treasury onboarding, capital management solutions, FX hedging, and institutional capital deployment.</p>
+        <span class="cc-tag">PRIME CLIENTS</span>
+        <span class="cc-arrow">treasury@kapitor.com →</span>
+      </div>
+      <div class="cc-item">
+        <div class="cc-icon" style="color:var(--co-slate);">⇄</div>
+        <div class="cc-title">General Enquiries</div>
+        <p class="cc-desc">General support, product questions, account enquiries, and onboarding guidance for new users.</p>
+        <span class="cc-tag">ALL TIERS</span>
+        <span class="cc-arrow">hello@kapitor.com →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey co" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Financial Infrastructure Requires Institutional Standards</div>
+      <h2>Governed. Accountable.<br>Built to Last.</h2>
+      <p>Structured to operate under regulatory visibility, governance accountability, and capital discipline.</p>
+      <div class="fc-statement">
+        <div class="fcs">Not Hype</div>
+        <div class="fcs">Not Speculation</div>
+        <div class="fcs">Infrastructure</div>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Request Institutional Access</button>
+        <button class="btn-final-out">View Governance Framework</button>
+        <button class="btn-final-out">Contact Kapitor</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="index.html">Smart Wallet</a></li><li><a href="gp.html">Pay</a></li><li><a href="#">Trade</a></li><li><a href="#">Earn</a></li><li><a href="#">Stake</a></li><li><a href="#">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="#">Kaloft (EPT)</a></li><li><a href="#">Katoin</a></li><li><a href="#">EQOUIN</a></li><li><a href="#">KFI</a></li><li><a href="rwa.html">RWA</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="#">Custody</a></li><li><a href="#">Treasury</a></li><li><a href="#">FX</a></li><li><a href="#">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Compliance</h5><ul><li><a href="#">KYC / KYB</a></li><li><a href="#">AML Framework</a></li><li><a href="#">Proof of Reserves</a></li><li><a href="#">Audit Reports</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul>
+        <li><a href="#about" style="color:var(--co-light);">About</a></li>
+        <li><a href="#governance">Governance</a></li>
+        <li><a href="#careers">Careers</a></li>
+        <li><a href="#media">Media</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Governance Framework</a><a href="#">Regulatory Disclosure</a><a href="#">Press Kit</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  window.addEventListener("scroll",()=>{document.getElementById("hdr").style.padding=window.scrollY>60?"0.65rem 2.5rem":"1rem 2.5rem";});
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});},{threshold:0.05});
+  document.querySelectorAll(
+    ".fs-item,.as-not-item,.as-is-item,.gov-row,.scsr-item,.reg-item,.role-item,.ci-item,.mg-item,.cc-item"
+  ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
+  (function(){
+    var header=document.getElementById("hdr");
+    var mobileToggle=document.querySelector(".nav-mobile-toggle");
+    function isMobile(){return window.innerWidth<=900;}
+    if(mobileToggle&&header){
+      mobileToggle.addEventListener("click",function(){
+        header.classList.toggle("header-mobile-open");
+        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+      });
+    }
+    document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+      btn.addEventListener("click",function(e){
+        if(isMobile()){e.preventDefault();var wrap=btn.closest(".nav-item-wrap");wrap.classList.toggle("open");btn.setAttribute("aria-expanded",wrap.classList.contains("open"));}
+      });
+    });
+  })();
+</script>
+</body>
+</html>

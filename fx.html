@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FX Infrastructure | Kapitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+:root {
+  /* KAP light theme */
+  --bg:#FCF8E8;
+  --surface:#FFFFFF;
+  --surface2:#F5ECD6;
+  --surface3:#F5ECD6;
+  --border:rgba(15,23,42,0.08);
+  --border-md:rgba(15,23,42,0.16);
+
+  --green:#33B269;  --green-dim:rgba(51,178,105,0.12); --green-border:rgba(51,178,105,0.2);
+  --amber:#F7AE40;  --amber-dim:rgba(247,174,64,0.14); --amber-border:rgba(247,174,64,0.22);
+
+  /* FX: cobalt-deep / exchange-teal / precision white */
+  --fx:#20d8c8;       --fx-light:#1878a8;
+  --fx-dim:rgba(32,216,200,0.08);     --fx-border:rgba(32,216,200,0.2);
+  --fx-cobalt:#1848b0; --fx-cobalt-dim:rgba(24,72,176,0.1); --fx-cobalt-border:rgba(24,72,176,0.22);
+  --fx-slate:#a0c0d8;  --fx-slate-dim:rgba(160,192,216,0.09);
+  --fx-gold:#b89830;   --fx-gold-dim:rgba(184,152,48,0.09); --fx-gold-border:rgba(184,152,48,0.2);
+
+  /* currency colours */
+  --inr:#ff9933;  --usd:#2266cc;  --eur:#4466cc;
+  --gbp:#cc2222;  --aed:#22aa66;  --brl:#009900;
+  --jpy:#cc0044;  --cny:#ff2222;
+
+  --text:#111827;  --text-muted:#6B6B6B;  --text-dim:#9CA3AF;  --white:#fff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:300;line-height:1.65;overflow-x:hidden;}
+body::after{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+h1,h2,h3{font-family:'Outfit',system-ui,sans-serif;font-weight:700;letter-spacing:-0.03em;color:var(--text);}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.fx{color:var(--fx-light);}   .ey.fx::before{background:var(--fx-light);}
+.ey.gold{color:var(--fx-gold);}  .ey.gold::before{background:var(--fx-gold);}
+.ey.sl{color:var(--fx-slate);}   .ey.sl::before{background:var(--fx-slate);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--text);margin-bottom:0.85rem;}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--fx-light);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--fx-border);color:var(--fx-light);}
+.btn-cta{background:var(--fx-cobalt);color:var(--white);border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-cta:hover{filter:brightness(1.2);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+/* flowing currency wave lines */
+.hero-bg{position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 45% at 52% 30%,rgba(32,216,200,0.06) 0%,transparent 55%),
+  radial-gradient(ellipse 35% 35% at 5% 68%,rgba(24,72,176,0.05) 0%,transparent 50%),
+  radial-gradient(ellipse 28% 28% at 94% 70%,rgba(184,152,48,0.04) 0%,transparent 45%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(32,216,200,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(32,216,200,0.015) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 65% at 42% 40%,black 10%,transparent 72%);}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(32,216,200,0.25);border-radius:3px;background:rgba(32,216,200,0.06);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--fx-light);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--fx);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero-content{position:relative;z-index:2;max-width:880px;}
+.hero h1{color:var(--text);margin-bottom:0.6rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.64rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:560px;color:rgba(136,168,192,0.5);margin-bottom:2rem;line-height:1.8;}
+/* use-case tags */
+.use-tags{display:flex;gap:0.45rem;flex-wrap:wrap;margin-bottom:2rem;}
+.utag{font-family:"JetBrains Mono",monospace;font-size:0.58rem;padding:0.28rem 0.7rem;border-radius:3px;border:1px solid var(--border-md);color:var(--text-muted);transition:all 0.2s;}
+.utag:hover{border-color:var(--fx-border);color:var(--fx-light);}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--fx-cobalt);color:var(--white);border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{filter:brightness(1.2);transform:translateY(-1px);box-shadow:0 10px 40px rgba(24,72,176,0.3);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--fx-border);color:var(--fx-light);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--fx-light);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 55s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--fx-light);}
+.t-item .dn{color:#e08080;}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* ─── LIVE RATE BOARD ─── */
+.rate-board{background:var(--surface);border:1px solid var(--border-md);border-radius:12px;overflow:hidden;}
+.rb2-topbar{height:2px;background:linear-gradient(90deg,var(--fx-cobalt),var(--fx),var(--fx-gold));}
+.rb2-header{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.rb2-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.rb2-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--fx-light);}
+/* rate grid */
+.rate-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.rate-cell{background:var(--surface);padding:1.1rem 1.25rem;transition:background 0.2s;}
+.rate-cell:hover{background:var(--surface2);}
+.rc-pair{display:flex;align-items:center;gap:6px;margin-bottom:0.4rem;}
+.rc-flag{font-size:0.85rem;}
+.rc-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.07em;color:var(--text-dim);}
+.rc-rate{font-family:'Outfit',system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:0.18rem;line-height:1;}
+.rc-spread{font-family:"JetBrains Mono",monospace;font-size:0.53rem;margin-bottom:0.12rem;}
+.rc-vol{font-family:"JetBrains Mono",monospace;font-size:0.52rem;color:var(--text-dim);}
+.rc-trend{font-family:"JetBrains Mono",monospace;font-size:0.52rem;margin-top:0.15rem;}
+/* conversion flow */
+.conv-flow{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.cf-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.cf-steps{display:flex;align-items:center;gap:0;}
+.cf-step{flex:1;padding:0.7rem 0.9rem;background:var(--surface2);border:1px solid var(--border);text-align:center;}
+.cf-step:first-child{border-radius:5px 0 0 5px;}
+.cf-step:last-child{border-radius:0 5px 5px 0;}
+.cf-s-label{font-family:"JetBrains Mono",monospace;font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.22rem;}
+.cf-s-val{font-family:"JetBrains Mono",monospace;font-size:0.65rem;color:var(--fx-light);}
+.cf-arrow{color:var(--fx);padding:0 0.4rem;font-size:0.9rem;flex-shrink:0;}
+/* what users see */
+.rate-info{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--border);border-top:1px solid var(--border);}
+.ri-col{background:var(--surface);padding:1.1rem 1.75rem;}
+.ri-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.ri-rows{display:flex;flex-direction:column;gap:0;}
+.ri-row{display:flex;justify-content:space-between;padding:0.38rem 0;border-bottom:1px solid var(--border);}
+.ri-row:last-child{border-bottom:none;}
+.ri-key{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);}
+.ri-val{font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+
+/* ─── ARCHITECTURE ─── */
+.arch-layout{display:grid;grid-template-columns:1.15fr 1fr;gap:5rem;align-items:start;}
+.arch-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.ap-topbar{height:2px;background:linear-gradient(90deg,var(--fx),var(--fx-cobalt));}
+.ap-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.ap-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.ap-badge{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--fx-dim);color:var(--fx-light);border:1px solid var(--fx-border);}
+/* 6-step conversion flow */
+.conv-steps{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.cs-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.cs-items{display:flex;flex-direction:column;gap:0.3rem;}
+.cs-item{display:flex;align-items:center;gap:10px;padding:0.52rem 0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:5px;border-left:2px solid var(--fx);}
+.cs-num{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--fx-light);width:18px;flex-shrink:0;}
+.cs-text{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);}
+.cs-check{font-family:"JetBrains Mono",monospace;font-size:0.54rem;color:var(--green);margin-left:auto;flex-shrink:0;}
+/* sample conversion */
+.sample-conv{padding:1.25rem 1.75rem;}
+.sc2-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.sample-card{background:rgba(32,216,200,0.06);border:1px solid var(--fx-border);border-radius:6px;}
+.scard-row{display:flex;justify-content:space-between;padding:0.45rem 1rem;border-bottom:1px solid var(--border);}
+.scard-row:last-child{border-bottom:none;}
+.scard-key{font-family:"JetBrains Mono",monospace;font-size:0.57rem;color:var(--text-muted);}
+.scard-val{font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+/* right features */
+.arch-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.af2-item{padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--fx);transition:border-color 0.2s;}
+.af2-item:hover{border-color:var(--border-md);}
+.af2-body h4{font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.af2-body p{font-size:0.73rem;}
+
+/* ─── CORRIDOR GRID ─── */
+.corridors-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.cg-item{background:var(--surface);padding:1.2rem 1.25rem;transition:background 0.2s;}
+.cg-item:hover{background:var(--surface2);}
+.cg-flags{display:flex;align-items:center;gap:5px;margin-bottom:0.55rem;}
+.cg-flag{font-size:1rem;}
+.cg-arrow{font-size:0.7rem;color:var(--text-dim);}
+.cg-pair{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;}
+.cg-vol{font-family:"JetBrains Mono",monospace;font-size:0.58rem;margin-bottom:0.4rem;}
+.cg-bars{display:flex;flex-direction:column;gap:0.22rem;}
+.cg-bar-row{display:flex;align-items:center;gap:0.5rem;}
+.cg-bar-label{font-family:"JetBrains Mono",monospace;font-size:0.5rem;color:var(--text-dim);width:40px;flex-shrink:0;}
+.cg-track{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.cg-fill{height:100%;border-radius:2px;}
+
+/* ─── RISK & COMPLIANCE ─── */
+.risk-comp-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.rc-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.rcp-topbar{height:2px;}
+.rcp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.rcp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.rcp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.rcp-rows{padding:0.25rem 0;}
+.rcp-row{display:flex;align-items:center;justify-content:space-between;padding:0.58rem 1.6rem;border-bottom:1px solid var(--border);}
+.rcp-row:last-child{border-bottom:none;}
+.rcp-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.rcp-badge{font-family:"JetBrains Mono",monospace;font-size:0.52rem;padding:0.14rem 0.45rem;border-radius:2px;letter-spacing:0.06em;}
+.rb-low{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.rb-mod{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-border);}
+.rb-act{background:var(--fx-dim);color:var(--fx-light);border:1px solid var(--fx-border);}
+.rb-red{background:var(--red-dim);color:#e08080;border:1px solid var(--red-border);}
+
+/* ─── DASHBOARD ─── */
+.dash-outer{background:var(--surface);border:1px solid var(--border-md);border-radius:12px;overflow:hidden;}
+.dash-topbar{height:2px;background:linear-gradient(90deg,var(--fx-cobalt),var(--fx),var(--fx-gold));}
+.dash-header{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dash-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.95rem;font-weight:700;color:var(--text);}
+.dash-sub{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--fx-light);letter-spacing:0.08em;}
+/* kpi strip */
+.dash-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.dk{background:var(--surface);padding:0.85rem 1rem;}
+.dk-label{font-family:"JetBrains Mono",monospace;font-size:0.51rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.3rem;}
+.dk-val{font-family:'Outfit',system-ui,sans-serif;font-size:0.95rem;font-weight:700;line-height:1;}
+.dk-sub{font-family:"JetBrains Mono",monospace;font-size:0.5rem;margin-top:0.15rem;}
+/* body */
+.dash-body2{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border);}
+.db-col{padding:1.25rem 1.5rem;border-right:1px solid var(--border);}
+.db-col:last-child{border-right:none;}
+.db-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+/* currency exposure bars */
+.ccy-rows{display:flex;flex-direction:column;gap:0.4rem;}
+.ccy-row{display:grid;grid-template-columns:60px 1fr 55px;gap:0.5rem;align-items:center;}
+.ccy-label{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);}
+.ccy-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.ccy-fill{height:100%;border-radius:2px;}
+.ccy-amt{font-family:"JetBrains Mono",monospace;font-size:0.58rem;text-align:right;}
+/* pending */
+.pend-rows{display:flex;flex-direction:column;gap:0;}
+.pr3-row{display:flex;flex-direction:column;gap:3px;padding:0.55rem 0;border-bottom:1px solid var(--border);}
+.pr3-row:last-child{border-bottom:none;}
+.pr3-id{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--fx-light);}
+.pr3-desc{font-family:"JetBrains Mono",monospace;font-size:0.54rem;color:var(--text-dim);}
+/* analytics */
+.anlyt-rows{display:flex;flex-direction:column;gap:0;}
+.an-row{display:flex;justify-content:space-between;align-items:center;padding:0.42rem 0;border-bottom:1px solid var(--border);}
+.an-row:last-child{border-bottom:none;}
+.an-key{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);}
+.an-val{font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+/* footer strip */
+.dash-footer{padding:0.75rem 1.75rem;display:flex;gap:2.5rem;flex-wrap:wrap;}
+.df-item{display:flex;align-items:center;gap:7px;font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+.df-dot{width:6px;height:6px;border-radius:50%;}
+.df-label{color:var(--text-muted);}
+.df-val{color:var(--fx-light);}
+
+/* FINAL CTA */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(32,216,200,0.06) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--text);margin-bottom:0.75rem;max-width:600px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:460px;margin:0 auto 2rem;}
+.fc-trio{display:flex;justify-content:center;gap:0;margin:0 auto 2.5rem;max-width:460px;}
+.fct{font-family:"JetBrains Mono",monospace;font-size:0.65rem;padding:0.68rem 1rem;border:1px solid var(--fx-border);border-right:none;color:var(--fx-light);background:var(--fx-dim);text-align:center;}
+.fct:first-child{border-radius:4px 0 0 4px;}
+.fct:last-child{border-right:1px solid var(--fx-border);border-radius:0 4px 4px 0;}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-final{background:var(--fx-cobalt);color:var(--white);border:none;padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{filter:brightness(1.2);box-shadow:0 10px 40px rgba(24,72,176,0.3);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--fx-border);color:var(--fx-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:'Outfit',system-ui,sans-serif;font-size:1.15rem;font-weight:700;color:var(--text);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--fx-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--fx-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .rate-grid{grid-template-columns:repeat(2,1fr);}
+  .corridors-grid{grid-template-columns:repeat(2,1fr);}
+  .dash-kpis{grid-template-columns:repeat(3,1fr);}
+  .dash-body2{grid-template-columns:1fr 1fr;}
+  .dash-body2>.db-col:last-child{display:none;}
+  .risk-comp-layout{grid-template-columns:1fr;}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .arch-layout{grid-template-columns:1fr;}
+  .rate-grid{grid-template-columns:1fr 1fr;}
+  .rate-info{grid-template-columns:1fr;}
+  .corridors-grid{grid-template-columns:1fr 1fr;}
+  .cf-steps{flex-wrap:wrap;}
+  .cf-arrow{display:none;}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .corridors-grid{grid-template-columns:1fr;}
+  .rate-grid{grid-template-columns:1fr;}
+  .fc-trio{flex-direction:column;max-width:200px;}
+  .fct{border-right:1px solid var(--fx-border);}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>FX INFRASTRUCTURE · GIPS INTEGRATED · UNIFIED LEDGER · REAL-TIME RATE ENGINE</div>
+      <h1>Accurate Pricing.<br><span style="color:var(--fx-light);">Governed Execution.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip" style="background:var(--fx-dim);border:1px solid var(--fx-border);color:var(--fx-light);">FX</span>
+        <span class="token-chip" style="background:var(--fx-cobalt-dim);border:1px solid var(--fx-cobalt-border);color:#80a0e8;">CROSS-BORDER LIQUIDITY</span>
+        <span style="color:var(--text-dim);">Transparent · Compliant · Ledger-Reconciled · No Hidden Markup</span>
+      </div>
+      <p class="hero-sub">Not a trading gimmick. Controlled currency infrastructure for corporate treasury, trade finance, cross-border payroll, institutional settlement, and multi-currency asset management. Every conversion tracked, compliant, and ledger-reconciled.</p>
+      <div class="use-tags">
+        <span class="utag">Corporate Treasury</span>
+        <span class="utag">Trade Finance Desks</span>
+        <span class="utag">Cross-Border Payroll</span>
+        <span class="utag">Institutional Settlement</span>
+        <span class="utag">Multi-Currency Management</span>
+        <span class="utag">FX Hedging</span>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Access FX Infrastructure</button>
+        <button class="btn-out">Request Treasury FX Access →</button>
+        <button class="btn-out">View Supported Corridors →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Daily FX Volume</div>
+          <div class="hm-val" style="color:var(--fx-light);">$2.1B</div>
+          <div class="hm-sub"><span class="up">▲ 22.4%</span> YTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Active Corridors</div>
+          <div class="hm-val" style="color:var(--white);">28</div>
+          <div class="hm-sub">Currency pairs</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Avg Spread</div>
+          <div class="hm-val" style="color:var(--fx-light);">0.04bp</div>
+          <div class="hm-sub">Institutional tier</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Hidden Markup</div>
+          <div class="hm-val" style="color:var(--green);font-size:1rem;padding-top:0.2rem;">Zero</div>
+          <div class="hm-sub">Full spread transparency</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Off-Ledger Conversions</div>
+          <div class="hm-val" style="color:var(--green);font-size:1rem;padding-top:0.2rem;">None</div>
+          <div class="hm-sub">All reconciled</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER — live rates -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">USD/INR</span><span class="up">84.22</span><span style="color:var(--text-dim);font-size:0.54rem;">▲0.04%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USD/EUR</span><span class="up">0.9210</span><span style="color:var(--text-dim);font-size:0.54rem;">▼0.01%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USD/AED</span><span class="up">3.6725</span><span style="color:var(--text-dim);font-size:0.54rem;">+0.00%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USD/GBP</span><span class="up">0.7840</span><span style="color:var(--text-dim);font-size:0.54rem;">▲0.02%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USD/BRL</span>5.0240<span style="color:var(--text-dim);font-size:0.54rem;">▼0.03%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USD/JPY</span>149.82<span style="color:var(--text-dim);font-size:0.54rem;">▲0.06%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">EUR/GBP</span>0.8513</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">DAILY VOLUME</span><span class="up">$2.1B</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">HIDDEN MARKUP</span>ZERO</span>
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USD/INR</span><span class="up">84.22</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">USD/EUR</span><span class="up">0.9210</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">DAILY VOLUME</span><span class="up">$2.1B</span></span>
+  </div>
+</div>
+
+<!-- LIVE RATE BOARD -->
+<section class="section" id="rates">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey fx">Live Rate Engine</div>
+      <h2 style="color:var(--white);">Real-Time. Transparent.<br>Every Conversion Visible.</h2>
+      <p>Kapitor FX integrates aggregated liquidity sources, market reference pricing, spread modeling, and execution timestamping. Users see the applied rate, fee breakdown, conversion amount, settlement time, and reference rate. No hidden markup. No rate manipulation.</p>
+    </div>
+    <div class="rate-board">
+      <div class="rb2-topbar"></div>
+      <div class="rb2-header">
+        <div class="rb2-title">Live FX Rate Board</div>
+        <div class="rb2-live"><div class="ld"></div>REAL-TIME · AML SCREENED · SPREAD DISCLOSED</div>
+      </div>
+      <div class="rate-grid">
+        <div class="rate-cell">
+          <div class="rc-pair"><span class="rc-flag">🇮🇳</span><span class="rc-flag">🇺🇸</span><span class="rc-label">INR / USD</span></div>
+          <div class="rc-rate" style="color:var(--fx-light);">0.01188</div>
+          <div class="rc-spread" style="color:var(--green);">Spread: 0.04 bp</div>
+          <div class="rc-vol" style="color:var(--fx-gold);">Vol: $840M · MTD</div>
+          <div class="rc-trend" style="color:var(--green);">▲ +0.04% today</div>
+        </div>
+        <div class="rate-cell">
+          <div class="rc-pair"><span class="rc-flag">🇺🇸</span><span class="rc-flag">🇪🇺</span><span class="rc-label">USD / EUR</span></div>
+          <div class="rc-rate" style="color:var(--fx-light);">0.9210</div>
+          <div class="rc-spread" style="color:var(--green);">Spread: 0.02 bp</div>
+          <div class="rc-vol" style="color:var(--fx-gold);">Vol: $620M · MTD</div>
+          <div class="rc-trend" style="color:#e08080;">▼ −0.01% today</div>
+        </div>
+        <div class="rate-cell">
+          <div class="rc-pair"><span class="rc-flag">🇺🇸</span><span class="rc-flag">🇦🇪</span><span class="rc-label">USD / AED</span></div>
+          <div class="rc-rate" style="color:var(--fx-light);">3.6725</div>
+          <div class="rc-spread" style="color:var(--green);">Spread: 0.03 bp</div>
+          <div class="rc-vol" style="color:var(--fx-gold);">Vol: $480M · MTD</div>
+          <div class="rc-trend" style="color:var(--text-dim);">→ Flat today</div>
+        </div>
+        <div class="rate-cell">
+          <div class="rc-pair"><span class="rc-flag">🇬🇧</span><span class="rc-flag">🇺🇸</span><span class="rc-label">GBP / USD</span></div>
+          <div class="rc-rate" style="color:var(--fx-light);">1.2755</div>
+          <div class="rc-spread" style="color:var(--green);">Spread: 0.02 bp</div>
+          <div class="rc-vol" style="color:var(--fx-gold);">Vol: $240M · MTD</div>
+          <div class="rc-trend" style="color:var(--green);">▲ +0.02% today</div>
+        </div>
+        <div class="rate-cell">
+          <div class="rc-pair"><span class="rc-flag">🇧🇷</span><span class="rc-flag">🇺🇸</span><span class="rc-label">BRL / USD</span></div>
+          <div class="rc-rate" style="color:var(--fx-light);">0.1990</div>
+          <div class="rc-spread" style="color:var(--green);">Spread: 0.06 bp</div>
+          <div class="rc-vol" style="color:var(--fx-gold);">Vol: $180M · MTD</div>
+          <div class="rc-trend" style="color:#e08080;">▼ −0.03% today</div>
+        </div>
+        <div class="rate-cell">
+          <div class="rc-pair"><span class="rc-flag">🇯🇵</span><span class="rc-flag">🇺🇸</span><span class="rc-label">JPY / USD</span></div>
+          <div class="rc-rate" style="color:var(--fx-light);">0.006674</div>
+          <div class="rc-spread" style="color:var(--green);">Spread: 0.03 bp</div>
+          <div class="rc-vol" style="color:var(--fx-gold);">Vol: $140M · MTD</div>
+          <div class="rc-trend" style="color:var(--green);">▲ +0.06% today</div>
+        </div>
+        <div class="rate-cell">
+          <div class="rc-pair"><span class="rc-flag">🇪🇺</span><span class="rc-flag">🇬🇧</span><span class="rc-label">EUR / GBP</span></div>
+          <div class="rc-rate" style="color:var(--fx-light);">0.8513</div>
+          <div class="rc-spread" style="color:var(--green);">Spread: 0.02 bp</div>
+          <div class="rc-vol" style="color:var(--fx-gold);">Vol: $110M · MTD</div>
+          <div class="rc-trend" style="color:var(--text-dim);">→ Flat today</div>
+        </div>
+        <div class="rate-cell">
+          <div class="rc-pair"><span class="rc-flag">🇺🇸</span><span class="rc-flag">🌐</span><span class="rc-label">USD / STBL</span></div>
+          <div class="rc-rate" style="color:var(--fx-light);">1.0000</div>
+          <div class="rc-spread" style="color:var(--green);">Spread: 0.01 bp</div>
+          <div class="rc-vol" style="color:var(--fx-gold);">Vol: $284M · MTD</div>
+          <div class="rc-trend" style="color:var(--fx-light);">Stablecoin peg</div>
+        </div>
+      </div>
+      <!-- sample conversion flow -->
+      <div class="conv-flow">
+        <div class="cf-label">Example Conversion Flow — INR → EUR via GIPS</div>
+        <div class="cf-steps">
+          <div class="cf-step"><div class="cf-s-label">Source</div><div class="cf-s-val">₹7,073,480 INR</div></div>
+          <div class="cf-arrow">→</div>
+          <div class="cf-step"><div class="cf-s-label">Compliance</div><div class="cf-s-val">AML · Sanctions · KYC ✓</div></div>
+          <div class="cf-arrow">→</div>
+          <div class="cf-step"><div class="cf-s-label">FX Rate</div><div class="cf-s-val">0.01100 · 0.04bp spread</div></div>
+          <div class="cf-arrow">→</div>
+          <div class="cf-step"><div class="cf-s-label">Settlement</div><div class="cf-s-val">€77,808 EUR → SEPA</div></div>
+          <div class="cf-arrow">→</div>
+          <div class="cf-step"><div class="cf-s-label">Ledger</div><div class="cf-s-val">LDG-FX-00284 · Confirmed</div></div>
+        </div>
+      </div>
+      <!-- what users + institutions see -->
+      <div class="rate-info">
+        <div class="ri-col">
+          <div class="ri-label">What Users See</div>
+          <div class="ri-rows">
+            <div class="ri-row"><span class="ri-key">Applied Exchange Rate</span><span class="ri-val" style="color:var(--fx-light);">84.22 INR/USD</span></div>
+            <div class="ri-row"><span class="ri-key">Spread / Fee Breakdown</span><span class="ri-val" style="color:var(--green);">0.04 bp · Disclosed</span></div>
+            <div class="ri-row"><span class="ri-key">Conversion Amount</span><span class="ri-val">$84,000.00 USD</span></div>
+            <div class="ri-row"><span class="ri-key">Settlement Time</span><span class="ri-val" style="color:var(--fx-light);">&lt;3s domestic · &lt;2 days intl</span></div>
+            <div class="ri-row"><span class="ri-key">Reference Rate</span><span class="ri-val">Market mid · Timestamped</span></div>
+          </div>
+        </div>
+        <div class="ri-col">
+          <div class="ri-label">What Institutions See</div>
+          <div class="ri-rows">
+            <div class="ri-row"><span class="ri-key">Liquidity Source Breakdown</span><span class="ri-val" style="color:var(--fx-light);">3 pools · Aggregated</span></div>
+            <div class="ri-row"><span class="ri-key">Rate Impact Analysis</span><span class="ri-val">+0.04% vs mid rate</span></div>
+            <div class="ri-row"><span class="ri-key">Volume-Weighted Pricing</span><span class="ri-val" style="color:var(--fx-light);">Available &gt;$1M</span></div>
+            <div class="ri-row"><span class="ri-key">Corridor Performance</span><span class="ri-val">INR/USD · 99.8% fill rate</span></div>
+            <div class="ri-row"><span class="ri-key">Hedge P&amp;L</span><span class="ri-val" style="color:var(--green);">+$4.2M MTD realized</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="section" id="architecture">
+  <div class="container">
+    <div class="arch-layout">
+      <div>
+        <div class="arch-panel">
+          <div class="ap-topbar"></div>
+          <div class="ap-header">
+            <div class="ap-title">FX Conversion Sequence</div>
+            <div class="ap-badge">NO OFF-LEDGER CONVERSIONS</div>
+          </div>
+          <div class="conv-steps">
+            <div class="cs-label">Six-Step Conversion — Every Transaction</div>
+            <div class="cs-items">
+              <div class="cs-item"><span class="cs-num">01</span><span class="cs-text">Liquidity validation — corridor depth verified</span><span class="cs-check">→</span></div>
+              <div class="cs-item"><span class="cs-num">02</span><span class="cs-text">Best-rate routing — aggregated source pricing</span><span class="cs-check">→</span></div>
+              <div class="cs-item"><span class="cs-num">03</span><span class="cs-text">Spread transparency — fee disclosed pre-execution</span><span class="cs-check">→</span></div>
+              <div class="cs-item"><span class="cs-num">04</span><span class="cs-text">Compliance screening — AML + sanctions + KYC</span><span class="cs-check">→</span></div>
+              <div class="cs-item"><span class="cs-num">05</span><span class="cs-text">Ledger reconciliation — debit + credit + spread entry</span><span class="cs-check">→</span></div>
+              <div class="cs-item" style="border-left-color:var(--green);"><span class="cs-num" style="color:var(--green);">06</span><span class="cs-text">Settlement confirmation — GIPS rail routed</span><span class="cs-check">✓</span></div>
+            </div>
+          </div>
+          <div class="sample-conv">
+            <div class="sc2-label">Sample Conversion Record</div>
+            <div class="sample-card">
+              <div class="scard-row"><span class="scard-key">Conversion ID</span><span class="scard-val" style="color:var(--fx-light);">FX-TXN-00284182</span></div>
+              <div class="scard-row"><span class="scard-key">Pair</span><span class="scard-val">USD → EUR · $240,000</span></div>
+              <div class="scard-row"><span class="scard-key">Rate Applied</span><span class="scard-val">0.9210 · Timestamped 14:22:08</span></div>
+              <div class="scard-row"><span class="scard-key">Spread</span><span class="scard-val" style="color:var(--green);">0.02 bp · Fully disclosed</span></div>
+              <div class="scard-row"><span class="scard-key">Converted</span><span class="scard-val">€221,040 EUR</span></div>
+              <div class="scard-row"><span class="scard-key">Rail</span><span class="scard-val">ACH → SEPA Instant</span></div>
+              <div class="scard-row"><span class="scard-key">Ledger Entry</span><span class="scard-val" style="color:var(--green);">LDG-FX-00284182 ✓</span></div>
+              <div class="scard-row"><span class="scard-key">Settlement</span><span class="scard-val" style="color:var(--green);">CONFIRMED · 14:22:11</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey fx">FX Architecture</div>
+        <h2 style="color:var(--white);">Integrated Liquidity<br>& Settlement Engine.</h2>
+        <p style="margin-top:0.85rem;">Kapitor FX connects regional banking rails, international settlement systems, institutional liquidity pools, and the treasury routing engine. Every conversion passes through six governed steps. No untracked conversions. No hidden markup.</p>
+        <div class="arch-features">
+          <div class="af2-item"><div class="af2-body"><h4>Corporate FX Routing</h4><p>Treasury officers can pre-approve currency corridors, set maximum spread tolerance, enable FX hedging, and lock conversion policies. All treasury conversions update capital adequacy ratios in real time.</p></div></div>
+          <div class="af2-item"><div class="af2-body"><h4>Liquidity Management</h4><p>Corridor liquidity thresholds, per-currency exposure caps, and real-time volatility monitoring govern all flows. High-value conversions may trigger secondary authorization or liquidity verification delay.</p></div></div>
+          <div class="af2-item"><div class="af2-body"><h4>Multi-Currency Conversion Support</h4><p>Fiat-to-fiat, fiat-to-stablecoin, stablecoin-to-fiat, cross-currency treasury routing, and multi-entity capital rebalancing. Currency pair availability governed by jurisdiction, compliance tier, and liquidity.</p></div></div>
+          <div class="af2-item"><div class="af2-body"><h4>GIPS Settlement Integration</h4><p>Every FX conversion routes directly into GIPS rails — domestic payments, international wires, card networks, trade finance instruments — with a single ledger entry covering debit, credit, spread, and compliance log.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CORRIDORS -->
+<section class="section" id="corridors">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey gold">Payment Corridors</div>
+      <h2 style="color:var(--white);">Active Corridors.<br>Volume-Validated Liquidity.</h2>
+    </div>
+    <div class="corridors-grid">
+      <div class="cg-item">
+        <div class="cg-flags"><span class="cg-flag">🇮🇳</span><span class="cg-arrow">⇄</span><span class="cg-flag">🇺🇸</span></div>
+        <div class="cg-pair" style="color:#ffb566;">INR / USD</div>
+        <div class="cg-vol" style="color:var(--fx-gold);">$840M MTD · 0.04bp</div>
+        <div class="cg-bars">
+          <div class="cg-bar-row"><span class="cg-bar-label">Volume</span><div class="cg-track"><div class="cg-fill" style="width:100%;background:var(--inr);"></div></div></div>
+          <div class="cg-bar-row"><span class="cg-bar-label">Fill Rate</span><div class="cg-track"><div class="cg-fill" style="width:99.8%;background:var(--green);"></div></div></div>
+        </div>
+      </div>
+      <div class="cg-item">
+        <div class="cg-flags"><span class="cg-flag">🇺🇸</span><span class="cg-arrow">⇄</span><span class="cg-flag">🇪🇺</span></div>
+        <div class="cg-pair" style="color:#88aaee;">USD / EUR</div>
+        <div class="cg-vol" style="color:var(--fx-gold);">$620M MTD · 0.02bp</div>
+        <div class="cg-bars">
+          <div class="cg-bar-row"><span class="cg-bar-label">Volume</span><div class="cg-track"><div class="cg-fill" style="width:74%;background:var(--usd);"></div></div></div>
+          <div class="cg-bar-row"><span class="cg-bar-label">Fill Rate</span><div class="cg-track"><div class="cg-fill" style="width:99.9%;background:var(--green);"></div></div></div>
+        </div>
+      </div>
+      <div class="cg-item">
+        <div class="cg-flags"><span class="cg-flag">🇺🇸</span><span class="cg-arrow">⇄</span><span class="cg-flag">🇦🇪</span></div>
+        <div class="cg-pair" style="color:#70d8a0;">USD / AED</div>
+        <div class="cg-vol" style="color:var(--fx-gold);">$480M MTD · 0.03bp</div>
+        <div class="cg-bars">
+          <div class="cg-bar-row"><span class="cg-bar-label">Volume</span><div class="cg-track"><div class="cg-fill" style="width:57%;background:var(--aed);"></div></div></div>
+          <div class="cg-bar-row"><span class="cg-bar-label">Fill Rate</span><div class="cg-track"><div class="cg-fill" style="width:99.7%;background:var(--green);"></div></div></div>
+        </div>
+      </div>
+      <div class="cg-item">
+        <div class="cg-flags"><span class="cg-flag">🇬🇧</span><span class="cg-arrow">⇄</span><span class="cg-flag">🇺🇸</span></div>
+        <div class="cg-pair" style="color:#f08080;">GBP / USD</div>
+        <div class="cg-vol" style="color:var(--fx-gold);">$240M MTD · 0.02bp</div>
+        <div class="cg-bars">
+          <div class="cg-bar-row"><span class="cg-bar-label">Volume</span><div class="cg-track"><div class="cg-fill" style="width:29%;background:var(--gbp);"></div></div></div>
+          <div class="cg-bar-row"><span class="cg-bar-label">Fill Rate</span><div class="cg-track"><div class="cg-fill" style="width:99.8%;background:var(--green);"></div></div></div>
+        </div>
+      </div>
+      <div class="cg-item">
+        <div class="cg-flags"><span class="cg-flag">🇧🇷</span><span class="cg-arrow">⇄</span><span class="cg-flag">🇺🇸</span></div>
+        <div class="cg-pair" style="color:#70d870;">BRL / USD</div>
+        <div class="cg-vol" style="color:var(--fx-gold);">$180M MTD · 0.06bp</div>
+        <div class="cg-bars">
+          <div class="cg-bar-row"><span class="cg-bar-label">Volume</span><div class="cg-track"><div class="cg-fill" style="width:21%;background:var(--brl);"></div></div></div>
+          <div class="cg-bar-row"><span class="cg-bar-label">Fill Rate</span><div class="cg-track"><div class="cg-fill" style="width:98.4%;background:var(--green);"></div></div></div>
+        </div>
+      </div>
+      <div class="cg-item">
+        <div class="cg-flags"><span class="cg-flag">🇯🇵</span><span class="cg-arrow">⇄</span><span class="cg-flag">🇺🇸</span></div>
+        <div class="cg-pair" style="color:#f08888;">JPY / USD</div>
+        <div class="cg-vol" style="color:var(--fx-gold);">$140M MTD · 0.03bp</div>
+        <div class="cg-bars">
+          <div class="cg-bar-row"><span class="cg-bar-label">Volume</span><div class="cg-track"><div class="cg-fill" style="width:17%;background:var(--jpy);"></div></div></div>
+          <div class="cg-bar-row"><span class="cg-bar-label">Fill Rate</span><div class="cg-track"><div class="cg-fill" style="width:99.2%;background:var(--green);"></div></div></div>
+        </div>
+      </div>
+      <div class="cg-item">
+        <div class="cg-flags"><span class="cg-flag">🇪🇺</span><span class="cg-arrow">⇄</span><span class="cg-flag">🇬🇧</span></div>
+        <div class="cg-pair" style="color:#99b8ff;">EUR / GBP</div>
+        <div class="cg-vol" style="color:var(--fx-gold);">$110M MTD · 0.02bp</div>
+        <div class="cg-bars">
+          <div class="cg-bar-row"><span class="cg-bar-label">Volume</span><div class="cg-track"><div class="cg-fill" style="width:13%;background:var(--eur);"></div></div></div>
+          <div class="cg-bar-row"><span class="cg-bar-label">Fill Rate</span><div class="cg-track"><div class="cg-fill" style="width:99.9%;background:var(--green);"></div></div></div>
+        </div>
+      </div>
+      <div class="cg-item">
+        <div class="cg-flags"><span class="cg-flag">🌐</span><span class="cg-arrow">⇄</span><span class="cg-flag">🇺🇸</span></div>
+        <div class="cg-pair" style="color:var(--fx-light);">STBL / USD</div>
+        <div class="cg-vol" style="color:var(--fx-gold);">$284M MTD · 0.01bp</div>
+        <div class="cg-bars">
+          <div class="cg-bar-row"><span class="cg-bar-label">Volume</span><div class="cg-track"><div class="cg-fill" style="width:34%;background:var(--fx);opacity:0.7;"></div></div></div>
+          <div class="cg-bar-row"><span class="cg-bar-label">Fill Rate</span><div class="cg-track"><div class="cg-fill" style="width:100%;background:var(--green);"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RISK & COMPLIANCE -->
+<section class="section" id="risk">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey sl">Risk & Compliance</div>
+      <h2 style="color:var(--white);">Risk Governance Is Dynamic.<br>No Anonymous Currency Movement.</h2>
+    </div>
+    <div class="risk-comp-layout">
+      <div class="rc-panel">
+        <div class="rcp-topbar" style="background:linear-gradient(90deg,var(--amber),var(--fx-cobalt));"></div>
+        <div class="rcp-header"><div class="rcp-title">FX Risk Monitor</div><div class="rcp-tag">CONTINUOUS</div></div>
+        <div class="rcp-rows">
+          <div class="rcp-row"><span class="rcp-key">Currency Concentration</span><span class="rcp-badge rb-mod">MODERATE — INR/USD dominant</span></div>
+          <div class="rcp-row"><span class="rcp-key">Volatility Spikes</span><span class="rcp-badge rb-low">NONE DETECTED</span></div>
+          <div class="rcp-row"><span class="rcp-key">Exposure Imbalance</span><span class="rcp-badge rb-low">WITHIN LIMIT</span></div>
+          <div class="rcp-row"><span class="rcp-key">Liquidity Stress</span><span class="rcp-badge rb-low">ALL CORRIDORS DEEP</span></div>
+          <div class="rcp-row"><span class="rcp-key">Counterparty Corridor Risk</span><span class="rcp-badge rb-low">SCREENED · KYB</span></div>
+          <div class="rcp-row"><span class="rcp-key">High-Value Auth Trigger</span><span class="rcp-badge rb-act">&gt;$500K SECONDARY AUTH</span></div>
+          <div class="rcp-row"><span class="rcp-key">Spread Adjustment</span><span class="rcp-badge rb-act">DYNAMIC · VOLATILITY-LINKED</span></div>
+          <div class="rcp-row"><span class="rcp-key">Restricted Corridors</span><span class="rcp-badge rb-red">BLOCKED · SANCTIONS LIST</span></div>
+        </div>
+      </div>
+      <div class="rc-panel">
+        <div class="rcp-topbar" style="background:linear-gradient(90deg,var(--red),var(--fx));"></div>
+        <div class="rcp-header"><div class="rcp-title">Compliance Controls</div><div class="rcp-tag">ALL FLOWS</div></div>
+        <div class="rcp-rows">
+          <div class="rcp-row"><span class="rcp-key">AML Transaction Screening</span><span class="rcp-badge rb-low">100% · ALL CONVERSIONS</span></div>
+          <div class="rcp-row"><span class="rcp-key">Sanctions Filtering</span><span class="rcp-badge rb-low">REAL-TIME · ENFORCED</span></div>
+          <div class="rcp-row"><span class="rcp-key">Jurisdiction Eligibility</span><span class="rcp-badge rb-act">AUTO-GATED BY TIER</span></div>
+          <div class="rcp-row"><span class="rcp-key">Source-of-Funds Validation</span><span class="rcp-badge rb-low">REQUIRED · &gt;$10K</span></div>
+          <div class="rcp-row"><span class="rcp-key">Anonymous Currency Movement</span><span class="rcp-badge rb-red">PROHIBITED</span></div>
+          <div class="rcp-row"><span class="rcp-key">Verified Identity Required</span><span class="rcp-badge rb-low">KYC / KYB ENFORCED</span></div>
+          <div class="rcp-row"><span class="rcp-key">Compliance Log</span><span class="rcp-badge rb-low">EVERY CONVERSION</span></div>
+          <div class="rcp-row"><span class="rcp-key">Off-Ledger Conversions</span><span class="rcp-badge rb-red">ZERO — NONE PERMITTED</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FX COMMAND DASHBOARD -->
+<section class="section" id="dashboard">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey fx">FX Command Center</div>
+      <h2 style="color:var(--white);">Institutional FX Dashboard.</h2>
+    </div>
+    <div class="dash-outer">
+      <div class="dash-topbar"></div>
+      <div class="dash-header">
+        <div class="dash-title">FX Command Center — Treasury View</div>
+        <div class="dash-sub">PRIME / TREASURY OFFICER ACCESS · LEDGER SYNCED</div>
+      </div>
+      <div class="dash-kpis">
+        <div class="dk"><div class="dk-label">Daily FX Volume</div><div class="dk-val" style="color:var(--fx-light);">$2.1B</div><div class="dk-sub" style="color:var(--green);">▲ 22.4% YTD</div></div>
+        <div class="dk"><div class="dk-label">Active Exposure</div><div class="dk-val" style="color:var(--amber);">$840M</div><div class="dk-sub" style="color:var(--text-dim);">8 currencies</div></div>
+        <div class="dk"><div class="dk-label">Pending Conversions</div><div class="dk-val" style="color:var(--white);">12</div><div class="dk-sub" style="color:var(--text-dim);">Awaiting auth</div></div>
+        <div class="dk"><div class="dk-label">Hedge P&L (MTD)</div><div class="dk-val" style="color:var(--green);">+$4.2M</div><div class="dk-sub" style="color:var(--text-dim);">Realized</div></div>
+        <div class="dk"><div class="dk-label">Avg Spread (MTD)</div><div class="dk-val" style="color:var(--fx-light);">0.028bp</div><div class="dk-sub" style="color:var(--text-dim);">Blended</div></div>
+        <div class="dk"><div class="dk-label">Hidden Markup</div><div class="dk-val" style="color:var(--green);">Zero</div><div class="dk-sub" style="color:var(--green);">Full disclosure</div></div>
+      </div>
+      <div class="dash-body2">
+        <!-- currency allocation -->
+        <div class="db-col">
+          <div class="db-label">Currency Exposure Breakdown</div>
+          <div class="ccy-rows">
+            <div class="ccy-row"><span class="ccy-label" style="color:#ffb566;">INR</span><div class="ccy-track"><div class="ccy-fill" style="width:100%;background:var(--inr);opacity:0.7;"></div></div><span class="ccy-amt" style="color:#ffb566;">$320M</span></div>
+            <div class="ccy-row"><span class="ccy-label" style="color:#88aaee;">USD</span><div class="ccy-track"><div class="ccy-fill" style="width:66%;background:var(--usd);opacity:0.7;"></div></div><span class="ccy-amt" style="color:#88aaee;">$210M</span></div>
+            <div class="ccy-row"><span class="ccy-label" style="color:#70d8a0;">AED</span><div class="ccy-track"><div class="ccy-fill" style="width:56%;background:var(--aed);opacity:0.7;"></div></div><span class="ccy-amt" style="color:#70d8a0;">$180M</span></div>
+            <div class="ccy-row"><span class="ccy-label" style="color:#f08080;">GBP</span><div class="ccy-track"><div class="ccy-fill" style="width:41%;background:var(--gbp);opacity:0.7;"></div></div><span class="ccy-amt" style="color:#f08080;">$130M</span></div>
+            <div class="ccy-row"><span class="ccy-label" style="color:var(--fx-light);">STBL</span><div class="ccy-track"><div class="ccy-fill" style="width:33%;background:var(--fx);opacity:0.6;"></div></div><span class="ccy-amt" style="color:var(--fx-light);">$0M hedge</span></div>
+            <div class="ccy-row"><span class="ccy-label" style="color:var(--text-muted);">Other</span><div class="ccy-track"><div class="ccy-fill" style="width:22%;background:var(--rep-c,#4a5878);opacity:0.5;"></div></div><span class="ccy-amt" style="color:var(--text-muted);">$0M</span></div>
+          </div>
+        </div>
+        <!-- pending -->
+        <div class="db-col">
+          <div class="db-label">Pending Conversions</div>
+          <div class="pend-rows">
+            <div class="pr3-row"><span class="pr3-id">FX-TXN-00292</span><span class="pr3-desc">$1.2M USD → INR · Awaiting 2nd auth</span></div>
+            <div class="pr3-row"><span class="pr3-id">FX-TXN-00291</span><span class="pr3-desc">€840K EUR → GBP · Compliance review</span></div>
+            <div class="pr3-row"><span class="pr3-id">FX-TXN-00290</span><span class="pr3-desc">$240K USD → AED · Auto-approved</span></div>
+            <div class="pr3-row"><span class="pr3-id">FX-TXN-00289</span><span class="pr3-desc">£180K GBP → USD · Routing</span></div>
+          </div>
+        </div>
+        <!-- analytics -->
+        <div class="db-col">
+          <div class="db-label">Spread Analytics</div>
+          <div class="anlyt-rows">
+            <div class="an-row"><span class="an-key">Best Corridor</span><span class="an-val" style="color:var(--green);">EUR/GBP · 0.02bp</span></div>
+            <div class="an-row"><span class="an-key">Highest Volume</span><span class="an-val" style="color:var(--fx-light);">INR/USD · $840M</span></div>
+            <div class="an-row"><span class="an-key">Liquidity Util.</span><span class="an-val">84.2%</span></div>
+            <div class="an-row"><span class="an-key">Conversion Cost</span><span class="an-val" style="color:var(--green);">$58.4K MTD</span></div>
+            <div class="an-row"><span class="an-key">P&L vs Mid Rate</span><span class="an-val" style="color:var(--green);">+$4.2M MTD</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="dash-footer">
+        <div class="df-item"><div class="df-dot" style="background:var(--green);"></div><span class="df-label">Off-Ledger Conversions:</span><span class="df-val">Zero</span></div>
+        <div class="df-item"><div class="df-dot" style="background:var(--green);"></div><span class="df-label">AML Screened:</span><span class="df-val">100% · All Conversions</span></div>
+        <div class="df-item"><div class="df-dot" style="background:var(--amber);"></div><span class="df-label">Active Exposure:</span><span class="df-val">$840M · 8 Currencies</span></div>
+        <div class="df-item"><div class="df-dot" style="background:var(--fx);"></div><span class="df-label">Spread Disclosure:</span><span class="df-val">Full · Every Conversion</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey fx" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Structured Currency Infrastructure</div>
+      <h2>That's Enterprise FX.</h2>
+      <p>Accurate pricing. Governed execution. Full traceability. No off-ledger conversions.</p>
+      <div class="fc-trio">
+        <div class="fct">Accurate Pricing</div>
+        <div class="fct">Governed Execution</div>
+        <div class="fct">Full Traceability</div>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Access FX Infrastructure</button>
+        <button class="btn-final-out">Request Treasury FX Access</button>
+        <button class="btn-final-out">View Supported Corridors</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="index.html">Smart Wallet</a></li><li><a href="index.html#pay">Pay</a></li><li><a href="index.html#trade">Trade</a></li><li><a href="index.html#earn">Earn</a></li><li><a href="index.html#stake">Stake</a></li><li><a href="rwa.html">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="digitalassets.html">Kaloft (EPT)</a></li><li><a href="digitalassets.html">Katoin</a></li><li><a href="digitalassets.html">EQOUIN</a></li><li><a href="digitalassets.html">KFI</a></li><li><a href="rwa.html">RWA</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul>
+        <li><a href="prime.html">Kapitor Prime</a></li>
+        <li><a href="custody.html">Custody</a></li>
+        <li><a href="#">Treasury</a></li>
+        <li><a href="fx.html" style="color:var(--fx-light);">FX Infrastructure</a></li>
+        <li><a href="api.html">API Access</a></li>
+      </ul></div>
+      <div class="footer-col"><h5>Payments</h5><ul><li><a href="#">GIPS</a></li><li><a href="#">Corridors</a></li><li><a href="#">Institutional</a></li></ul></div>
+      <div class="footer-col"><h5>Compliance</h5><ul><li><a href="#">KYC / KYB</a></li><li><a href="#">AML Framework</a></li><li><a href="#">Proof of Reserves</a></li><li><a href="#">Audit Reports</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="company.html">Terms</a><a href="company.html">Privacy</a><a href="company.html">FX Policy</a><a href="company.html">Risk Disclosure</a><a href="#">Corridors</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+(function(){
+  var header=document.getElementById("hdr");
+  var mobileToggle=document.querySelector(".nav-mobile-toggle");
+  function isMobile(){return window.innerWidth<=900;}
+  if(mobileToggle&&header){
+    mobileToggle.addEventListener("click",function(){
+      header.classList.toggle("header-mobile-open");
+      mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+    });
+  }
+  document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+    btn.addEventListener("click",function(e){
+      if(isMobile()){e.preventDefault();var wrap=btn.closest(".nav-item-wrap");wrap.classList.toggle("open");btn.setAttribute("aria-expanded",wrap.classList.contains("open"));}
+    });
+  });
+})();
+</script>
+</body>
+</html>

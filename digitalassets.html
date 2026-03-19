@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EQOUIN – Internal Equity Exposure Infrastructure</title>
+<link
+  href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap"
+  rel="stylesheet"
+>
+<style> 
+:root {
+  /* Core surfaces – match Kapitor brand light theme */
+  --bg: #FCF8E8;
+  --surface: #FFFFFF;
+  --surface2: #F5ECD6;
+  --surface3: #F5ECD6;
+
+  /* Borders & outlines */
+  --border: rgba(15, 23, 42, 0.08);
+  --border-md: rgba(15, 23, 42, 0.16);
+  --border-hi: rgba(15, 23, 42, 0.22);
+
+  /* Brand colors */
+  --blue: #1A6FB8;
+  --blue-light: #2B83D1;
+  --blue-dim: rgba(26, 111, 184, 0.10);
+  --blue-glow: rgba(26, 111, 184, 0.12);
+  --green: #33B269;
+  --green-light:#5ed498;
+  --green-dim: rgba(51, 178, 105, 0.12);
+  --green-border: rgba(51, 178, 105, 0.20);
+  --amber: #F7AE40;
+  --amber-light:#f5bc5a;
+  --amber-dim: rgba(247, 174, 64, 0.14);
+  --amber-border: rgba(247, 174, 64, 0.22);
+
+  /* Semantic states */
+  --success: #0F9D58;
+  --warning: #F59E0B;
+  --error: #E53535;
+
+  /* Typography */
+  --text: #111827;
+  --text-muted: #6B6B6B;
+  --text-dim: #9CA3AF;
+  --white: #FFFFFF;
+
+  /* EQOUIN: cool platinum-silver-indigo palette (keep accents) */
+  --eq:#a78bfa;       --eq-light:#c4b0fd;
+  --eq-dim:rgba(167,139,250,0.09);    --eq-border:rgba(167,139,250,0.22);
+  --eq-silver:#c0c8e0; --eq-silver-dim:rgba(192,200,224,0.07); --eq-silver-border:rgba(192,200,224,0.18);
+  --eq-gold:#c8a84a;  --eq-gold-dim:rgba(200,168,74,0.09);  --eq-gold-border:rgba(200,168,74,0.2);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:300;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+body::after{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+h1,h2,h3{
+  font-family:'Outfit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:700;
+  letter-spacing:-0.03em;
+}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.eq{color:var(--eq);}        .ey.eq::before{background:var(--eq);}
+.ey.silver{color:var(--eq-silver);} .ey.silver::before{background:var(--eq-silver);}
+.ey.gold{color:var(--eq-gold);} .ey.gold::before{background:var(--eq-gold);}
+.ey.g{color:var(--green);}      .ey.g::before{background:var(--green);}
+.ey.b{color:var(--blue-light);} .ey.b::before{background:var(--blue-light);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--white);margin-bottom:0.85rem;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+.two-col-r{display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:start;}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--eq-light);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--eq);color:var(--eq-light);}
+.btn-cta{background:var(--eq);color:#07060f;border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.2s;}
+.btn-cta:hover{background:var(--eq-light);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:"Epilogue",sans-serif;cursor:pointer;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 65% 55% at 52% 26%,rgba(167,139,250,0.1) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 8% 72%,rgba(74,127,203,0.04) 0%,transparent 50%),
+    radial-gradient(ellipse 35% 35% at 92% 68%,rgba(200,168,74,0.04) 0%,transparent 45%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.013) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.013) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 65% at 50% 40%,black 10%,transparent 75%);}
+/* diamond pattern bg */
+.hero-diamond{position:absolute;top:5%;right:2%;width:500px;height:500px;opacity:0.025;pointer-events:none;background:repeating-linear-gradient(45deg,var(--eq) 0,var(--eq) 1px,transparent 0,transparent 50%);background-size:28px 28px;}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(167,139,250,0.3);border-radius:3px;background:rgba(167,139,250,0.08);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--eq-light);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--eq);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero-content{position:relative;z-index:2;max-width:900px;}
+.hero h1{color:var(--white);margin-bottom:0.6rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.64rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:560px;color:rgba(204,202,224,0.5);margin-bottom:2rem;line-height:1.8;}
+.hero-not{display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap;}
+.not-pill{font-family:"JetBrains Mono",monospace;font-size:0.63rem;letter-spacing:0.08em;padding:0.38rem 0.9rem;border-radius:3px;}
+.not-pill.no{border:1px solid rgba(192,80,56,0.2);color:rgba(192,80,56,0.55);background:rgba(192,80,56,0.05);text-decoration:line-through;}
+.not-pill.yes{border:1px solid var(--eq-border);color:var(--eq-light);background:var(--eq-dim);}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--eq);color:#07060f;border:none;padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:var(--eq-light);transform:translateY(-1px);box-shadow:0 8px 30px rgba(167,139,250,0.22);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--eq-border);color:var(--eq-light);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:"Syne",sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--eq);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 42s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--eq);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* VALUATION */
+.val-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.vp-topbar{height:2px;background:var(--eq);}
+.vp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.vp-title{font-family:"Syne",sans-serif;font-size:0.9rem;font-weight:600;color:var(--white);}
+.vp-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--eq-light);}
+/* unit price display */
+.vp-unit{padding:1.5rem 1.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.vpu-price{font-family:"Syne",sans-serif;font-size:2.4rem;font-weight:800;color:var(--eq);line-height:1;}
+.vpu-label{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-top:0.3rem;}
+.vpu-change{text-align:right;}
+.vpu-delta{font-family:"Syne",sans-serif;font-size:1.3rem;font-weight:700;color:var(--green);}
+.vpu-period{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-dim);margin-top:0.3rem;}
+/* valuation chart */
+.vp-chart{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.vpc-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.vpc-chart svg{width:100%;display:block;}
+/* valuation metrics */
+.vp-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.vpm-item{background:var(--surface);padding:0.9rem 1.1rem;}
+.vpm-label{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.3rem;}
+.vpm-val{font-family:"Syne",sans-serif;font-size:0.95rem;font-weight:700;line-height:1;}
+.vpm-sub{font-family:"JetBrains Mono",monospace;font-size:0.52rem;color:var(--text-dim);margin-top:0.18rem;}
+/* valuation inputs */
+.vp-inputs{padding:1.1rem 1.75rem;}
+.vpi-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.vpi-rows{display:flex;flex-direction:column;gap:0;}
+.vpi-row{display:flex;justify-content:space-between;align-items:center;padding:0.48rem 0;border-bottom:1px solid var(--border);}
+.vpi-row:last-child{border-bottom:none;}
+.vpi-key{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);}
+.vpi-val{font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+/* valuation features */
+.val-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.vf-item{display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--eq);transition:border-color 0.2s;}
+.vf-item:hover{border-color:var(--border-md);}
+.vf-body h4{font-size:0.8rem;font-family:"Epilogue",sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.vf-body p{font-size:0.73rem;}
+
+/* DIVIDEND */
+.div-layout{display:grid;grid-template-columns:1fr 1.1fr;gap:5rem;align-items:start;}
+.div-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp2-topbar{height:2px;background:linear-gradient(90deg,var(--eq-gold),var(--eq));}
+.dp2-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp2-title{font-family:"Syne",sans-serif;font-size:0.9rem;font-weight:600;color:var(--white);}
+.dp2-badge{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--eq-gold-dim);color:var(--eq-gold);border:1px solid var(--eq-gold-border);}
+/* dividend summary */
+.div-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.ds-item{background:var(--surface);padding:0.9rem 1.1rem;}
+.dsi-label{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.3rem;}
+.dsi-val{font-family:"Syne",sans-serif;font-size:1rem;font-weight:700;line-height:1;}
+/* dividend steps */
+.div-steps{padding:1.25rem 1.75rem;border-top:1px solid var(--border);}
+.dvs-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.dvs-flow{display:flex;flex-direction:column;gap:0.38rem;}
+.dvs-step{display:flex;align-items:center;gap:10px;padding:0.55rem 0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:5px;border-left:2px solid var(--eq-gold);}
+.dvs-num{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--eq-gold);width:18px;flex-shrink:0;}
+.dvs-text{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+/* dividend history */
+.div-history{margin:0 1.75rem 1.5rem;border-top:1px solid var(--border);padding-top:1.1rem;}
+.dvh-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.dvh-rows{display:flex;flex-direction:column;gap:0;}
+.dvh-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:0.58rem 0;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;align-items:center;}
+.dvh-row:last-child{border-bottom:none;}
+.dvh-row.hdr{}
+.dvh-cell{color:var(--text-muted);}
+.dvh-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.dvh-amount{color:var(--eq-gold);}
+/* div features */
+.div-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.df-item{display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--eq-gold);transition:border-color 0.2s;}
+.df-item:hover{border-color:var(--border-md);}
+.df-body h4{font-size:0.8rem;font-family:"Epilogue",sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.df-body p{font-size:0.73rem;}
+.div-note{margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--eq-gold-border);border-radius:5px;background:var(--eq-gold-dim);font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--eq-gold);}
+
+/* APPRECIATION */
+.appr-layout{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+.appr-drivers{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:2rem;}
+.ad-item{background:var(--surface);padding:1.4rem 1.5rem;transition:background 0.2s;}
+.ad-item:hover{background:var(--surface2);}
+.ad-icon{font-size:0.85rem;color:var(--eq);margin-bottom:0.5rem;}
+.ad-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);margin-bottom:0.28rem;}
+.ad-desc{font-size:0.73rem;color:var(--text-muted);}
+/* appreciation SVG chart */
+.appr-chart-wrap{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.acw-topbar{height:2px;background:linear-gradient(90deg,var(--eq),var(--eq-silver));}
+.acw-header{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.acw-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:600;color:var(--white);}
+.acw-gain{font-family:"Syne",sans-serif;font-size:1.2rem;font-weight:700;color:var(--green);}
+.acw-chart{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.acw-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.acw-m{background:var(--surface);padding:0.85rem 1rem;}
+.acw-m-label{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.3rem;}
+.acw-m-val{font-family:"Syne",sans-serif;font-size:0.95rem;font-weight:700;}
+.acw-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.52rem;color:var(--text-dim);margin-top:0.15rem;}
+
+/* INTERNAL MARKET */
+.market-layout{display:grid;grid-template-columns:1.05fr 1fr;gap:5rem;align-items:start;}
+.market-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.mp-topbar{height:2px;background:linear-gradient(90deg,var(--eq),var(--blue));}
+.mp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.mp-title{font-family:"Syne",sans-serif;font-size:0.9rem;font-weight:600;color:var(--white);}
+.mp-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--eq-light);}
+/* order book */
+.order-book{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.ob-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.ob-cols{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+.ob-side{display:flex;flex-direction:column;gap:0.3rem;}
+.ob-side-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;}
+.ob-row{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0.3rem 0.5rem;border-radius:3px;font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+.ob-price-bid{color:var(--green);}
+.ob-price-ask{color:var(--red,#c05038);}
+.ob-price-ask{color:#c05038;}
+.ob-qty{color:var(--text-dim);text-align:right;}
+.ob-row.b1{background:rgba(61,184,122,0.08);}
+.ob-row.b2{background:rgba(61,184,122,0.05);}
+.ob-row.b3{background:rgba(61,184,122,0.03);}
+.ob-row.a1{background:rgba(192,80,56,0.08);}
+.ob-row.a2{background:rgba(192,80,56,0.05);}
+.ob-row.a3{background:rgba(192,80,56,0.03);}
+.ob-spread{text-align:center;padding:0.4rem;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-dim);border-top:1px solid var(--border);margin-top:0.5rem;}
+/* trade history */
+.trade-history{padding:0.25rem 0;}
+.th-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:0.6rem 1.75rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;align-items:center;transition:background 0.15s;}
+.th-row:last-child{border-bottom:none;}
+.th-row:hover{background:rgba(255,255,255,0.02);}
+.th-row.hdr{background:rgba(0,0,0,0.2);}
+.th-cell{color:var(--text-muted);}
+.th-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.th-buy{color:var(--green);}
+.th-sell{color:#c05038;}
+/* market features */
+.market-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.mf-item{display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;transition:border-color 0.2s;}
+.mf-item:hover{border-color:var(--border-md);}
+.mf-icon{color:var(--eq);font-size:0.75rem;flex-shrink:0;margin-top:2px;}
+.mf-body h4{font-size:0.8rem;font-family:"Epilogue",sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.mf-body p{font-size:0.73rem;}
+.market-note{margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--eq-border);border-radius:5px;background:var(--eq-dim);font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--eq-light);}
+
+/* GOVERNANCE & RISK */
+.gov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:3rem;}
+.gg-item{background:var(--surface);padding:1.5rem 1.4rem;transition:background 0.2s;}
+.gg-item:hover{background:var(--surface2);}
+.gg-icon{font-size:0.9rem;color:var(--eq);margin-bottom:0.5rem;}
+.gg-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);margin-bottom:0.3rem;}
+.gg-desc{font-size:0.73rem;color:var(--text-muted);}
+.risk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.rg-item{background:var(--surface);padding:1.4rem 1.5rem;transition:background 0.2s;}
+.rg-item:hover{background:var(--surface2);}
+.rg-risk{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--eq);margin-bottom:0.35rem;}
+.rg-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--text);margin-bottom:0.2rem;}
+.rg-desc{font-size:0.73rem;color:var(--text-muted);}
+.rg-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:0.65rem;}
+.rg-fill{height:100%;border-radius:2px;}
+
+/* DASHBOARD */
+.dash-panels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.dash-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp-topbar{height:2px;}
+.dp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:600;color:var(--white);}
+.dp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.dp-metric{background:var(--surface);padding:1rem 1.1rem;}
+.dp-m-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.dp-m-val{font-family:"Syne",sans-serif;font-size:1rem;font-weight:700;}
+.dp-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-top:0.18rem;}
+.dp-rows{padding:0.25rem 0;}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.6rem;border-bottom:1px solid var(--border);}
+.dp-row:last-child{border-bottom:none;}
+.dp-row-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.dp-row-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);}
+
+/* FINAL CTA */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(167,139,250,0.07) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--white);margin-bottom:0.75rem;max-width:580px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:460px;margin:0 auto 0.75rem;}
+.fc-three{display:flex;justify-content:center;gap:0;margin:2rem 0;flex-wrap:wrap;}
+.fct-item{font-family:"JetBrains Mono",monospace;font-size:0.65rem;padding:0.65rem 1.5rem;border:1px solid var(--border-md);border-right:none;color:var(--text-muted);}
+.fct-item:first-child{border-radius:4px 0 0 4px;}
+.fct-item:last-child{border-right:1px solid var(--border-md);border-radius:0 4px 4px 0;}
+.fct-item.active{background:var(--eq-dim);border-color:var(--eq-border);color:var(--eq-light);}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:2.5rem;}
+.btn-final{background:var(--eq);color:#07060f;border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{background:var(--eq-light);box-shadow:0 8px 30px rgba(167,139,250,0.22);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--eq-border);color:var(--eq-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:"Syne",sans-serif;font-size:1.15rem;font-weight:700;color:var(--white);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--eq-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-item-wrap.active .nav-trigger{color:var(--eq-light);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--eq-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .gov-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .two-col,.two-col-r,.div-layout,.appr-layout,.market-layout,.dash-panels{grid-template-columns:1fr;}
+  .appr-drivers{grid-template-columns:1fr;}
+  .dvh-row{grid-template-columns:1fr 1fr 1fr;}
+  .dvh-row>*:nth-child(4),.dvh-row.hdr>*:nth-child(4){display:none;}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .risk-grid,.gov-grid{grid-template-columns:1fr;}
+}
+</style>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap active">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="hero-diamond"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>3.3 · EQOUIN · INTERNAL EQUITY INFRASTRUCTURE · MARKET OPEN</div>
+      <h1 style="color:var(--white);">Internal Equity<br><span style="color:var(--eq-light);">Exposure Infrastructure.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip" style="background:var(--eq-dim);border:1px solid var(--eq-border);color:var(--eq-light);">EQOUIN</span>
+        <span class="token-chip" style="background:var(--eq-silver-dim);border:1px solid var(--eq-silver-border);color:var(--eq-silver);">DIGITIZED EQUITY</span>
+        <span style="color:var(--text-dim);">Valuation-Mapped · Dividend-Eligible · Internal Market Only</span>
+      </div>
+      <p class="hero-sub">Structured digital equity exposure within the Kapitor ecosystem — reflecting valuation growth, dividend allocation, and capital appreciation. Operates inside the Unified Ledger. Does not trade on external stock exchanges.</p>
+      <div class="hero-not">
+        <span class="not-pill no">External Exchange Volatility</span>
+        <span class="not-pill no">Speculation</span>
+        <span class="not-pill no">Unstructured Equity</span>
+        <span class="not-pill yes">Enterprise Value Participation</span>
+        <span class="not-pill yes">Governed Internal Market</span>
+        <span class="not-pill yes">Ledger-Reconciled</span>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Acquire EQOUIN</button>
+        <button class="btn-out">View Valuation Reports →</button>
+        <button class="btn-out">Access Internal Market →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Current Unit Value</div>
+          <div class="hm-val" style="color:var(--eq-light);">$184.20</div>
+          <div class="hm-sub"><span class="up">▲ 12.4%</span> YTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Total Units Issued</div>
+          <div class="hm-val" style="color:var(--eq-silver);">10M</div>
+          <div class="hm-sub">Cap enforced</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Market Cap (Internal)</div>
+          <div class="hm-val" style="color:var(--white);">$1.84B</div>
+          <div class="hm-sub">Enterprise-mapped</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Last Dividend</div>
+          <div class="hm-val" style="color:var(--eq-gold);">$4.20</div>
+          <div class="hm-sub">Per unit · Q4 2025</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">External Exchange</div>
+          <div class="hm-val" style="color:var(--eq-light);font-size:1.1rem;">None</div>
+          <div class="hm-sub">Internal only</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">EQOUIN UNIT VALUE</span><span class="up">$184.20 ▲1.2%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">UNITS ISSUED</span>10,000,000</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">MARKET CAP (INT.)</span>$1.84B</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">LAST DIVIDEND</span><span class="up">$4.20/UNIT · Q4 2025</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">YTD APPRECIATION</span><span class="up">+12.4%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">INTERNAL MARKET</span><span class="up">OPEN · GOVERNED</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">EXTERNAL LISTING</span>NONE</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TREASURY RESERVE</span>1.2M UNITS</span>
+    <!-- dupe -->
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">EQOUIN UNIT VALUE</span><span class="up">$184.20 ▲1.2%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">LAST DIVIDEND</span><span class="up">$4.20/UNIT · Q4 2025</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">YTD APPRECIATION</span><span class="up">+12.4%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">INTERNAL MARKET</span><span class="up">OPEN</span></span>
+  </div>
+</div>
+
+<!-- ═══ VALUATION MECHANISM ═══ -->
+<section class="section" id="valuation">
+  <div class="container">
+    <div class="two-col">
+      <div>
+        <div class="val-panel">
+          <div class="vp-topbar"></div>
+          <div class="vp-header">
+            <div class="vp-title">EQOUIN Unit Valuation</div>
+            <div class="vp-live"><div class="ld"></div>LEDGER SYNC</div>
+          </div>
+          <div class="vp-unit">
+            <div>
+              <div class="vpu-price">$184.20</div>
+              <div class="vpu-label">CURRENT UNIT VALUE</div>
+            </div>
+            <div class="vpu-change">
+              <div class="vpu-delta">+$20.40</div>
+              <div class="vpu-period">+12.4% YTD · Entry: $163.80</div>
+            </div>
+          </div>
+          <div class="vp-chart">
+            <div class="vpc-label">Unit Value — 12-Month History</div>
+            <svg viewBox="0 0 600 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.22"/>
+                  <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="divGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#c8a84a" stop-opacity="0.12"/>
+                  <stop offset="100%" stop-color="#c8a84a" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- grid lines -->
+              <line x1="0" y1="68" x2="600" y2="68" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <line x1="0" y1="45" x2="600" y2="45" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <!-- unit value area -->
+              <path d="M0 68 L50 65 L100 62 L150 59 L200 57 L250 53 L300 49 L350 46 L400 42 L450 38 L500 34 L550 30 L600 26 L600 90 L0 90 Z" fill="url(#eqGrad)"/>
+              <path d="M0 68 L50 65 L100 62 L150 59 L200 57 L250 53 L300 49 L350 46 L400 42 L450 38 L500 34 L550 30 L600 26" stroke="#a78bfa" stroke-width="1.8" fill="none"/>
+              <!-- dividend markers -->
+              <circle cx="150" cy="59" r="3" fill="#c8a84a" opacity="0.8"/>
+              <circle cx="300" cy="49" r="3" fill="#c8a84a" opacity="0.8"/>
+              <circle cx="450" cy="38" r="3" fill="#c8a84a" opacity="0.8"/>
+              <circle cx="600" cy="26" r="3" fill="#c8a84a" opacity="0.8"/>
+              <!-- labels -->
+              <text x="4" y="86" fill="rgba(255,255,255,0.08)" font-family="JetBrains Mono" font-size="7">$163</text>
+              <text x="4" y="28" fill="rgba(167,139,250,0.45)" font-family="JetBrains Mono" font-size="7">$184</text>
+              <text x="140" y="54" fill="rgba(200,168,74,0.5)" font-family="JetBrains Mono" font-size="6">DIV</text>
+              <text x="290" y="44" fill="rgba(200,168,74,0.5)" font-family="JetBrains Mono" font-size="6">DIV</text>
+              <text x="440" y="33" fill="rgba(200,168,74,0.5)" font-family="JetBrains Mono" font-size="6">DIV</text>
+            </svg>
+          </div>
+          <div class="vp-metrics">
+            <div class="vpm-item"><div class="vpm-label">Total Units Issued</div><div class="vpm-val" style="color:var(--white);">10,000,000</div><div class="vpm-sub">Cap enforced</div></div>
+            <div class="vpm-item"><div class="vpm-label">Circulating Units</div><div class="vpm-val" style="color:var(--eq-light);">8,800,000</div><div class="vpm-sub">88% of issued</div></div>
+            <div class="vpm-item"><div class="vpm-label">Treasury Reserve</div><div class="vpm-val" style="color:var(--eq-gold);">1,200,000</div><div class="vpm-sub">12% held</div></div>
+          </div>
+          <div class="vp-inputs">
+            <div class="vpi-label">Valuation Inputs — Governing Factors</div>
+            <div class="vpi-rows">
+              <div class="vpi-row"><span class="vpi-key">Net Revenue</span><span class="vpi-val" style="color:var(--eq-light);">PRIMARY INPUT</span></div>
+              <div class="vpi-row"><span class="vpi-key">Operating Margin</span><span class="vpi-val" style="color:var(--eq-light);">PRIMARY INPUT</span></div>
+              <div class="vpi-row"><span class="vpi-key">Total AUM</span><span class="vpi-val">$620M Vaults + $840M Kaloft</span></div>
+              <div class="vpi-row"><span class="vpi-key">Structured Product Profit</span><span class="vpi-val">Quarterly attribution</span></div>
+              <div class="vpi-row"><span class="vpi-key">Treasury Holdings</span><span class="vpi-val">Reserve-mapped</span></div>
+              <div class="vpi-row"><span class="vpi-key">Last Audit Review</span><span class="vpi-val" style="color:var(--green);">Q4 2025 · PASSED</span></div>
+              <div class="vpi-row"><span class="vpi-key">Governance Board Approval</span><span class="vpi-val" style="color:var(--green);">ACTIVE</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey eq">Valuation Mechanism</div>
+        <h2 style="color:var(--white);">Structured Enterprise<br>Valuation Mapping</h2>
+        <p style="margin-top:0.85rem;">EQOUIN reflects the valuation of Kapitor's underlying enterprise operations across trading infrastructure, yield systems, commodity engine, Kaloft pools, institutional treasury, and payment infrastructure. Valuation is documented — not speculative.</p>
+        <p style="margin-top:0.85rem;">Updates are governed by financial reporting cycles, independent audit review, governance board approval, and ledger-reconciled capital metrics. No arbitrary adjustments.</p>
+        <div class="val-features">
+          <div class="vf-item"><div class="vf-body"><h4>Ledger-Reconciled Valuation</h4><p>Every valuation update is reconciled against Unified Ledger capital metrics before it is reflected in the unit price.</p></div></div>
+          <div class="vf-item"><div class="vf-body"><h4>Independent Audit Verification</h4><p>Valuation inputs are independently audited on a quarterly basis. Audit reports are accessible to EQOUIN holders.</p></div></div>
+          <div class="vf-item"><div class="vf-body"><h4>Governance Board Approval</h4><p>No valuation update can be applied without governance board approval. Dilution events and capital structure changes are documented in advance.</p></div></div>
+          <div class="vf-item"><div class="vf-body"><h4>No Artificial Inflation</h4><p>Unit price reflects real enterprise metrics only. There is no market-making, price smoothing, or discretionary adjustment of the EQOUIN unit value.</p></div></div>
+        </div>
+        <div style="margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--eq-border);border-radius:5px;background:var(--eq-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--eq-light);">Valuation is documented — not speculative. NAV movement is tied to real enterprise performance.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DIVIDEND DISTRIBUTION ═══ -->
+<section class="section" id="dividends">
+  <div class="container">
+    <div class="div-layout">
+      <div>
+        <div class="ey gold">Dividend Distribution</div>
+        <h2 style="color:var(--white);">Profit-Based Allocation.<br>Event-Governed.</h2>
+        <p style="margin-top:0.85rem;">EQOUIN holders may receive dividend distributions based on net distributable profits. Dividend eligibility depends on profit realization, capital reserves, regulatory constraints, and governance approval — not on a fixed schedule.</p>
+        <div class="div-features">
+          <div class="df-item"><div class="df-body"><h4>Profit-Realization Gating</h4><p>No dividend is paid unless net distributable profit has been realized, capital reserves are maintained, and governance has approved the distribution.</p></div></div>
+          <div class="df-item"><div class="df-body"><h4>Multi-Currency Distribution</h4><p>Dividends may be paid in fiat, stablecoins, or retained as structured earnings depending on governance decision and holder preference.</p></div></div>
+          <div class="df-item"><div class="df-body"><h4>Profit Source Attribution</h4><p>Each dividend is attributed to its source — trading infrastructure, yield systems, commodity engine, vault performance, or institutional flows. Full transparency per distribution event.</p></div></div>
+          <div class="df-item"><div class="df-body"><h4>Per-Unit Transparency</h4><p>Dividend per unit, total distributed, distribution date, and profit source attribution are all disclosed and ledger-recorded for every distribution event.</p></div></div>
+        </div>
+        <div class="div-note">Dividends are event-based and governed. Not scheduled. Not guaranteed. Tied to enterprise profit realization.</div>
+      </div>
+      <div>
+        <div class="div-panel">
+          <div class="dp2-topbar"></div>
+          <div class="dp2-header">
+            <div class="dp2-title">Dividend Engine — Q4 2025</div>
+            <div class="dp2-badge">DISTRIBUTED</div>
+          </div>
+          <div class="div-summary">
+            <div class="ds-item"><div class="dsi-label">Dividend Per Unit</div><div class="dsi-val" style="color:var(--eq-gold);">$4.20</div></div>
+            <div class="ds-item"><div class="dsi-label">Total Distributed</div><div class="dsi-val" style="color:var(--white);">$36.96M</div></div>
+            <div class="ds-item"><div class="dsi-label">Distribution Date</div><div class="dsi-val" style="font-size:0.88rem;">Jan 15, 2026</div></div>
+            <div class="ds-item"><div class="dsi-label">Units Eligible</div><div class="dsi-val" style="color:var(--eq-light);">8,800,000</div></div>
+          </div>
+          <div class="div-steps">
+            <div class="dvs-label">Distribution Sequence — Q4 2025</div>
+            <div class="dvs-flow">
+              <div class="dvs-step"><div class="dvs-num">01</div><div class="dvs-text">Net profit calculation — Q4 P&amp;L finalized</div></div>
+              <div class="dvs-step"><div class="dvs-num">02</div><div class="dvs-text">Allocation pool determined — $36.96M approved</div></div>
+              <div class="dvs-step"><div class="dvs-num">03</div><div class="dvs-text">Per-unit dividend computed — $4.20 per unit</div></div>
+              <div class="dvs-step"><div class="dvs-num">04</div><div class="dvs-text">Governance board sign-off — Approved</div></div>
+              <div class="dvs-step"><div class="dvs-num">05</div><div class="dvs-text">Ledger credit to all eligible EQOUIN holders</div></div>
+            </div>
+          </div>
+          <div class="div-history">
+            <div class="dvh-label">Dividend History</div>
+            <div class="dvh-rows">
+              <div class="dvh-row hdr">
+                <span class="dvh-cell hdr">PERIOD</span>
+                <span class="dvh-cell hdr">PER UNIT</span>
+                <span class="dvh-cell hdr">TOTAL DIST.</span>
+                <span class="dvh-cell hdr">SOURCE</span>
+              </div>
+              <div class="dvh-row">
+                <span class="dvh-cell">Q4 2025</span>
+                <span class="dvh-amount">$4.20</span>
+                <span class="dvh-cell">$36.96M</span>
+                <span class="dvh-cell" style="font-size:0.56rem;">Blended</span>
+              </div>
+              <div class="dvh-row">
+                <span class="dvh-cell">Q2 2025</span>
+                <span class="dvh-amount">$3.80</span>
+                <span class="dvh-cell">$33.44M</span>
+                <span class="dvh-cell" style="font-size:0.56rem;">Vaults + Trade</span>
+              </div>
+              <div class="dvh-row">
+                <span class="dvh-cell">Q4 2024</span>
+                <span class="dvh-amount">$3.40</span>
+                <span class="dvh-cell">$29.92M</span>
+                <span class="dvh-cell" style="font-size:0.56rem;">Yield + Kaloft</span>
+              </div>
+              <div class="dvh-row">
+                <span class="dvh-cell">Q2 2024</span>
+                <span class="dvh-amount">$2.90</span>
+                <span class="dvh-cell">$25.52M</span>
+                <span class="dvh-cell" style="font-size:0.56rem;">Trading Infra</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CAPITAL APPRECIATION ═══ -->
+<section class="section" id="appreciation">
+  <div class="container">
+    <div class="appr-layout">
+      <div>
+        <div class="ey eq">Capital Appreciation</div>
+        <h2 style="color:var(--white);">Value Growth Through<br>Enterprise Expansion</h2>
+        <p style="margin-top:0.85rem;">EQOUIN appreciates when enterprise valuation increases — driven by revenue expansion, asset base growth, market infrastructure scaling, and strategic investment maturity. Appreciation is reflected in unit price adjustment and internal market demand.</p>
+        <p style="margin-top:0.85rem;">EQOUIN is structured for long-term capital growth aligned with enterprise performance — not short-term price movement.</p>
+        <div class="appr-drivers">
+          <div class="ad-item"><div class="ad-icon">⇄</div><div class="ad-title">Transaction Volume Growth</div><p class="ad-desc">Increased throughput in Kapitor Pay and Trade infrastructure raises operating margin.</p></div>
+          <div class="ad-item"><div class="ad-icon" style="color:var(--eq-gold);">◈</div><div class="ad-title">Kapitor Pay Expansion</div><p class="ad-desc">Geographic and user-base growth in the payment layer feeds revenue and enterprise valuation.</p></div>
+          <div class="ad-item"><div class="ad-icon" style="color:var(--green);">§</div><div class="ad-title">Kaloft Pool Growth</div><p class="ad-desc">Expansion of Kaloft participation pools increases AUM attribution within the enterprise valuation model.</p></div>
+          <div class="ad-item"><div class="ad-icon" style="color:var(--blue-light);">▣</div><div class="ad-title">Higher Vault AUM</div><p class="ad-desc">Growth in the five Vault strategies directly increases enterprise asset base and management revenue.</p></div>
+          <div class="ad-item"><div class="ad-icon" style="color:var(--amber);">⬡</div><div class="ad-title">Institutional Adoption</div><p class="ad-desc">Kapitor Prime client growth expands treasury deployment, custody AUM, and structured product revenue.</p></div>
+          <div class="ad-item"><div class="ad-icon" style="color:var(--eq-silver);">⊘</div><div class="ad-title">Strategic Investments</div><p class="ad-desc">Maturation of strategic capital deployment positions adds book value and revaluation upside.</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="appr-chart-wrap">
+          <div class="acw-topbar"></div>
+          <div class="acw-header">
+            <div class="acw-title">EQOUIN Appreciation Model</div>
+            <div class="acw-gain">+12.4% YTD</div>
+          </div>
+          <div class="acw-chart">
+            <svg viewBox="0 0 520 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="aprGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.2"/>
+                  <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- baseline -->
+              <line x1="0" y1="82" x2="520" y2="82" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="4,4"/>
+              <!-- appreciation path -->
+              <path d="M0 82 L65 76 L130 70 L195 63 L260 57 L325 50 L390 43 L455 36 L520 28 L520 110 L0 110 Z" fill="url(#aprGrad)"/>
+              <path d="M0 82 L65 76 L130 70 L195 63 L260 57 L325 50 L390 43 L455 36 L520 28" stroke="#a78bfa" stroke-width="2" fill="none"/>
+              <!-- enterprise events -->
+              <line x1="130" y1="15" x2="130" y2="70" stroke="rgba(200,168,74,0.25)" stroke-width="1" stroke-dasharray="3,3"/>
+              <text x="118" y="12" fill="rgba(200,168,74,0.45)" font-family="JetBrains Mono" font-size="6">Kaloft Exp.</text>
+              <line x1="325" y1="15" x2="325" y2="50" stroke="rgba(200,168,74,0.25)" stroke-width="1" stroke-dasharray="3,3"/>
+              <text x="310" y="12" fill="rgba(200,168,74,0.45)" font-family="JetBrains Mono" font-size="6">Prime Launch</text>
+              <!-- axis -->
+              <text x="4" y="90" fill="rgba(255,255,255,0.08)" font-family="JetBrains Mono" font-size="6.5">$163.80</text>
+              <text x="4" y="32" fill="rgba(167,139,250,0.45)" font-family="JetBrains Mono" font-size="6.5">$184.20</text>
+              <text x="504" y="107" fill="rgba(255,255,255,0.08)" font-family="JetBrains Mono" font-size="6.5">M12</text>
+            </svg>
+          </div>
+          <div class="acw-metrics">
+            <div class="acw-m"><div class="acw-m-label">Entry (Jan 2025)</div><div class="acw-m-val" style="color:var(--text);">$163.80</div><div class="acw-m-sub">12 months ago</div></div>
+            <div class="acw-m"><div class="acw-m-label">Current</div><div class="acw-m-val" style="color:var(--eq-light);">$184.20</div><div class="acw-m-sub">+$20.40</div></div>
+            <div class="acw-m"><div class="acw-m-label">Capital Gain</div><div class="acw-m-val" style="color:var(--green);">+12.4%</div><div class="acw-m-sub">YTD</div></div>
+          </div>
+        </div>
+        <div style="margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--eq-border);border-radius:5px;background:var(--eq-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--eq-light);">Capital appreciation is reflected in unit price adjustment, NAV expansion, and internal market demand. Long-term alignment with enterprise performance.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INTERNAL TRADING MARKET ═══ -->
+<section class="section" id="market">
+  <div class="container">
+    <div class="market-layout">
+      <div>
+        <div class="market-panel">
+          <div class="mp-topbar"></div>
+          <div class="mp-header">
+            <div class="mp-title">Internal EQOUIN Market</div>
+            <div class="mp-live"><div class="ld"></div>MARKET OPEN</div>
+          </div>
+          <!-- ORDER BOOK -->
+          <div class="order-book">
+            <div class="ob-label">Live Order Book</div>
+            <div class="ob-cols">
+              <div class="ob-side">
+                <div class="ob-side-label" style="color:var(--green);font-size:0.55rem;">BID — BUY ORDERS</div>
+                <div class="ob-row b1"><span class="ob-price-bid">$184.20</span><span class="ob-qty">8,400 units</span></div>
+                <div class="ob-row b2"><span class="ob-price-bid">$184.00</span><span class="ob-qty">12,200 units</span></div>
+                <div class="ob-row b3"><span class="ob-price-bid">$183.80</span><span class="ob-qty">5,800 units</span></div>
+              </div>
+              <div class="ob-side">
+                <div class="ob-side-label" style="color:#c05038;font-size:0.55rem;">ASK — SELL ORDERS</div>
+                <div class="ob-row a1"><span class="ob-price-ask">$184.40</span><span class="ob-qty">6,200 units</span></div>
+                <div class="ob-row a2"><span class="ob-price-ask">$184.60</span><span class="ob-qty">9,400 units</span></div>
+                <div class="ob-row a3"><span class="ob-price-ask">$184.80</span><span class="ob-qty">4,100 units</span></div>
+              </div>
+            </div>
+            <div class="ob-spread">SPREAD: $0.20 · LAST TRADE: $184.20 · VOLUME (24H): 48,400 UNITS</div>
+          </div>
+          <!-- TRADE HISTORY -->
+          <div class="trade-history">
+            <div class="th-row hdr">
+              <span class="th-cell hdr">PRICE</span>
+              <span class="th-cell hdr">UNITS</span>
+              <span class="th-cell hdr">SIDE</span>
+              <span class="th-cell hdr">TIME</span>
+            </div>
+            <div class="th-row"><span class="th-cell">$184.20</span><span class="th-cell">840</span><span class="th-buy">BUY</span><span class="th-cell">14:22:08</span></div>
+            <div class="th-row"><span class="th-cell">$184.20</span><span class="th-cell">1,200</span><span class="th-sell">SELL</span><span class="th-cell">14:21:44</span></div>
+            <div class="th-row"><span class="th-cell">$184.00</span><span class="th-cell">2,400</span><span class="th-buy">BUY</span><span class="th-cell">14:20:55</span></div>
+            <div class="th-row"><span class="th-cell">$184.00</span><span class="th-cell">600</span><span class="th-buy">BUY</span><span class="th-cell">14:19:32</span></div>
+            <div class="th-row"><span class="th-cell">$183.80</span><span class="th-cell">1,800</span><span class="th-sell">SELL</span><span class="th-cell">14:18:10</span></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey b">Internal Trading Market</div>
+        <h2 style="color:var(--white);">Controlled Liquidity.<br>No External Listing.</h2>
+        <p style="margin-top:0.85rem;">EQOUIN trades exclusively within the Kapitor internal marketplace — accessible only through compliance-tier-approved accounts. Liquidity is structured and governed. There is no external listing dependency, no external exchange volatility.</p>
+        <div class="market-features">
+          <div class="mf-item"><div class="mf-icon">◈</div><div class="mf-body"><h4>Compliance Tier Access</h4><p>EQOUIN trading is gated by compliance tier. Eligibility is verified at account level before market access is granted.</p></div></div>
+          <div class="mf-item"><div class="mf-icon">◈</div><div class="mf-body"><h4>Limit & Market Orders</h4><p>Full order book trading with limit orders, market orders, bid-ask visibility, and transaction history — within the internal marketplace.</p></div></div>
+          <div class="mf-item"><div class="mf-icon">◈</div><div class="mf-body"><h4>Settlement via Unified Ledger</h4><p>All trades settle through the Unified Ledger. Each trade generates an ownership transfer record, ledger entry, compliance log, and updated circulating supply figure.</p></div></div>
+          <div class="mf-item"><div class="mf-icon">◈</div><div class="mf-body"><h4>Liquidity Governance</h4><p>Market liquidity is actively managed. There are no uncontrolled flash prices — the Liquidity Governance system enforces order size limits and spread controls.</p></div></div>
+        </div>
+        <div class="market-note">No external listing dependency. Liquidity is structured and governed. All trades settle via Unified Ledger with full compliance logging.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GOVERNANCE & RISK ═══ -->
+<section class="section" id="governance">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey eq">Governance & Risk</div>
+      <h2 style="color:var(--white);">Issuance Limits Enforced.<br>Capital Structure Transparent.</h2>
+    </div>
+    <div class="gov-grid">
+      <div class="gg-item"><div class="gg-icon">§</div><div class="gg-title">Corporate Governance</div><p class="gg-desc">EQOUIN operates under defined corporate governance policies. All capital structure decisions require board approval.</p></div>
+      <div class="gg-item"><div class="gg-icon" style="color:var(--eq-gold);">◈</div><div class="gg-title">Financial Reporting Standards</div><p class="gg-desc">Valuation is updated in line with financial reporting cycles. Deviations from reporting standards are documented and disclosed.</p></div>
+      <div class="gg-item"><div class="gg-icon" style="color:var(--green);">⬡</div><div class="gg-title">Audit Verification</div><p class="gg-desc">Independent quarterly audits verify all valuation inputs and distribution calculations before they are applied.</p></div>
+      <div class="gg-item"><div class="gg-icon" style="color:var(--blue-light);">⊘</div><div class="gg-title">Risk Engine Monitoring</div><p class="gg-desc">Continuous risk engine oversight on circulating supply, market liquidity, and position concentration.</p></div>
+      <div class="gg-item"><div class="gg-icon" style="color:var(--amber);">▣</div><div class="gg-title">Compliance-Based Eligibility</div><p class="gg-desc">Participation in EQOUIN issuance and internal market trading requires compliance tier verification.</p></div>
+      <div class="gg-item"><div class="gg-icon" style="color:var(--eq-silver);">⇄</div><div class="gg-title">Issuance Limits Enforced</div><p class="gg-desc">Dilution events are documented. Capital structure updates are transparent and require governance approval before execution.</p></div>
+    </div>
+    <div class="risk-grid">
+      <div class="rg-item"><div class="rg-risk">RISK FACTOR 01</div><div class="rg-title">Business Performance Risk</div><p class="rg-desc">EQOUIN valuation is directly tied to enterprise operating performance. Revenue decline reduces unit value.</p><div class="rg-bar"><div class="rg-fill" style="width:38%;background:var(--amber);"></div></div></div>
+      <div class="rg-item"><div class="rg-risk">RISK FACTOR 02</div><div class="rg-title">Revenue Fluctuation</div><p class="rg-desc">Quarterly and annual revenue variability may affect dividend eligibility and valuation inputs.</p><div class="rg-bar"><div class="rg-fill" style="width:32%;background:var(--amber);"></div></div></div>
+      <div class="rg-item"><div class="rg-risk">RISK FACTOR 03</div><div class="rg-title">Regulatory Changes</div><p class="rg-desc">Changes in financial or digital asset regulation may affect EQOUIN structure, market access, or dividend policy.</p><div class="rg-bar"><div class="rg-fill" style="width:25%;background:var(--blue-light);"></div></div></div>
+      <div class="rg-item"><div class="rg-risk">RISK FACTOR 04</div><div class="rg-title">Market Liquidity Constraints</div><p class="rg-desc">Internal market liquidity is governed but not unlimited. Large position exits may face structured settlement windows.</p><div class="rg-bar"><div class="rg-fill" style="width:20%;background:var(--green);"></div></div></div>
+    </div>
+    <div style="margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--border-md);border-radius:5px;background:var(--surface);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">All risks are documented prior to participation. Capital restructuring events are disclosed in advance. No surprises.</div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey eq">Dashboard Overview</div>
+      <h2 style="color:var(--white);">Holder & Institutional<br>EQOUIN Views</h2>
+    </div>
+    <div class="dash-panels">
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--eq),var(--eq-silver));"></div>
+        <div class="dp-header"><div class="dp-title">EQOUIN Holder Dashboard</div><div class="dp-tag">QUALIFIED</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Units Held</div><div class="dp-m-val" style="color:var(--white);">4,800</div><div class="dp-m-sub" style="color:var(--text-dim);">0.048% of issued</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Current Unit Value</div><div class="dp-m-val" style="color:var(--eq-light);">$184.20</div><div class="dp-m-sub" style="color:var(--eq);">+12.4% YTD</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Portfolio Value</div><div class="dp-m-val" style="color:var(--white);">$884,160</div><div class="dp-m-sub" style="color:var(--green);">+$97,920 gain</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Dividend (Q4 2025)</div><div class="dp-m-val" style="color:var(--eq-gold);">$20,160</div><div class="dp-m-sub" style="color:var(--text-dim);">$4.20 × 4,800</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Internal Market Price</span><span class="dp-row-val">$184.20 bid · $184.40 ask</span></div>
+          <div class="dp-row"><span class="dp-row-key">Trading Availability</span><span class="dp-row-val" style="color:var(--green);">Active · Limit & Market</span></div>
+          <div class="dp-row"><span class="dp-row-key">Capital Gain (Total)</span><span class="dp-row-val" style="color:var(--green);">+$97,920</span></div>
+          <div class="dp-row"><span class="dp-row-key">Dividend History</span><span class="dp-row-val">4 distributions · $67,200 total</span></div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--eq-gold),var(--eq));"></div>
+        <div class="dp-header"><div class="dp-title">Institutional Dashboard</div><div class="dp-tag" style="color:var(--eq);border-color:var(--eq-border);background:var(--eq-dim);">PRIME</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Units Held</div><div class="dp-m-val" style="color:var(--white);">840,000</div><div class="dp-m-sub" style="color:var(--text-dim);">8.4% of issued</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Portfolio Value</div><div class="dp-m-val" style="color:var(--eq-light);">$154.7M</div><div class="dp-m-sub" style="color:var(--green);">+12.4% YTD</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Governance Rights</div><div class="dp-m-val" style="color:var(--eq-gold);">Active</div><div class="dp-m-sub" style="color:var(--text-dim);">Voting enabled</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Capital Analytics</div><div class="dp-m-val" style="color:var(--blue-light);">Full</div><div class="dp-m-sub" style="color:var(--text-dim);">Structure access</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Ownership Distribution</span><span class="dp-row-val">8.4% of circulating</span></div>
+          <div class="dp-row"><span class="dp-row-key">Governance Voting Rights</span><span class="dp-row-val" style="color:var(--green);">Enabled</span></div>
+          <div class="dp-row"><span class="dp-row-key">Capital Structure Analytics</span><span class="dp-row-val">Full access</span></div>
+          <div class="dp-row"><span class="dp-row-key">Strategic Reports</span><span class="dp-row-val">Quarterly · Board level</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey eq" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Enterprise Value. Structured Participation.</div>
+      <h2>EQOUIN — Digital Equity Aligned<br>with Enterprise Performance.</h2>
+      <p>Governed by transparency, ledger reconciliation, and structured market controls.</p>
+      <div class="fc-three">
+        <span class="fct-item active">Not speculation</span>
+        <span class="fct-item active">Not external exchange volatility</span>
+        <span class="fct-item active">Structured enterprise participation</span>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Acquire EQOUIN</button>
+        <button class="btn-final-out">View Valuation Reports</button>
+        <button class="btn-final-out">Access Internal Market</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="index.html">Smart Wallet</a></li><li><a href="gp.html">Pay</a></li><li><a href="#">Trade</a></li><li><a href="#">Earn</a></li><li><a href="#">Stake</a></li><li><a href="#">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="#">Kaloft (EPT)</a></li><li><a href="#">Katoin</a></li><li><a href="#" style="color:var(--eq-light);">EQOUIN</a></li><li><a href="#">KFI</a></li><li><a href="rwa.html">RWA</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="#">Custody</a></li><li><a href="#">Treasury</a></li><li><a href="#">FX</a></li><li><a href="#">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Infrastructure</h5><ul><li><a href="#">Payment Rails</a></li><li><a href="#">Jurisdictions</a></li><li><a href="compliance.html">Compliance</a></li><li><a href="#">Proof of Reserves</a></li><li><a href="#">Security</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="company.html">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Media</a></li><li><a href="#">Contact</a></li><li><a href="#">Whitepaper</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Risk Disclosure</a><a href="#">EQOUIN Documentation</a><a href="#">AML Policy</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  window.addEventListener("scroll",()=>{document.getElementById("hdr").style.padding=window.scrollY>60?"0.65rem 2.5rem":"1rem 2.5rem";});
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});},{threshold:0.06});
+  document.querySelectorAll(
+    ".vf-item,.df-item,.mf-item,.ad-item,.gg-item,.rg-item,.dvs-step,.dvh-row,.th-row,.vpi-row,.vpm-item,.ob-row,.dp-metric,.dp-row,.fct-item"
+  ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
+  (function(){
+    var header=document.getElementById("hdr");
+    var mobileToggle=document.querySelector(".nav-mobile-toggle");
+    function isMobile(){return window.innerWidth<=900;}
+    if(mobileToggle&&header){
+      mobileToggle.addEventListener("click",function(){
+        header.classList.toggle("header-mobile-open");
+        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+      });
+    }
+    document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+      btn.addEventListener("click",function(e){
+        if(isMobile()){e.preventDefault();var wrap=btn.closest(".nav-item-wrap");wrap.classList.toggle("open");btn.setAttribute("aria-expanded",wrap.classList.contains("open"));}
+      });
+    });
+  })();
+</script>
+</body>
+</html>

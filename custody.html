@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Institutional Custody | Kapitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+:root {
+  /* KAP light theme */
+  --bg:#FCF8E8;
+  --surface:#FFFFFF;
+  --surface2:#F5ECD6;
+  --surface3:#F5ECD6;
+  --border:rgba(15,23,42,0.08);
+  --border-md:rgba(15,23,42,0.16);
+
+  --green:#33B269;  --green-dim:rgba(51,178,105,0.12); --green-border:rgba(51,178,105,0.2);
+  --amber:#F7AE40;  --amber-dim:rgba(247,174,64,0.14); --amber-border:rgba(247,174,64,0.22);
+
+  /* Custody: cold steel / titanium white / vault grey */
+  --cu:#6b7a9e;       --cu-light:#1878a8;
+  --cu-dim:rgba(24,120,168,0.08);    --cu-border:rgba(24,120,168,0.2);
+  --cu-steel:#4a5878; --cu-steel-dim:rgba(74,88,120,0.1); --cu-steel-border:rgba(74,88,120,0.22);
+  --cu-ice:#7898c8;   --cu-ice-dim:rgba(120,152,200,0.09);
+  --cu-safe:#1878a8;
+  --cu-safe-dim:rgba(24,120,168,0.1); --cu-safe-border:rgba(24,120,168,0.22);
+  --cu-gold:#b09028;  --cu-gold-dim:rgba(176,144,40,0.09); --cu-gold-border:rgba(176,144,40,0.2);
+
+  --cold-c:#2850a0;   --hot-c:#1878a8;   --seg-c:#3870c0;   --msig-c:#1898b8;
+
+  --text:#111827;  --text-muted:#6B6B6B;  --text-dim:#9CA3AF;  --white:#fff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:300;line-height:1.65;overflow-x:hidden;}
+body::after{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+h1,h2,h3{font-family:'Outfit',system-ui,sans-serif;font-weight:700;letter-spacing:-0.03em;color:var(--text);}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.cu{color:var(--cu-light);}    .ey.cu::before{background:var(--cu-light);}
+.ey.safe{color:var(--cu-safe);}  .ey.safe::before{background:var(--cu-safe);filter:brightness(1.4);}
+.ey.gold{color:var(--cu-gold);}  .ey.gold::before{background:var(--cu-gold);}
+.ey.g{color:var(--green);}       .ey.g::before{background:var(--green);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--text);margin-bottom:0.85rem;}
+
+/* ─── HEADER ─── */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--cu-light);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--cu-border);color:var(--cu-light);}
+.btn-cta{background:var(--cu-safe);color:var(--white);border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-cta:hover{filter:brightness(1.2);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;}
+
+/* ─── HERO ─── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+/* vault door aesthetic — concentric rectangles */
+.hero-vault{position:absolute;top:50%;right:-2%;transform:translateY(-50%);width:580px;height:580px;pointer-events:none;}
+.hv-ring{position:absolute;border:1px solid;border-radius:8px;top:50%;left:50%;transform:translate(-50%,-50%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(200,212,232,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(200,212,232,0.012) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 70% at 35% 50%,black 10%,transparent 72%);}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(200,212,232,0.2);border-radius:3px;background:rgba(200,212,232,0.05);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--cu-light);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero-content{position:relative;z-index:2;max-width:840px;}
+.hero h1{color:var(--text);margin-bottom:0.6rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.64rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:540px;color:rgba(152,168,192,0.5);margin-bottom:2rem;line-height:1.8;}
+/* three-pillar */
+.three-pillars{display:flex;gap:0;margin-bottom:2rem;}
+.tp-item{flex:1;padding:0.75rem 1rem;border:1px solid var(--border-md);border-right:none;display:flex;flex-direction:column;gap:0.2rem;}
+.tp-item:first-child{border-radius:4px 0 0 4px;}
+.tp-item:last-child{border-right:1px solid var(--border-md);border-radius:0 4px 4px 0;}
+.tp-label{font-family:"JetBrains Mono",monospace;font-size:0.5rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);}
+.tp-val{font-family:"JetBrains Mono",monospace;font-size:0.65rem;color:var(--cu-light);}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--cu-safe);color:var(--white);border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{filter:brightness(1.2);transform:translateY(-1px);box-shadow:0 10px 40px rgba(24,120,168,0.28);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--cu-border);color:var(--cu-light);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:"Syne",sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--cu-light);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 50s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--cu-light);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* ─── ARCHITECTURE LAYER CARDS ─── */
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.ac-card{background:var(--surface);overflow:hidden;transition:background 0.25s;}
+.ac-card:hover{background:var(--surface2);}
+.acc-topbar{height:3px;}
+.acc-header{padding:1.75rem 1.75rem 1rem;}
+.acc-num{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.acc-icon-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.65rem;}
+.acc-badge{font-family:"JetBrains Mono",monospace;font-size:0.62rem;font-weight:700;padding:0.32rem 0.75rem;border-radius:4px;letter-spacing:0.08em;}
+.acc-name{font-family:"Syne",sans-serif;font-size:1.05rem;font-weight:700;color:var(--white);margin-bottom:0.18rem;}
+.acc-sub{font-family:"JetBrains Mono",monospace;font-size:0.56rem;letter-spacing:0.07em;margin-bottom:0.65rem;}
+.acc-desc{font-size:0.76rem;color:var(--text-muted);line-height:1.7;margin-bottom:0.85rem;}
+.acc-body{padding:0 1.75rem;}
+.acc-items{display:flex;flex-direction:column;gap:0;}
+.acc-item{display:flex;align-items:center;gap:7px;padding:0.38rem 0;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);}
+.acc-item:last-child{border-bottom:none;}
+.acc-item::before{content:"→";font-size:0.55rem;flex-shrink:0;opacity:0.35;}
+
+/* ─── ASSET COVERAGE ─── */
+.assets-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:12px;overflow:hidden;}
+.ap-topbar{height:2px;background:linear-gradient(90deg,var(--cold-c),var(--cu-safe),var(--cu-ice));}
+.ap-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.ap-title{font-family:"Syne",sans-serif;font-size:0.95rem;font-weight:700;color:var(--white);}
+.ap-sub{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--cu-light);letter-spacing:0.08em;}
+/* asset rows */
+.asset-table{padding:0.25rem 0;}
+.at-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:0.62rem 1.75rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.6rem;align-items:center;transition:background 0.15s;}
+.at-row.hdr{background:rgba(0,0,0,0.2);}
+.at-row:last-child{border-bottom:none;}
+.at-row:hover{background:rgba(200,212,232,0.02);}
+.at-cell{color:var(--text-muted);}
+.at-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.at-asset{display:flex;align-items:center;gap:7px;}
+.at-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.at-name{color:var(--text);}
+.at-status{display:inline-block;padding:0.15rem 0.45rem;border-radius:2px;font-size:0.52rem;letter-spacing:0.06em;}
+.st-active{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.st-held{background:var(--cu-dim);color:var(--cu-light);border:1px solid var(--cu-border);}
+/* cold/hot allocation bar */
+.cold-hot-bar{padding:1.25rem 1.75rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:0.6rem;}
+.chb-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);}
+.chb-track{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:1px;}
+.chb-cold{background:var(--cold-c);}
+.chb-hot{background:var(--cu-safe);}
+.chb-buf{background:var(--cu-ice);opacity:0.5;}
+.chb-legend{display:flex;gap:1.5rem;}
+.chb-li{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);}
+.chb-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+
+/* ─── TX WORKFLOW + ROLES ─── */
+.workflow-layout{display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:start;}
+.workflow-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.wp-topbar{height:2px;background:linear-gradient(90deg,var(--cu-safe),var(--cold-c));}
+.wp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.wp-title{font-family:"Syne",sans-serif;font-size:0.9rem;font-weight:600;color:var(--white);}
+.wp-badge{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+/* 7-step workflow */
+.tx-steps{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.txs-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.txs-flow{display:flex;flex-direction:column;gap:0.3rem;}
+.txs-step{display:flex;align-items:center;gap:10px;padding:0.52rem 0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:5px;border-left:2px solid var(--cu-safe);}
+.txs-num{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--cu-light);width:18px;flex-shrink:0;}
+.txs-text{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);}
+.txs-check{font-family:"JetBrains Mono",monospace;font-size:0.54rem;color:var(--green);margin-left:auto;flex-shrink:0;}
+/* sample auth request */
+.tx-sample{padding:1.25rem 1.75rem;}
+.sample-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.sample-card{background:rgba(24,120,168,0.07);border:1px solid var(--cu-safe-border);border-radius:6px;padding:0.85rem 1rem;}
+.sc-row{display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--border);}
+.sc-row:last-child{border-bottom:none;}
+.sc-key{font-family:"JetBrains Mono",monospace;font-size:0.57rem;color:var(--text-muted);}
+.sc-val{font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+/* roles grid */
+.roles-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:2rem;}
+.role-item{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1rem 1.1rem;border-top:2px solid var(--cu-steel);transition:border-color 0.2s;}
+.role-item:hover{border-color:var(--cu-safe);}
+.ri-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);margin-bottom:0.3rem;}
+.ri-caps{display:flex;flex-direction:column;gap:0.18rem;}
+.ri-cap{font-family:"JetBrains Mono",monospace;font-size:0.56rem;color:var(--text-muted);}
+
+/* ─── SECURITY INFRA ─── */
+.security-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.sg-item{background:var(--surface);padding:1.5rem 1.4rem;transition:background 0.2s;}
+.sg-item:hover{background:var(--surface2);}
+.sg-icon{font-size:0.9rem;color:var(--cu-light);margin-bottom:0.5rem;}
+.sg-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);margin-bottom:0.3rem;}
+.sg-desc{font-size:0.73rem;color:var(--text-muted);}
+
+/* ─── DASHBOARD ─── */
+.dash-panels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.dash-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp-topbar{height:2px;}
+.dp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:600;color:var(--white);}
+.dp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.dp-metric{background:var(--surface);padding:1rem 1.1rem;}
+.dp-m-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.dp-m-val{font-family:"Syne",sans-serif;font-size:1rem;font-weight:700;}
+.dp-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-top:0.18rem;}
+.dp-rows{padding:0.25rem 0;}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.6rem;border-bottom:1px solid var(--border);}
+.dp-row:last-child{border-bottom:none;}
+.dp-row-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.dp-row-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);}
+/* allocation breakdown */
+.alloc-breakdown{padding:0 1.6rem 1.25rem;border-top:1px solid var(--border);}
+.ab-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin:0.85rem 0 0.5rem;}
+.ab-bars{display:flex;flex-direction:column;gap:0.3rem;}
+.ab-row{display:flex;align-items:center;gap:0.6rem;}
+.ab-name{font-family:"JetBrains Mono",monospace;font-size:0.57rem;color:var(--text-muted);width:90px;flex-shrink:0;}
+.ab-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.ab-fill{height:100%;border-radius:2px;}
+.ab-pct{font-family:"JetBrains Mono",monospace;font-size:0.56rem;color:var(--text-dim);width:28px;text-align:right;flex-shrink:0;}
+/* pending auth */
+.pending-auths{padding:0 1.6rem 1.25rem;border-top:1px solid var(--border);}
+.pa-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin:0.85rem 0 0.5rem;}
+.pa-item{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border);}
+.pa-item:last-child{border-bottom:none;}
+.pa-info{display:flex;flex-direction:column;gap:2px;}
+.pa-id{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--cu-light);}
+.pa-desc{font-family:"JetBrains Mono",monospace;font-size:0.55rem;color:var(--text-dim);}
+.pa-status{font-family:"JetBrains Mono",monospace;font-size:0.54rem;padding:0.15rem 0.45rem;border-radius:2px;background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-border);}
+
+/* ─── FINAL CTA ─── */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(24,120,168,0.07) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--white);margin-bottom:0.75rem;max-width:600px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:460px;margin:0 auto 2rem;}
+.fc-four{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;max-width:640px;margin:0 auto 2.5rem;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.fcf-item{background:var(--surface);padding:0.85rem 0.75rem;text-align:center;}
+.fcf-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--cu-light);margin-bottom:0.18rem;}
+.fcf-sub{font-family:"JetBrains Mono",monospace;font-size:0.52rem;color:var(--text-dim);}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-final{background:var(--cu-safe);color:var(--white);border:none;padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{filter:brightness(1.2);box-shadow:0 10px 40px rgba(24,120,168,0.3);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--cu-border);color:var(--cu-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:'Outfit',system-ui,sans-serif;font-size:1.15rem;font-weight:700;color:var(--text);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--cu-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover{color:var(--text);}
+.nav-link.active{color:var(--cu-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .arch-grid{grid-template-columns:repeat(2,1fr);}
+  .security-grid{grid-template-columns:repeat(2,1fr);}
+  .at-row{grid-template-columns:2fr 1fr 1fr;}
+  .at-row>*:nth-child(4),.at-row.hdr>*:nth-child(4){display:none;}
+  .fc-four{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .workflow-layout,.dash-panels{grid-template-columns:1fr;}
+  .arch-grid,.security-grid{grid-template-columns:1fr;}
+  .roles-grid{grid-template-columns:1fr;}
+  .three-pillars{flex-wrap:wrap;}
+  .tp-item{flex:1 1 45%;}
+  .tp-item:last-child{border-right:1px solid var(--border-md);}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .fc-four{grid-template-columns:repeat(2,1fr);}
+  .hero-vault{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <!-- Vault door concentric rings -->
+  <div class="hero-vault">
+    <div class="hv-ring" style="width:520px;height:520px;border-color:rgba(200,212,232,0.04);"></div>
+    <div class="hv-ring" style="width:420px;height:420px;border-color:rgba(200,212,232,0.055);"></div>
+    <div class="hv-ring" style="width:320px;height:320px;border-color:rgba(200,212,232,0.07);"></div>
+    <div class="hv-ring" style="width:220px;height:220px;border-color:rgba(200,212,232,0.09);"></div>
+    <div class="hv-ring" style="width:120px;height:120px;border-color:rgba(200,212,232,0.12);background:rgba(24,120,168,0.04);"></div>
+  </div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>INSTITUTIONAL CUSTODY · KAPITOR PRIME · SEGREGATED · LEDGER-RECONCILED</div>
+      <h1 style="color:var(--white);">Capital Protection<br><span style="color:var(--cu-light);">Without Compromise.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip" style="background:var(--cu-dim);border:1px solid var(--cu-border);color:var(--cu-light);">CUSTODY</span>
+        <span class="token-chip" style="background:var(--cu-safe-dim);border:1px solid var(--cu-safe-border);color:#6ab0d8;">INSTITUTIONAL</span>
+        <span style="color:var(--text-dim);">Segregated · Multi-Sig · Audit-Traceable · Ledger-Governed</span>
+      </div>
+      <p class="hero-sub">Not wallet storage. Regulated capital custody infrastructure — designed for corporations, funds, asset managers, and treasury operators requiring structured, governed asset protection. All balances segregated, reconciled, and audit-traceable.</p>
+      <div class="three-pillars">
+        <div class="tp-item"><div class="tp-label">Architecture</div><div class="tp-val">Segregated Accounts</div></div>
+        <div class="tp-item"><div class="tp-label">Authorization</div><div class="tp-val">Multi-Signature</div></div>
+        <div class="tp-item"><div class="tp-label">Storage</div><div class="tp-val">Cold + Hot + Buffer</div></div>
+        <div class="tp-item"><div class="tp-label">Truth</div><div class="tp-val">Unified Ledger</div></div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Request Institutional Custody Access</button>
+        <button class="btn-out">Speak with Prime Desk →</button>
+        <button class="btn-out">Download Custody Framework →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Assets Under Custody</div>
+          <div class="hm-val" style="color:var(--cu-light);">$18.4B</div>
+          <div class="hm-sub"><span class="up">▲ 12.2%</span> YTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Institutional Clients</div>
+          <div class="hm-val" style="color:var(--white);">284</div>
+          <div class="hm-sub">KYB verified</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Co-mingling</div>
+          <div class="hm-val" style="color:var(--green);font-size:1rem;padding-top:0.2rem;">Zero</div>
+          <div class="hm-sub">Client assets segregated</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Cold Storage</div>
+          <div class="hm-val" style="color:var(--cu-light);">82%</div>
+          <div class="hm-sub">Long-term holdings</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Off-Ledger Custody</div>
+          <div class="hm-val" style="color:var(--green);font-size:1rem;padding-top:0.2rem;">None</div>
+          <div class="hm-sub">Ledger is truth</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">AUC</span><span class="up">$18.4B · 284 CLIENTS</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">COLD STORAGE</span><span class="up">82% · LONG-TERM</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">CO-MINGLING</span>ZERO — CLIENT SEGREGATED</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">MULTI-SIG</span><span class="up">ENFORCED · ALL WITHDRAWALS</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">LEDGER SYNC</span><span class="up">REAL-TIME · UNIFIED</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">OFF-LEDGER CUSTODY</span>NONE</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">AUDIT STATUS</span><span class="up">CONTINUOUS · TRACEABLE</span></span>
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">AUC</span><span class="up">$18.4B · 284 CLIENTS</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">COLD STORAGE</span><span class="up">82% · LONG-TERM</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">CO-MINGLING</span>ZERO — CLIENT SEGREGATED</span>
+  </div>
+</div>
+
+<!-- ═══ ARCHITECTURE LAYERS ═══ -->
+<section class="section" id="architecture">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey cu">Custody Architecture</div>
+      <h2 style="color:var(--white);">Three Layers. No Single<br>Point of Authorization.</h2>
+      <p>Kapitor Custody operates under a structured multi-layer asset control model. Segregated accounts, multi-signature authorization, and cold-plus-hot infrastructure — each layer independently enforced.</p>
+    </div>
+    <div class="arch-grid">
+
+      <!-- SEGREGATED -->
+      <div class="ac-card">
+        <div class="acc-topbar" style="background:var(--seg-c);"></div>
+        <div class="acc-header">
+          <div class="acc-num">LAYER 01</div>
+          <div class="acc-icon-row">
+            <div class="acc-badge" style="background:rgba(56,112,192,0.12);border:1px solid rgba(56,112,192,0.28);color:#80a8e8;">SEGREGATED ACCOUNTS</div>
+            <span style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:#80a8e8;">284</span>
+          </div>
+          <div class="acc-name">Segregated Accounts</div>
+          <div class="acc-sub" style="color:#80a8e8;">ISOLATED CLIENT CAPITAL</div>
+          <p class="acc-desc">Each institutional client receives dedicated custody accounts with segregated on-ledger balances and isolated risk exposure. Client assets are never co-mingled with operational capital.</p>
+        </div>
+        <div class="acc-body">
+          <div class="acc-items">
+            <div class="acc-item">Dedicated custody accounts per entity</div>
+            <div class="acc-item">Segregated on-ledger balance tracking</div>
+            <div class="acc-item">Isolated risk exposure per client</div>
+            <div class="acc-item">Independent transaction logs</div>
+            <div class="acc-item">Zero co-mingling with operational funds</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MULTI-SIG -->
+      <div class="ac-card">
+        <div class="acc-topbar" style="background:var(--msig-c);"></div>
+        <div class="acc-header">
+          <div class="acc-num">LAYER 02</div>
+          <div class="acc-icon-row">
+            <div class="acc-badge" style="background:rgba(24,152,184,0.12);border:1px solid rgba(24,152,184,0.28);color:#60c0d8;">MULTI-SIG AUTH</div>
+            <span style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:#60c0d8;">M-of-N</span>
+          </div>
+          <div class="acc-name">Multi-Signature Authorization</div>
+          <div class="acc-sub" style="color:#60c0d8;">NO SINGLE AUTHORIZATION POINT</div>
+          <p class="acc-desc">All withdrawals require tier-based approval hierarchy, multi-signature confirmation, and dual or multi-party validation. Optional time-locked execution. No single key controls any custody position.</p>
+        </div>
+        <div class="acc-body">
+          <div class="acc-items">
+            <div class="acc-item">Tier-based approval hierarchy</div>
+            <div class="acc-item">Multi-signature confirmation required</div>
+            <div class="acc-item">Dual / multi-party validation</div>
+            <div class="acc-item">Time-locked execution (optional)</div>
+            <div class="acc-item">No single authorization point</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLD + HOT -->
+      <div class="ac-card">
+        <div class="acc-topbar" style="background:linear-gradient(90deg,var(--cold-c),var(--cu-safe));"></div>
+        <div class="acc-header">
+          <div class="acc-num">LAYER 03</div>
+          <div class="acc-icon-row">
+            <div class="acc-badge" style="background:rgba(40,80,160,0.12);border:1px solid rgba(40,80,160,0.28);color:#80a0e0;">COLD + HOT INFRA</div>
+            <span style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:#80a0e0;">82 / 12</span>
+          </div>
+          <div class="acc-name">Cold + Hot Infrastructure</div>
+          <div class="acc-sub" style="color:#80a0e0;">TIERED STORAGE ARCHITECTURE</div>
+          <p class="acc-desc">Assets distributed across cold storage (long-term holdings), controlled hot infrastructure (settlement needs), and a liquidity buffer layer. Movement between tiers requires governance approval and logging.</p>
+        </div>
+        <div class="acc-body">
+          <div class="acc-items">
+            <div class="acc-item">Cold storage — 82% long-term holdings</div>
+            <div class="acc-item">Hot infra — 12% settlement liquidity</div>
+            <div class="acc-item">Buffer layer — 6% liquidity reserve</div>
+            <div class="acc-item">Tier movement requires governance</div>
+            <div class="acc-item">All movements logged + timestamped</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ASSET COVERAGE ═══ -->
+<section class="section" id="assets">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey cu">Asset Coverage</div>
+      <h2 style="color:var(--white);">Eight Asset Classes.<br>One Custody Architecture.</h2>
+    </div>
+    <div class="assets-panel">
+      <div class="ap-topbar"></div>
+      <div class="ap-header">
+        <div class="ap-title">Custody Asset Coverage</div>
+        <div class="ap-sub">ALL CLASSES · RESERVE-MAPPED · LEDGER-RECONCILED</div>
+      </div>
+      <div class="asset-table">
+        <div class="at-row hdr">
+          <span class="at-cell hdr">ASSET CLASS</span>
+          <span class="at-cell hdr">RESERVE</span>
+          <span class="at-cell hdr">RECONCILE</span>
+          <span class="at-cell hdr">STATUS</span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:#5ab0e8;"></div><span class="at-name">Fiat Balances</span></div>
+          <span class="at-cell" style="color:var(--green);">100% mapped</span>
+          <span class="at-cell">Real-time</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:#f0b866;"></div><span class="at-name">Major Digital Assets</span></div>
+          <span class="at-cell" style="color:var(--green);">100% mapped</span>
+          <span class="at-cell">Real-time</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:#88d8a8;"></div><span class="at-name">Stablecoins</span></div>
+          <span class="at-cell" style="color:var(--green);">100% mapped</span>
+          <span class="at-cell">Real-time</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:#5ad8d0;"></div><span class="at-name">Kaloft Pool Capital</span></div>
+          <span class="at-cell" style="color:var(--green);">Pool-mapped</span>
+          <span class="at-cell">Per epoch</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:#e8c870;"></div><span class="at-name">Katoin Commodity Tokens</span></div>
+          <span class="at-cell" style="color:var(--green);">Vault-backed</span>
+          <span class="at-cell">Real-time</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:#c0a8f8;"></div><span class="at-name">EQOUIN Holdings</span></div>
+          <span class="at-cell" style="color:var(--green);">Enterprise-mapped</span>
+          <span class="at-cell">Ledger</span>
+          <span><span class="at-status st-held">HELD</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:#90d890;"></div><span class="at-name">RWA Tokens</span></div>
+          <span class="at-cell" style="color:var(--green);">Custody-verified</span>
+          <span class="at-cell">Appraisal cycle</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:#80a8e0;"></div><span class="at-name">KFI Instrument Collateral</span></div>
+          <span class="at-cell" style="color:var(--green);">128% ratio</span>
+          <span class="at-cell">Continuous</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+      </div>
+      <!-- cold/hot bar -->
+      <div class="cold-hot-bar">
+        <div class="chb-label">Cold / Hot / Buffer Allocation — $18.4B</div>
+        <div class="chb-track">
+          <div class="chb-cold" style="width:82%;"></div>
+          <div class="chb-hot" style="width:12%;"></div>
+          <div class="chb-buf" style="width:6%;"></div>
+        </div>
+        <div class="chb-legend">
+          <div class="chb-li"><div class="chb-dot" style="background:var(--cold-c);"></div>Cold Storage 82% — $15.1B</div>
+          <div class="chb-li"><div class="chb-dot" style="background:var(--cu-safe);"></div>Hot Infrastructure 12% — $2.2B</div>
+          <div class="chb-li"><div class="chb-dot" style="background:var(--cu-ice);opacity:0.6;"></div>Liquidity Buffer 6% — $1.1B</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TRANSACTION WORKFLOW + ROLES ═══ -->
+<section class="section" id="workflow">
+  <div class="container">
+    <div class="workflow-layout">
+      <div>
+        <div class="workflow-panel">
+          <div class="wp-topbar"></div>
+          <div class="wp-header">
+            <div class="wp-title">Transaction Workflow</div>
+            <div class="wp-badge">NO OFF-LEDGER EXECUTION</div>
+          </div>
+          <div class="tx-steps">
+            <div class="txs-label">Seven-Step Custody Transaction Sequence</div>
+            <div class="txs-flow">
+              <div class="txs-step"><span class="txs-num">01</span><span class="txs-text">Authorization request — role-based submission</span><span class="txs-check">→</span></div>
+              <div class="txs-step"><span class="txs-num">02</span><span class="txs-text">Role-based approval — M-of-N signatures required</span><span class="txs-check">→</span></div>
+              <div class="txs-step"><span class="txs-num">03</span><span class="txs-text">Compliance screening — AML + jurisdiction check</span><span class="txs-check">→</span></div>
+              <div class="txs-step"><span class="txs-num">04</span><span class="txs-text">Risk scoring — exposure ceiling verified</span><span class="txs-check">→</span></div>
+              <div class="txs-step"><span class="txs-num">05</span><span class="txs-text">Ledger confirmation — Unified Ledger entry created</span><span class="txs-check">→</span></div>
+              <div class="txs-step"><span class="txs-num">06</span><span class="txs-text">Settlement execution — rail routed via GIPS</span><span class="txs-check">→</span></div>
+              <div class="txs-step" style="border-left-color:var(--green);"><span class="txs-num" style="color:var(--green);">07</span><span class="txs-text">Audit log creation — immutable · timestamped</span><span class="txs-check">✓</span></div>
+            </div>
+          </div>
+          <div class="tx-sample">
+            <div class="sample-label">Sample Authorization Request</div>
+            <div class="sample-card">
+              <div class="sc-row"><span class="sc-key">Request ID</span><span class="sc-val" style="color:var(--cu-light);">AUTH-CUS-00284</span></div>
+              <div class="sc-row"><span class="sc-key">Entity</span><span class="sc-val">ENT-CORP-0028 · Treasury Officer</span></div>
+              <div class="sc-row"><span class="sc-key">Action</span><span class="sc-val">Withdrawal · $8.4M USDC</span></div>
+              <div class="sc-row"><span class="sc-key">Whitelist</span><span class="sc-val" style="color:var(--green);">Destination verified ✓</span></div>
+              <div class="sc-row"><span class="sc-key">Approvers Required</span><span class="sc-val">2 of 3 · Pending 1</span></div>
+              <div class="sc-row"><span class="sc-key">Timelock</span><span class="sc-val">4h · Governance enforced</span></div>
+              <div class="sc-row"><span class="sc-key">Status</span><span class="sc-val" style="color:var(--amber);">AWAITING APPROVAL</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey safe">Access Control</div>
+        <h2 style="color:var(--white);">Role-Based Institutional<br>Access Configuration.</h2>
+        <p style="margin-top:0.85rem;">Kapitor Prime clients configure granular role-based access for custody operations. Every role has defined permissions, spend limits, and geographic restrictions. Every role action is logged and timestamped.</p>
+        <div class="roles-grid">
+          <div class="role-item">
+            <div class="ri-title">Treasury Officer</div>
+            <div class="ri-caps">
+              <div class="ri-cap">→ Withdrawal initiation</div>
+              <div class="ri-cap">→ Capital deployment</div>
+              <div class="ri-cap">→ Policy configuration</div>
+            </div>
+          </div>
+          <div class="role-item">
+            <div class="ri-title">Compliance Officer</div>
+            <div class="ri-caps">
+              <div class="ri-cap">→ AML review access</div>
+              <div class="ri-cap">→ Transaction approval gate</div>
+              <div class="ri-cap">→ Restriction controls</div>
+            </div>
+          </div>
+          <div class="role-item">
+            <div class="ri-title">Auditor View</div>
+            <div class="ri-caps">
+              <div class="ri-cap">→ Read-only access</div>
+              <div class="ri-cap">→ Immutable log export</div>
+              <div class="ri-cap">→ Balance reconciliation</div>
+            </div>
+          </div>
+          <div class="role-item">
+            <div class="ri-title">Transaction Approver</div>
+            <div class="ri-caps">
+              <div class="ri-cap">→ M-of-N signing rights</div>
+              <div class="ri-cap">→ Withdrawal approval</div>
+              <div class="ri-cap">→ Timelock override (if authorized)</div>
+            </div>
+          </div>
+          <div class="role-item" style="grid-column:span 2;">
+            <div class="ri-title">API Access Role</div>
+            <div class="ri-caps" style="flex-direction:row;gap:1.5rem;">
+              <div class="ri-cap">→ Programmatic custody access</div>
+              <div class="ri-cap">→ Automated reporting</div>
+              <div class="ri-cap">→ ERP / treasury software integration</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;padding:0.85rem 1.2rem;border:1px solid var(--cu-safe-border);border-radius:5px;background:var(--cu-safe-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#6ab0d8;">Every role action is logged and timestamped. No untracked access. Custody does not exist outside the ledger.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECURITY ═══ -->
+<section class="section" id="security">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey cu">Security Infrastructure</div>
+      <h2 style="color:var(--white);">Security Is Architectural.<br>Not Reactive.</h2>
+    </div>
+    <div class="security-grid">
+      <div class="sg-item"><div class="sg-icon">◈</div><div class="sg-title">Hardware-Based Key Management</div><p class="sg-desc">Cryptographic keys are stored and operated within hardware security modules (HSMs). No software-level key exposure. All signing operations occur within secure hardware boundaries.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:var(--cu-ice);">§</div><div class="sg-title">Network Segmentation</div><p class="sg-desc">Custody infrastructure operates on isolated network segments, fully separated from operational and payment infrastructure. No shared network paths between cold storage and public-facing services.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:var(--green);">⬡</div><div class="sg-title">Encrypted Storage</div><p class="sg-desc">All custody records, transaction logs, and balance data are encrypted at rest and in transit. Encryption keys are rotated on governance-defined schedules.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:var(--amber);">▣</div><div class="sg-title">Anomaly Detection</div><p class="sg-desc">Continuous behavioral anomaly detection monitors all custody access patterns. Deviations from established access baselines trigger temporary restrictions and escalation protocols.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:var(--cu-light);">⊘</div><div class="sg-title">Penetration Testing</div><p class="sg-desc">Regular third-party penetration testing against custody infrastructure, key management systems, and access control layers. Findings remediated before next test cycle.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:#80d8d0;">⇄</div><div class="sg-title">Continuous Monitoring</div><p class="sg-desc">24/7 automated monitoring of custody balances, authorization requests, and access logs. Manual review workflows activated on anomaly detection. No unmanned custody windows.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey gold">Dashboard Overview</div>
+      <h2 style="color:var(--white);">Prime Client & Auditor<br>Custody Views</h2>
+    </div>
+    <div class="dash-panels">
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--cu-safe),var(--cold-c));"></div>
+        <div class="dp-header"><div class="dp-title">Prime Client Custody View</div><div class="dp-tag">INSTITUTIONAL</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Total Assets Custodied</div><div class="dp-m-val" style="color:var(--cu-light);">$284M</div><div class="dp-m-sub" style="color:var(--text-dim);">This entity</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Compliance Status</div><div class="dp-m-val" style="color:var(--green);">CLEAR</div><div class="dp-m-sub" style="color:var(--text-dim);">0 alerts MTD</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Risk Score</div><div class="dp-m-val" style="color:var(--amber);">MODERATE</div><div class="dp-m-sub" style="color:var(--text-dim);">Risk Engine live</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Cold Allocation</div><div class="dp-m-val" style="color:var(--cu-light);">$233M</div><div class="dp-m-sub" style="color:var(--text-dim);">82% cold storage</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Segregated Account ID</span><span class="dp-row-val">CUS-ENT-00284-A</span></div>
+          <div class="dp-row"><span class="dp-row-key">Ledger Sync</span><span class="dp-row-val" style="color:var(--green);">Real-time · All balances</span></div>
+          <div class="dp-row"><span class="dp-row-key">Last Audit Export</span><span class="dp-row-val">Feb 20, 2026 · Available</span></div>
+        </div>
+        <div class="alloc-breakdown">
+          <div class="ab-label">Exposure by Asset Class</div>
+          <div class="ab-bars">
+            <div class="ab-row"><span class="ab-name" style="color:#5ab0e8;">Fiat</span><div class="ab-track"><div class="ab-fill" style="width:38%;background:#5ab0e8;"></div></div><span class="ab-pct">38%</span></div>
+            <div class="ab-row"><span class="ab-name" style="color:#f0b866;">Digital</span><div class="ab-track"><div class="ab-fill" style="width:28%;background:#f0b866;"></div></div><span class="ab-pct">28%</span></div>
+            <div class="ab-row"><span class="ab-name" style="color:#80a8e0;">KFI Coll.</span><div class="ab-track"><div class="ab-fill" style="width:20%;background:#80a8e0;"></div></div><span class="ab-pct">20%</span></div>
+            <div class="ab-row"><span class="ab-name" style="color:#90d890;">RWA</span><div class="ab-track"><div class="ab-fill" style="width:14%;background:#90d890;"></div></div><span class="ab-pct">14%</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--cu-gold),var(--cu-safe));"></div>
+        <div class="dp-header"><div class="dp-title">Auditor View</div><div class="dp-tag" style="color:var(--cu-gold);border-color:var(--cu-gold-border);background:var(--cu-gold-dim);">READ-ONLY</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Transaction Logs</div><div class="dp-m-val" style="color:var(--cu-light);">Immutable</div><div class="dp-m-sub" style="color:var(--text-dim);">Full history</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Balance Reconciliation</div><div class="dp-m-val" style="color:var(--green);">✓ Verified</div><div class="dp-m-sub" style="color:var(--text-dim);">This period</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Timestamp Verification</div><div class="dp-m-val" style="color:var(--cu-light);">Blockchain</div><div class="dp-m-sub" style="color:var(--text-dim);">Independent</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Instrument Lifecycle</div><div class="dp-m-val" style="color:var(--cu-light);">Full Map</div><div class="dp-m-sub" style="color:var(--text-dim);">All KFI instruments</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Audit Period</span><span class="dp-row-val">Q4 2025 · Finalized</span></div>
+          <div class="dp-row"><span class="dp-row-key">Reserve Reconciliation</span><span class="dp-row-val" style="color:var(--green);">100% · No discrepancies</span></div>
+          <div class="dp-row"><span class="dp-row-key">Regulatory-Ready Export</span><span class="dp-row-val" style="color:var(--cu-light);">Available · PDF + CSV</span></div>
+        </div>
+        <div class="pending-auths">
+          <div class="pa-label">Pending Authorization Requests</div>
+          <div class="pa-item">
+            <div class="pa-info"><span class="pa-id">AUTH-CUS-00284</span><span class="pa-desc">$8.4M USDC · Withdrawal · Awaiting 1 sig</span></div>
+            <span class="pa-status">PENDING</span>
+          </div>
+          <div class="pa-item">
+            <div class="pa-info"><span class="pa-id">AUTH-CUS-00283</span><span class="pa-desc">$2.1M USDT → Treasury · Cold → Hot move</span></div>
+            <span class="pa-status">PENDING</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey cu" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Capital Protection Without Compromise</div>
+      <h2>Institutional Custody —<br>Done Properly.</h2>
+      <p>Segregated accounts. Multi-signature control. Real-time reconciliation. Full audit visibility.</p>
+      <div class="fc-four">
+        <div class="fcf-item"><div class="fcf-val">Segregated</div><div class="fcf-sub">Accounts</div></div>
+        <div class="fcf-item"><div class="fcf-val">Multi-Sig</div><div class="fcf-sub">Control</div></div>
+        <div class="fcf-item"><div class="fcf-val">Real-Time</div><div class="fcf-sub">Reconciliation</div></div>
+        <div class="fcf-item"><div class="fcf-val">Full Audit</div><div class="fcf-sub">Visibility</div></div>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Request Institutional Custody Access</button>
+        <button class="btn-final-out">Speak with Prime Desk</button>
+        <button class="btn-final-out">Download Custody Framework</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="#">Smart Wallet</a></li><li><a href="#">Pay</a></li><li><a href="#">Trade</a></li><li><a href="#">Earn</a></li><li><a href="#">Stake</a></li><li><a href="#">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="#">Kaloft (EPT)</a></li><li><a href="#">Katoin</a></li><li><a href="#">EQOUIN</a></li><li><a href="#">KFI</a></li><li><a href="#">RWA</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul>
+        <li><a href="prime.html">Kapitor Prime</a></li>
+        <li><a href="custody.html" style="color:var(--cu-light);">Custody</a></li>
+        <li><a href="#">Treasury</a></li>
+        <li><a href="#">FX</a></li>
+        <li><a href="api.html">API Access</a></li>
+      </ul></div>
+      <div class="footer-col"><h5>Payments</h5><ul><li><a href="#">GIPS</a></li><li><a href="#">Corridors</a></li><li><a href="#">FX Engine</a></li><li><a href="#">Institutional</a></li></ul></div>
+      <div class="footer-col"><h5>Compliance</h5><ul><li><a href="#">KYC / KYB</a></li><li><a href="#">AML Framework</a></li><li><a href="#">Proof of Reserves</a></li><li><a href="#">Audit Reports</a></li><li><a href="#">Transparency</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="company.html">Terms</a><a href="company.html">Privacy</a><a href="#">Custody Agreement</a><a href="#">Risk Disclosure</a><a href="#">Custody Framework</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  window.addEventListener("scroll",()=>{document.getElementById("hdr").style.padding=window.scrollY>60?"0.65rem 2.5rem":"1rem 2.5rem";});
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});},{threshold:0.05});
+  document.querySelectorAll(
+    ".ac-card,.acc-item,.at-row,.txs-step,.sc-row,.role-item,.sg-item,.dp-metric,.dp-row,.ab-row,.pa-item,.fcf-item"
+  ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
+  (function(){
+    var header=document.getElementById("hdr");
+    var mobileToggle=document.querySelector(".nav-mobile-toggle");
+    function isMobile(){return window.innerWidth<=900;}
+    if(mobileToggle&&header){
+      mobileToggle.addEventListener("click",function(){
+        header.classList.toggle("header-mobile-open");
+        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+      });
+    }
+    document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+      btn.addEventListener("click",function(e){
+        if(isMobile()){e.preventDefault();var wrap=btn.closest(".nav-item-wrap");wrap.classList.toggle("open");btn.setAttribute("aria-expanded",wrap.classList.contains("open"));}
+      });
+    });
+  })();
+</script>
+</body>
+</html>

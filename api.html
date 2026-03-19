@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Access | Kapitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* KAP light theme */
+  --bg:#FCF8E8;
+  --surface:#FFFFFF;
+  --surface2:#F5ECD6;
+  --surface3:#F5ECD6;
+  --border:rgba(15,23,42,0.08);
+  --border-md:rgba(15,23,42,0.16);
+
+  --green:#33B269;  --green-dim:rgba(51,178,105,0.12); --green-border:rgba(51,178,105,0.20);
+  --red:#E53535;    --red-dim:rgba(229,53,53,0.09);   --red-border:rgba(229,53,53,0.2);
+  --amber:#F7AE40;  --amber-dim:rgba(247,174,64,0.14); --amber-border:rgba(247,174,64,0.22);
+
+  /* API accent */
+  --api:#8860f0;      --api-light:#b090ff;
+  --api-dim:rgba(136,96,240,0.08);    --api-border:rgba(136,96,240,0.2);
+  --api-lime:#a0e840;  --api-lime-dim:rgba(160,232,64,0.08); --api-lime-border:rgba(160,232,64,0.2);
+  --api-code:#e8eeff;
+  --api-slate:#606888; --api-slate-dim:rgba(96,104,136,0.1);
+
+  --m-wallet:#4a88d0;
+  --m-pay:#22aa78;
+  --m-fx:#20c8d8;
+  --m-trade:#d89030;
+  --m-yield:#9060e0;
+  --m-stake:#2a80b0;
+  --m-kfi:#c06040;
+
+  --text:#111827;  --text-muted:#6B6B6B;  --text-dim:#9CA3AF;  --white:#FFFFFF;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:300;line-height:1.65;overflow-x:hidden;}
+body::after{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+h1,h2,h3{font-family:"Outfit",system-ui,sans-serif;font-weight:700;letter-spacing:-0.03em;}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.api{color:var(--api-light);}   .ey.api::before{background:var(--api-light);}
+.ey.lime{color:var(--api-lime);}   .ey.lime::before{background:var(--api-lime);}
+.ey.g{color:var(--green);}         .ey.g::before{background:var(--green);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--text);margin-bottom:0.85rem;}
+
+/* ─── HEADER ─── */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:"Outfit",system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:"Epilogue",sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--api-light);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--api-border);color:var(--api-light);}
+.btn-cta{background:var(--api);color:var(--white);border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-cta:hover{filter:brightness(1.2);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:"Epilogue",sans-serif;cursor:pointer;}
+
+/* ─── HERO ─── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;
+  background:radial-gradient(ellipse 55% 45% at 50% 28%,rgba(136,96,240,0.08) 0%,transparent 55%),
+  radial-gradient(ellipse 30% 30% at 5% 70%,rgba(160,232,64,0.04) 0%,transparent 50%),
+  radial-gradient(ellipse 28% 28% at 94% 70%,rgba(32,200,216,0.03) 0%,transparent 45%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(136,96,240,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(136,96,240,0.018) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 65% at 50% 40%,black 10%,transparent 72%);}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(136,96,240,0.28);border-radius:3px;background:rgba(136,96,240,0.07);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--api-light);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--api-lime);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero-content{position:relative;z-index:2;max-width:900px;}
+.hero h1{color:var(--text);margin-bottom:0.6rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.64rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:560px;color:rgba(136,152,192,0.5);margin-bottom:2rem;line-height:1.8;}
+/* 7-module mini chips */
+.module-chips{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:2rem;}
+.mc{font-family:"JetBrains Mono",monospace;font-size:0.57rem;padding:0.26rem 0.65rem;border-radius:3px;border:1px solid;transition:all 0.2s;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--api);color:var(--white);border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{filter:brightness(1.2);transform:translateY(-1px);box-shadow:0 10px 40px rgba(136,96,240,0.3);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--api-border);color:var(--api-light);}
+
+/* METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:"Syne",sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--api-light);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 52s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--api-light);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* ─── CODE BLOCK ─── */
+pre{margin:0;}
+.code-block{background:rgba(0,0,0,0.6);border:1px solid var(--border-md);border-radius:8px;overflow:hidden;font-family:"JetBrains Mono",monospace;}
+.cb-header{padding:0.55rem 1rem;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.cb-dots{display:flex;gap:5px;}
+.cb-dot{width:8px;height:8px;border-radius:50%;}
+.cb-lang{font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);}
+.cb-body{padding:1.25rem 1.25rem;font-size:0.64rem;line-height:1.8;overflow-x:auto;}
+.c-comment{color:#4a5870;}
+.c-method{color:#e05070;}
+.c-url{color:var(--api-light);}
+.c-key{color:#80c8e8;}
+.c-str{color:#a0e870;}
+.c-num{color:#f0b860;}
+.c-bool{color:#e08060;}
+.c-type{color:var(--api-lime);}
+.c-bracket{color:#808898;}
+.c-white{color:var(--api-code);}
+
+/* ─── MODULE CARDS ─── */
+.modules-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.mod-card{background:var(--surface);overflow:hidden;transition:background 0.25s;}
+.mod-card:hover{background:var(--surface2);}
+.mc2-topbar{height:3px;}
+.mc2-header{padding:1.5rem 1.5rem 0.85rem;}
+.mc2-num{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.mc2-icon-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;}
+.mc2-badge{font-family:"JetBrains Mono",monospace;font-size:0.62rem;font-weight:500;padding:0.28rem 0.65rem;border-radius:4px;letter-spacing:0.07em;}
+.mc2-name{font-family:"Outfit",system-ui,sans-serif;font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:0.15rem;}
+.mc2-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.07em;margin-bottom:0.55rem;}
+.mc2-desc{font-size:0.74rem;color:var(--text-muted);line-height:1.65;margin-bottom:0.75rem;}
+.mc2-body{padding:0 1.5rem;}
+.mc2-endpoints{display:flex;flex-direction:column;gap:0;}
+.mc2-ep{display:flex;align-items:center;gap:7px;padding:0.33rem 0;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.57rem;color:var(--text-muted);}
+.mc2-ep:last-child{border-bottom:none;margin-bottom:0.85rem;}
+.ep-method{font-size:0.5rem;padding:0.1rem 0.35rem;border-radius:2px;flex-shrink:0;letter-spacing:0.05em;}
+.ep-get{background:rgba(61,184,122,0.15);color:var(--green);}
+.ep-post{background:rgba(136,96,240,0.15);color:var(--api-light);}
+
+/* ─── API FLOW ─── */
+.api-flow-layout{display:grid;grid-template-columns:1.15fr 1fr;gap:5rem;align-items:start;}
+.flow-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.fp3-topbar{height:2px;background:linear-gradient(90deg,var(--api),var(--api-lime));}
+.fp3-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.fp3-title{font-family:"Outfit",system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.fp3-badge{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--api-dim);color:var(--api-light);border:1px solid var(--api-border);}
+/* 6-step flow */
+.api-steps{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.as-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.as-items{display:flex;flex-direction:column;gap:0.3rem;}
+.as-item{display:flex;align-items:center;gap:10px;padding:0.52rem 0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:5px;border-left:2px solid var(--api);}
+.as-num{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--api-light);width:18px;flex-shrink:0;}
+.as-text{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);}
+.as-check{font-family:"JetBrains Mono",monospace;font-size:0.54rem;color:var(--green);margin-left:auto;flex-shrink:0;}
+/* response block */
+.api-response{padding:1.25rem 1.75rem;}
+.ar-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+/* security features */
+.sec-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.sf-item{padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--api-lime);transition:border-color 0.2s;}
+.sf-item:hover{border-color:var(--border-md);}
+.sf-body h4{font-size:0.8rem;font-family:"Epilogue",sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.sf-body p{font-size:0.73rem;}
+
+/* ─── SECURITY GRID ─── */
+.sec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.sg-item{background:var(--surface);padding:1.4rem 1.4rem;transition:background 0.2s;}
+.sg-item:hover{background:var(--surface2);}
+.sg-icon{font-size:0.9rem;color:var(--api-light);margin-bottom:0.5rem;}
+.sg-title{font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:var(--text);margin-bottom:0.3rem;}
+.sg-desc{font-size:0.73rem;color:var(--text-muted);}
+
+/* ─── ROLES TABLE ─── */
+.roles-table{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.rt-topbar{height:2px;background:linear-gradient(90deg,var(--api),var(--m-trade),var(--m-fx));}
+.rt-header{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.rt-title{font-family:"Outfit",system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.rt-grid{display:grid;grid-template-columns:1.4fr repeat(7,1fr);gap:1px;background:var(--border);}
+.rtc{background:var(--surface);padding:0.6rem 0.75rem;font-family:"JetBrains Mono",monospace;font-size:0.57rem;text-align:center;}
+.rtc.hdr{background:rgba(0,0,0,0.22);color:var(--text-dim);font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;}
+.rtc.feature{text-align:left;color:var(--text-muted);font-size:0.6rem;}
+.rtc-yes{color:var(--green);}
+.rtc-ro{color:var(--api-light);}
+.rtc-no{color:var(--text-dim);}
+.rtc-lim{color:var(--amber);}
+
+/* ─── SANDBOX ─── */
+.sandbox-layout{display:grid;grid-template-columns:1.15fr 1fr;gap:5rem;align-items:start;}
+.sb-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.sbp-topbar{height:2px;background:linear-gradient(90deg,var(--api-lime),var(--api));}
+.sbp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.sbp-title{font-family:"Outfit",system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.sbp-badge{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--api-lime-dim);color:var(--api-lime);border:1px solid var(--api-lime-border);}
+.sb-features-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
+.sbf-item{background:var(--surface);padding:1rem 1.25rem;}
+.sbf-icon{font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--api-lime);margin-bottom:0.35rem;}
+.sbf-title{font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:0.8rem;font-weight:500;color:var(--text);margin-bottom:0.22rem;}
+.sbf-desc{font-size:0.7rem;color:var(--text-muted);}
+/* portal links */
+.portal-links{display:flex;flex-direction:column;gap:0.5rem;margin-top:2rem;}
+.pl-item{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;transition:background 0.2s;}
+.pl-item:hover{background:var(--surface2);}
+.pl-left{display:flex;align-items:center;gap:9px;}
+.pl-icon{font-family:"JetBrains Mono",monospace;font-size:0.65rem;color:var(--api-lime);width:22px;}
+.pl-name{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:400;color:var(--text);}
+.pl-desc{font-size:0.68rem;color:var(--text-muted);}
+.pl-arrow{font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--text-dim);}
+
+/* ─── FINAL CTA ─── */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(136,96,240,0.07) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--text);margin-bottom:0.75rem;max-width:600px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:460px;margin:0 auto 2rem;}
+.fc-trio{display:flex;justify-content:center;gap:0;margin:0 auto 2.5rem;max-width:480px;}
+.fct{font-family:"JetBrains Mono",monospace;font-size:0.65rem;padding:0.68rem 1.1rem;border:1px solid var(--api-border);border-right:none;color:var(--api-light);background:var(--api-dim);text-align:center;}
+.fct:first-child{border-radius:4px 0 0 4px;}
+.fct:last-child{border-right:1px solid var(--api-border);border-radius:0 4px 4px 0;}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-final{background:var(--api);color:var(--white);border:none;padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{filter:brightness(1.2);box-shadow:0 10px 40px rgba(136,96,240,0.3);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--api-border);color:var(--api-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:"Outfit",system-ui,sans-serif;font-size:1.15rem;font-weight:700;color:var(--text);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--api-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* ─── NAV DROPDOWNS (minimal) ─── */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--api-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .modules-grid{grid-template-columns:repeat(2,1fr);}
+  .sec-grid{grid-template-columns:repeat(2,1fr);}
+  .rt-grid{grid-template-columns:1.2fr repeat(4,1fr);}
+  .rt-grid>*:nth-child(5n+4),.rt-grid>*:nth-child(5n+5),.rt-grid>*:nth-child(5n){display:none;}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .api-flow-layout,.sandbox-layout{grid-template-columns:1fr;}
+  .modules-grid{grid-template-columns:1fr 1fr;}
+  .sb-features-grid{grid-template-columns:1fr;}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .modules-grid{grid-template-columns:1fr;}
+  .sec-grid{grid-template-columns:1fr 1fr;}
+  .fc-trio{flex-direction:column;max-width:220px;}
+  .fct{border-right:1px solid var(--api-border);}
+}
+</style>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link active">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>API ACCESS · PROGRAMMABLE FINANCIAL INFRASTRUCTURE · 7 MODULES · v2 REST + WEBSOCKET</div>
+      <h1 style="color:var(--text);">Programmable Finance.<br><span style="color:var(--api-light);">Under Governance.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip" style="background:var(--api-dim);border:1px solid var(--api-border);color:var(--api-light);">API v2</span>
+        <span class="token-chip" style="background:var(--api-lime-dim);border:1px solid var(--api-lime-border);color:var(--api-lime);">REST + WEBSOCKET</span>
+        <span style="color:var(--text-dim);">Authenticated · Role-Permissioned · Compliance-Screened · Ledger-Linked</span>
+      </div>
+      <p class="hero-sub">Secure, permissioned connectivity to the Kapitor Financial Operating System. Enterprises, institutions, and regulated partners integrate directly with the Unified Ledger, payments, FX, trading, yield, staking, RWA, KFI, custody, and treasury. No off-system shortcuts.</p>
+      <div class="module-chips">
+        <span class="mc" style="background:rgba(74,136,208,0.1);border-color:rgba(74,136,208,0.25);color:#80b0e8;">Wallet</span>
+        <span class="mc" style="background:rgba(34,170,120,0.1);border-color:rgba(34,170,120,0.25);color:#70d8a8;">Payments (GIPS)</span>
+        <span class="mc" style="background:rgba(32,200,216,0.1);border-color:rgba(32,200,216,0.25);color:var(--m-fx);">FX</span>
+        <span class="mc" style="background:rgba(216,144,48,0.1);border-color:rgba(216,144,48,0.25);color:#e8b860;">Trade</span>
+        <span class="mc" style="background:rgba(144,96,224,0.1);border-color:rgba(144,96,224,0.25);color:#c098f0;">Yield & Vault</span>
+        <span class="mc" style="background:rgba(42,128,176,0.1);border-color:rgba(42,128,176,0.25);color:#80b8d8;">Staking</span>
+        <span class="mc" style="background:rgba(192,96,64,0.1);border-color:rgba(192,96,64,0.25);color:#e09070;">KFI Issuance</span>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Access Developer Portal</button>
+        <button class="btn-out">Request API Keys →</button>
+        <button class="btn-out">View Documentation →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">API Calls (MTD)</div>
+          <div class="hm-val" style="color:var(--api-light);">84M</div>
+          <div class="hm-sub"><span class="up">▲ 34.2%</span> YTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Active Integrations</div>
+          <div class="hm-val" style="color:var(--text);">284</div>
+          <div class="hm-sub">Enterprise clients</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">API Modules</div>
+          <div class="hm-val" style="color:var(--api-light);">7</div>
+          <div class="hm-sub">All ledger-linked</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Anonymous Endpoints</div>
+          <div class="hm-val" style="color:var(--green);font-size:1rem;padding-top:0.2rem;">Zero</div>
+          <div class="hm-sub">All authenticated</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Off-System Shortcuts</div>
+          <div class="hm-val" style="color:var(--green);font-size:1rem;padding-top:0.2rem;">None</div>
+          <div class="hm-sub">Every call → ledger</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">API CALLS MTD</span><span class="up">84M ▲34.2%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ACTIVE INTEGRATIONS</span>284 ENTERPRISE</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">API MODULES</span><span class="up">7 · ALL LEDGER-LINKED</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">AUTH MODEL</span>API KEY + OAUTH 2.0</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ANONYMOUS ENDPOINTS</span>ZERO</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">OFF-SYSTEM SHORTCUTS</span>NONE</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">COMPLIANCE BYPASS</span>NOT POSSIBLE</span>
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">API CALLS MTD</span><span class="up">84M ▲34.2%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">API MODULES</span><span class="up">7 · ALL LEDGER-LINKED</span></span>
+  </div>
+</div>
+
+<!-- 7 MODULE CARDS -->
+<section class="section" id="modules">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey api">Seven API Modules</div>
+      <h2 style="color:var(--text);">Every Kapitor Capability.<br>Programmable. Governed.</h2>
+      <p>Seven API modules cover every function in the Kapitor Financial Operating System — from wallet access and payment routing to trade execution and KFI issuance. Every endpoint authenticates identity, verifies role permissions, runs compliance screening, and creates a ledger entry.</p>
+    </div>
+    <div class="modules-grid">
+
+      <!-- WALLET -->
+      <div class="mod-card">
+        <div class="mc2-topbar" style="background:var(--m-wallet);"></div>
+        <div class="mc2-header">
+          <div class="mc2-num">MODULE 01</div>
+          <div class="mc2-icon-row">
+            <div class="mc2-badge" style="background:rgba(74,136,208,0.12);border:1px solid rgba(74,136,208,0.28);color:#80b0e8;">WALLET</div>
+          </div>
+          <div class="mc2-name">Wallet API</div>
+          <div class="mc2-sub" style="color:#80b0e8;">BALANCE · HISTORY · POSITIONS</div>
+          <p class="mc2-desc">Retrieve balances, view asset allocation, fetch transaction history, check locked versus withdrawable funds, and monitor staking positions. All wallet data is ledger-synchronized.</p>
+        </div>
+        <div class="mc2-body">
+          <div class="mc2-endpoints">
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/wallet/balance</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/wallet/allocations</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/wallet/transactions</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/wallet/staking</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYMENTS -->
+      <div class="mod-card">
+        <div class="mc2-topbar" style="background:var(--m-pay);"></div>
+        <div class="mc2-header">
+          <div class="mc2-num">MODULE 02</div>
+          <div class="mc2-icon-row">
+            <div class="mc2-badge" style="background:rgba(34,170,120,0.12);border:1px solid rgba(34,170,120,0.28);color:#70d8a8;">PAYMENTS</div>
+          </div>
+          <div class="mc2-name">Payments API</div>
+          <div class="mc2-sub" style="color:#70d8a8;">GIPS · DOMESTIC · CROSS-BORDER</div>
+          <p class="mc2-desc">Initiate domestic payments, trigger cross-border transfers, route via specific rails, retrieve settlement status, and generate payment references. ERP, payroll, billing, and merchant integration.</p>
+        </div>
+        <div class="mc2-body">
+          <div class="mc2-endpoints">
+            <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/payments/initiate</div>
+            <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/payments/cross-border</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/payments/status/:id</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/payments/reference</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FX -->
+      <div class="mod-card">
+        <div class="mc2-topbar" style="background:var(--m-fx);"></div>
+        <div class="mc2-header">
+          <div class="mc2-num">MODULE 03</div>
+          <div class="mc2-icon-row">
+            <div class="mc2-badge" style="background:rgba(32,200,216,0.12);border:1px solid rgba(32,200,216,0.28);color:var(--m-fx);">FX</div>
+          </div>
+          <div class="mc2-name">FX API</div>
+          <div class="mc2-sub" style="color:var(--m-fx);">RATES · CONVERSION · HEDGING</div>
+          <p class="mc2-desc">Real-time exchange rate requests, currency conversion execution, spread data retrieval, exposure monitoring, and corridor locking. Designed for treasury-level automation.</p>
+        </div>
+        <div class="mc2-body">
+          <div class="mc2-endpoints">
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/fx/rate/:pair</div>
+            <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/fx/convert</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/fx/exposure</div>
+            <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/fx/lock-corridor</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRADE -->
+      <div class="mod-card">
+        <div class="mc2-topbar" style="background:var(--m-trade);"></div>
+        <div class="mc2-header">
+          <div class="mc2-num">MODULE 04</div>
+          <div class="mc2-icon-row">
+            <div class="mc2-badge" style="background:rgba(216,144,48,0.12);border:1px solid rgba(216,144,48,0.28);color:#e8b860;">TRADE</div>
+          </div>
+          <div class="mc2-name">Trade API</div>
+          <div class="mc2-sub" style="color:#e8b860;">SPOT · LIMIT · DERIVATIVES</div>
+          <p class="mc2-desc">Execute spot trades, submit limit and market orders, monitor open positions, retrieve order book depth, and access derivative margin data. All trades are Risk Engine validated before execution.</p>
+        </div>
+        <div class="mc2-body">
+          <div class="mc2-endpoints">
+            <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/trade/spot</div>
+            <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/trade/order</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/trade/positions</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/trade/orderbook</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- YIELD & VAULT -->
+      <div class="mod-card">
+        <div class="mc2-topbar" style="background:var(--m-yield);"></div>
+        <div class="mc2-header">
+          <div class="mc2-num">MODULE 05</div>
+          <div class="mc2-icon-row">
+            <div class="mc2-badge" style="background:rgba(144,96,224,0.12);border:1px solid rgba(144,96,224,0.28);color:#c098f0;">YIELD & VAULT</div>
+          </div>
+          <div class="mc2-name">Yield & Vault API</div>
+          <div class="mc2-sub" style="color:#c098f0;">STRATEGIES · NAV · MATURITY</div>
+          <p class="mc2-desc">Allocate capital to yield strategies, redeem vault positions, retrieve performance metrics, monitor NAV, and check maturity timelines. Institutional capital deployment automation.</p>
+        </div>
+        <div class="mc2-body">
+          <div class="mc2-endpoints">
+            <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/yield/allocate</div>
+            <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/vault/redeem</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/yield/performance</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/vault/nav/:id</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAKING -->
+      <div class="mod-card">
+        <div class="mc2-topbar" style="background:var(--m-stake);"></div>
+        <div class="mc2-header">
+          <div class="mc2-num">MODULE 06</div>
+          <div class="mc2-icon-row">
+            <div class="mc2-badge" style="background:rgba(42,128,176,0.12);border:1px solid rgba(42,128,176,0.28);color:#80b8d8;">STAKING</div>
+          </div>
+          <div class="mc2-name">Staking API</div>
+          <div class="mc2-sub" style="color:#80b8d8;">DELEGATE · REWARDS · UNBONDING</div>
+          <p class="mc2-desc">Delegate staking, monitor validator status, claim rewards, view unbonding periods, and track layered yield exposure. All staking actions update the Unified Ledger instantly.</p>
+        </div>
+        <div class="mc2-body">
+          <div class="mc2-endpoints">
+            <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/staking/delegate</div>
+            <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/staking/claim</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/staking/positions</div>
+            <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/staking/validators</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KFI (spans 2 cols) -->
+      <div class="mod-card" style="grid-column:span 2;">
+        <div class="mc2-topbar" style="background:var(--m-kfi);"></div>
+        <div class="mc2-header">
+          <div class="mc2-num">MODULE 07</div>
+          <div class="mc2-icon-row">
+            <div class="mc2-badge" style="background:rgba(192,96,64,0.12);border:1px solid rgba(192,96,64,0.28);color:#e09070;">KFI ISSUANCE</div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-dim);">BG · SBLC · LC · PG</span>
+          </div>
+          <div class="mc2-name">KFI Issuance API</div>
+          <div class="mc2-sub" style="color:#e09070;">PROGRAMMABLE TRADE FINANCE</div>
+          <p class="mc2-desc">Submit instrument requests, upload supporting documents, track approval status, retrieve issuance IDs, and verify blockchain records. Digital trade finance becomes fully programmable.</p>
+        </div>
+        <div class="mc2-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+            <div class="mc2-endpoints" style="padding-right:1.5rem;border-right:1px solid var(--border);">
+              <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/kfi/issue</div>
+              <div class="mc2-ep"><span class="ep-method ep-post">POST</span>/kfi/documents</div>
+            </div>
+            <div class="mc2-endpoints" style="padding-left:1.5rem;">
+              <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/kfi/status/:id</div>
+              <div class="mc2-ep"><span class="ep-method ep-get">GET</span>/kfi/blockchain/:id</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- API FLOW + CODE -->
+<section class="section" id="flow">
+  <div class="container">
+    <div class="api-flow-layout">
+      <div>
+        <div class="flow-panel">
+          <div class="fp3-topbar"></div>
+          <div class="fp3-header">
+            <div class="fp3-title">API Request Lifecycle</div>
+            <div class="fp3-badge">EVERY REQUEST</div>
+          </div>
+          <div class="api-steps">
+            <div class="as-label">Six-Step API Request Sequence</div>
+            <div class="as-items">
+              <div class="as-item"><span class="as-num">01</span><span class="as-text">Authenticate identity — API key + OAuth 2.0</span><span class="as-check">→</span></div>
+              <div class="as-item"><span class="as-num">02</span><span class="as-text">Verify role permissions — endpoint + action scope</span><span class="as-check">→</span></div>
+              <div class="as-item"><span class="as-num">03</span><span class="as-text">Compliance screening — KYC/KYB + AML + jurisdiction</span><span class="as-check">→</span></div>
+              <div class="as-item"><span class="as-num">04</span><span class="as-text">Risk scoring — exposure + limit enforcement</span><span class="as-check">→</span></div>
+              <div class="as-item"><span class="as-num">05</span><span class="as-text">Create ledger entry — Unified Ledger record</span><span class="as-check">→</span></div>
+              <div class="as-item" style="border-left-color:var(--api-lime);"><span class="as-num" style="color:var(--api-lime);">06</span><span class="as-text">Return structured response — with ledger ref</span><span class="as-check" style="color:var(--api-lime);">✓</span></div>
+            </div>
+          </div>
+          <div class="api-response">
+            <div class="ar-label">KFI Issuance — Example API Call</div>
+            <div class="code-block">
+              <div class="cb-header">
+                <div class="cb-dots">
+                  <div class="cb-dot" style="background:#ff5f57;"></div>
+                  <div class="cb-dot" style="background:#febc2e;"></div>
+                  <div class="cb-dot" style="background:#28c840;"></div>
+                </div>
+                <span class="cb-lang">REST · POST /v2/prime/kfi/issue</span>
+              </div>
+              <div class="cb-body"><pre><code><span class="c-comment">// Request</span>
+<span class="c-method">POST</span> <span class="c-url">https://api.kapitor.com/v2/prime/kfi/issue</span>
+<span class="c-key">Authorization:</span> <span class="c-str">Bearer eyJhbGc...</span>
+<span class="c-key">X-Entity-ID:</span>  <span class="c-str">ENT-CORP-0028</span>
+<span class="c-key">X-Role:</span>       <span class="c-str">treasury-officer</span>
+
+<span class="c-bracket">{</span>
+  <span class="c-key">"instrument_type"</span><span class="c-white">:</span> <span class="c-str">"SBLC"</span><span class="c-white">,</span>
+  <span class="c-key">"applicant_id"</span><span class="c-white">:</span>    <span class="c-str">"USR-KYB-00284"</span><span class="c-white">,</span>
+  <span class="c-key">"beneficiary"</span><span class="c-white">:</span>     <span class="c-str">"CORP-BEN-0042"</span><span class="c-white">,</span>
+  <span class="c-key">"value_usd"</span><span class="c-white">:</span>       <span class="c-num">2400000</span><span class="c-white">,</span>
+  <span class="c-key">"expiry_days"</span><span class="c-white">:</span>     <span class="c-num">365</span><span class="c-white">,</span>
+  <span class="c-key">"collateral_id"</span><span class="c-white">:</span>  <span class="c-str">"COLL-00284"</span>
+<span class="c-bracket">}</span>
+
+<span class="c-comment">// Response 200 OK</span>
+<span class="c-bracket">{</span>
+  <span class="c-key">"instrument_id"</span><span class="c-white">:</span>  <span class="c-str">"KFI-SBLC-00284"</span><span class="c-white">,</span>
+  <span class="c-key">"ledger_entry"</span><span class="c-white">:</span>   <span class="c-str">"LDG-00284182"</span><span class="c-white">,</span>
+  <span class="c-key">"blockchain_hash"</span><span class="c-white">:</span><span class="c-str">"0x8f3a..."</span><span class="c-white">,</span>
+  <span class="c-key">"compliance_log"</span><span class="c-white">:</span> <span class="c-str">"COMP-00284"</span><span class="c-white">,</span>
+  <span class="c-key">"status"</span><span class="c-white">:</span>         <span class="c-type">"ISSUED"</span>
+<span class="c-bracket">}</span></code></pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey api">API Architecture</div>
+        <h2 style="color:var(--text);">Direct Integration.<br>No Off-System Shortcuts.</h2>
+        <p style="margin-top:0.85rem;">Kapitor APIs connect directly to core system modules — not to an abstraction layer. Every request touches the Unified Ledger. Every action has a compliance log, risk update, and audit record.</p>
+        <div class="sec-features">
+          <div class="sf-item"><div class="sf-body"><h4>Webhooks & Event Streaming</h4><p>Real-time notifications for transaction settlements, risk alerts, compliance flag updates, NAV changes, and instrument maturity alerts. Supports webhooks, streaming feeds, and batch exports. All events tied to ledger entries.</p></div></div>
+          <div class="sf-item"><div class="sf-body"><h4>No Compliance Bypass Through Automation</h4><p>API-triggered actions pass the same compliance gates as manual operations — KYC/KYB, AML screening, jurisdiction checks, investment limits, and risk thresholds. If compliance fails, the API returns a structured rejection.</p></div></div>
+          <div class="sf-item"><div class="sf-body"><h4>Monitoring & Audit Exports</h4><p>Institutional clients receive API usage logs, transaction audit trails, error tracking, rate limit metrics, and security event alerts. Audit exports are regulator-ready in structured format.</p></div></div>
+          <div class="sf-item"><div class="sf-body"><h4>Versioning & Backward Compatibility</h4><p>API versioning ensures backward compatibility across integrations. Changes are communicated via the developer portal changelog before deployment. No breaking changes without migration path.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECURITY -->
+<section class="section" id="security">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey lime">Security Framework</div>
+      <h2 style="color:var(--text);">Authenticated. Permissioned.<br>Every Request Logged.</h2>
+    </div>
+    <div class="sec-grid">
+      <div class="sg-item"><div class="sg-icon">◈</div><div class="sg-title">API Key + OAuth 2.0</div><p class="sg-desc">Every integration uses an API key and secret model with OAuth 2.0 token authentication. Keys are scoped to entity, role, and permitted modules. No shared credentials across roles.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:var(--api-lime);">§</div><div class="sg-title">IP Whitelisting</div><p class="sg-desc">Each API integration can define permitted IP ranges. Requests from non-whitelisted sources are rejected at the gateway — before authentication is attempted.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:var(--m-fx);">⬡</div><div class="sg-title">Request Signing</div><p class="sg-desc">All API requests are signed using HMAC-SHA256. Signature verification runs before any processing occurs. Unsigned or invalidly signed requests return 401.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:var(--amber);">▣</div><div class="sg-title">Rate Limiting</div><p class="sg-desc">Per-entity and per-role rate limits are enforced at the gateway. Burst limits apply to high-value operations. Rate metrics are visible in the institutional monitoring dashboard.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:var(--green);">⊘</div><div class="sg-title">Encrypted Transport</div><p class="sg-desc">All API traffic uses TLS 1.3 encryption in transit. Certificate pinning is available for enterprise integrations. No unencrypted API endpoints exist.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:var(--api-light);">⇄</div><div class="sg-title">Audit Record Per Request</div><p class="sg-desc">Every API request generates a timestamp, caller identity record, permission validation log, compliance entry, and audit record. All records are immutable and regulator-exportable.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:#e08080);">◉</div><div class="sg-title">Multi-Approval Workflows</div><p class="sg-desc">Organizations can enable multi-approval workflows for high-value or sensitive API actions. A single API call requiring two-person authorization will not execute until the second party confirms.</p></div>
+      <div class="sg-item"><div class="sg-icon" style="color:var(--m-kfi);">⬛</div><div class="sg-title">Transaction Size Caps</div><p class="sg-desc">Per-role API-based transaction caps are set at the organizational level. The API cannot execute transactions beyond the defined cap without a policy change approved through governance.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES TABLE -->
+<section class="section" id="roles">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey api">Role-Based Access Control</div>
+      <h2 style="color:var(--text);">Granular Permissions.<br>Control Stays with the Institution.</h2>
+    </div>
+    <div class="roles-table">
+      <div class="rt-topbar"></div>
+      <div class="rt-header">
+        <div class="rt-title">API Endpoint Access by Role</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text-muted);">All permissions enforced at API gateway — not advisory</div>
+      </div>
+      <div class="rt-grid">
+        <div class="rtc hdr feature">CAPABILITY</div>
+        <div class="rtc hdr" style="color:#80b0e8;">TREASURY</div>
+        <div class="rtc hdr" style="color:#e8b860;">TRADING</div>
+        <div class="rtc hdr" style="color:#e08080;">COMPLIANCE</div>
+        <div class="rtc hdr" style="color:#80b8d8;">CUSTODY MGR</div>
+        <div class="rtc hdr" style="color:var(--api-light);">AUDITOR</div>
+        <div class="rtc hdr" style="color:#c098f0;">API ACCOUNT</div>
+        <div class="rtc hdr" style="color:var(--text-dim);">— </div>
+
+        <div class="rtc feature">Wallet Read</div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"><span class="rtc-ro">R/O</span></div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"></div>
+
+        <div class="rtc feature">Payment Initiation</div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-lim">Gate</span></div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"></div>
+
+        <div class="rtc feature">FX Conversion</div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"><span class="rtc-lim">Read</span></div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-ro">R/O</span></div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"></div>
+
+        <div class="rtc feature">Trade Execution</div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-ro">R/O</span></div>
+        <div class="rtc"><span class="rtc-lim">Scope</span></div>
+        <div class="rtc"></div>
+
+        <div class="rtc feature">Yield Allocation</div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"><span class="rtc-lim">Gate</span></div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-ro">R/O</span></div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"></div>
+
+        <div class="rtc feature">KFI Issuance</div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"><span class="rtc-no">—</span></div>
+        <div class="rtc"><span class="rtc-lim">Gate</span></div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"><span class="rtc-ro">R/O</span></div>
+        <div class="rtc"><span class="rtc-yes">✓</span></div>
+        <div class="rtc"></div>
+
+        <div class="rtc feature">Audit Export</div>
+        <div class="rtc"><span class="rtc-lim">Own</span></div>
+        <div class="rtc"><span class="rtc-lim">Own</span></div>
+        <div class="rtc"><span class="rtc-yes">✓ Full</span></div>
+        <div class="rtc"><span class="rtc-lim">Own</span></div>
+        <div class="rtc"><span class="rtc-yes">✓ Full</span></div>
+        <div class="rtc"><span class="rtc-lim">Scoped</span></div>
+        <div class="rtc"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SANDBOX + PORTAL -->
+<section class="section" id="sandbox">
+  <div class="container">
+    <div class="sandbox-layout">
+      <div>
+        <div class="sb-panel">
+          <div class="sbp-topbar"></div>
+          <div class="sbp-header">
+            <div class="sbp-title">Sandbox Environment</div>
+            <div class="sbp-badge">NO PRODUCTION IMPACT</div>
+          </div>
+          <div class="sb-features-grid">
+            <div class="sbf-item">
+              <div class="sbf-icon">[ key ]</div>
+              <div class="sbf-title">Sandbox API Keys</div>
+              <p class="sbf-desc">Dedicated sandbox credentials scoped separately from production. Sandbox keys cannot access production endpoints.</p>
+            </div>
+            <div class="sbf-item">
+              <div class="sbf-icon">[ bal ]</div>
+              <div class="sbf-title">Simulated Balances</div>
+              <p class="sbf-desc">Pre-loaded test balances across all asset classes. Realistic allocation breakdowns for integration testing.</p>
+            </div>
+            <div class="sbf-item">
+              <div class="sbf-icon">[ pay ]</div>
+              <div class="sbf-title">Test Payment Routing</div>
+              <p class="sbf-desc">Simulated rail routing across all GIPS payment systems with realistic response times and settlement status flows.</p>
+            </div>
+            <div class="sbf-item">
+              <div class="sbf-icon">[ fx ]</div>
+              <div class="sbf-title">Controlled FX Simulation</div>
+              <p class="sbf-desc">Realistic exchange rate simulation with configurable spread parameters. Mock volatility scenarios available for stress testing.</p>
+            </div>
+            <div class="sbf-item">
+              <div class="sbf-icon">[ trd ]</div>
+              <div class="sbf-title">Mock Trade Execution</div>
+              <p class="sbf-desc">Full order lifecycle simulation — submission, risk validation, execution, and position update — without production market impact.</p>
+            </div>
+            <div class="sbf-item">
+              <div class="sbf-icon">[ sdk ]</div>
+              <div class="sbf-title">SDK Libraries</div>
+              <p class="sbf-desc">Official SDKs for Node.js, Python, Java, and Go. Full sandbox support built into all client libraries from day one.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey lime">Developer Portal</div>
+        <h2 style="color:var(--text);">Safe Testing.<br>Full Documentation.</h2>
+        <p style="margin-top:0.85rem;">The Kapitor developer portal provides everything needed to integrate from sandbox to production — REST documentation, authentication guides, endpoint references, SDK libraries, sample code, and a live status page.</p>
+        <div class="portal-links">
+          <div class="pl-item">
+            <div class="pl-left">
+              <span class="pl-icon">{ }</span>
+              <div><div class="pl-name">REST Documentation</div><div class="pl-desc">Full endpoint reference with request/response schemas</div></div>
+            </div>
+            <span class="pl-arrow">→</span>
+          </div>
+          <div class="pl-item">
+            <div class="pl-left">
+              <span class="pl-icon">🔑</span>
+              <div><div class="pl-name">Authentication Guide</div><div class="pl-desc">API key, OAuth 2.0, request signing setup</div></div>
+            </div>
+            <span class="pl-arrow">→</span>
+          </div>
+          <div class="pl-item">
+            <div class="pl-left">
+              <span class="pl-icon">&lt;/&gt;</span>
+              <div><div class="pl-name">SDK Libraries</div><div class="pl-desc">Node.js · Python · Java · Go</div></div>
+            </div>
+            <span class="pl-arrow">→</span>
+          </div>
+          <div class="pl-item">
+            <div class="pl-left">
+              <span class="pl-icon">◉</span>
+              <div><div class="pl-name">Status Page</div><div class="pl-desc">Live uptime and incident tracking</div></div>
+            </div>
+            <span class="pl-arrow">→</span>
+          </div>
+          <div class="pl-item">
+            <div class="pl-left">
+              <span class="pl-icon">⟳</span>
+              <div><div class="pl-name">Changelog</div><div class="pl-desc">Version history · Breaking change notices</div></div>
+            </div>
+            <span class="pl-arrow">→</span>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;padding:0.85rem 1.2rem;border:1px solid var(--api-lime-border);border-radius:5px;background:var(--api-lime-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--api-lime);">APIs do not operate outside governance. Every call → ledger entry → compliance log → audit record.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey api" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Financial Infrastructure — Programmable, Governed</div>
+      <h2>That's Programmable Finance<br>Done Properly.</h2>
+      <p>Automated execution. Structured permissions. Full ledger traceability.</p>
+      <div class="fc-trio">
+        <div class="fct">Automated Execution</div>
+        <div class="fct">Structured Permissions</div>
+        <div class="fct">Ledger Traceability</div>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Access Developer Portal</button>
+        <button class="btn-final-out">Request API Keys</button>
+        <button class="btn-final-out">View Documentation</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="index.html">Smart Wallet</a></li><li><a href="gp.html">Pay</a></li><li><a href="#">Trade</a></li><li><a href="#">Earn</a></li><li><a href="#">Stake</a></li><li><a href="#">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="#">Kaloft (EPT)</a></li><li><a href="#">Katoin</a></li><li><a href="#">EQOUIN</a></li><li><a href="#">KFI</a></li><li><a href="rwa.html">RWA</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul>
+        <li><a href="prime.html">Kapitor Prime</a></li><li><a href="#">Custody</a></li>
+        <li><a href="#">Treasury</a></li><li><a href="#">FX</a></li>
+        <li><a href="api.html" style="color:var(--api-light);">API Access</a></li>
+      </ul></div>
+      <div class="footer-col"><h5>Payments</h5><ul><li><a href="#">GIPS</a></li><li><a href="#">Corridors</a></li><li><a href="#">FX Engine</a></li><li><a href="#">Institutional</a></li></ul></div>
+      <div class="footer-col"><h5>Developers</h5><ul>
+        <li><a href="#">Developer Portal</a></li>
+        <li><a href="#">REST Docs</a></li>
+        <li><a href="#">SDK Libraries</a></li>
+        <li><a href="#">Status Page</a></li>
+        <li><a href="#">Changelog</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">API Terms</a><a href="#">Rate Limits</a><a href="#">Developer Docs</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  window.addEventListener("scroll",()=>{document.getElementById("hdr").style.padding=window.scrollY>60?"0.65rem 2.5rem":"1rem 2.5rem";});
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});},{threshold:0.05});
+  document.querySelectorAll(
+    ".mod-card,.mc2-ep,.as-item,.sf-item,.sg-item,.rtc,.sbf-item,.pl-item"
+  ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
+</script>
+<script src="script.js"></script>
+<script>
+(function(){
+  var header=document.getElementById('hdr');
+  var mobileToggle=document.querySelector('.nav-mobile-toggle');
+  function isMobile(){return window.innerWidth<=900;}
+  if(mobileToggle&&header){
+    mobileToggle.addEventListener('click',function(){
+      header.classList.toggle('header-mobile-open');
+      mobileToggle.setAttribute('aria-expanded',header.classList.contains('header-mobile-open'));
+    });
+  }
+  document.querySelectorAll('.nav-item-wrap .nav-trigger').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      if(isMobile()){e.preventDefault();var wrap=btn.closest('.nav-item-wrap');wrap.classList.toggle('open');btn.setAttribute('aria-expanded',wrap.classList.contains('open'));}
+    });
+  });
+})();
+</script>
+</body>
+</html>

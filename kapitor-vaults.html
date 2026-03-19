@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitor Vaults – Structured Investment Strategies</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+:root {
+  /* KAP light theme */
+  --bg:#FCF8E8;
+  --surface:#FFFFFF;
+  --surface2:#F5ECD6;
+  --surface3:#F5ECD6;
+  --border:rgba(15,23,42,0.08);
+  --border-md:rgba(15,23,42,0.16);
+
+  --blue:#4a7fcb;  --blue-light:#6b9de0;
+  --blue-dim:rgba(74,127,203,0.09);  --blue-border:rgba(74,127,203,0.2);
+
+  --green:#3db87a;  --green-light:#5ed498;
+  --green-dim:rgba(61,184,122,0.09);  --green-border:rgba(61,184,122,0.2);
+
+  --amber:#f0a030;  --amber-light:#f5bc5a;
+  --amber-dim:rgba(240,160,48,0.09);  --amber-border:rgba(240,160,48,0.2);
+
+  /* vault accent palette */
+  --v1:#5edaff;   --v1-dim:rgba(94,218,255,0.08);   --v1-border:rgba(94,218,255,0.2);
+  --v2:#f7931a;   --v2-dim:rgba(247,147,26,0.09);   --v2-border:rgba(247,147,26,0.22);
+  --v3:#8b5cf6;   --v3-dim:rgba(139,92,246,0.09);   --v3-border:rgba(139,92,246,0.2);
+  --v4:#22d3a3;   --v4-dim:rgba(34,211,163,0.09);   --v4-border:rgba(34,211,163,0.2);
+  --v5:#e879f9;   --v5-dim:rgba(232,121,249,0.09);  --v5-border:rgba(232,121,249,0.2);
+
+  --text:#111827;  --text-muted:#6B6B6B;  --text-dim:#9CA3AF;  --white:#ffffff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:300;line-height:1.65;overflow-x:hidden;}
+
+h1,h2,h3{font-family:'Outfit',system-ui,sans-serif;font-weight:700;letter-spacing:-0.03em;color:var(--text);}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.b{color:var(--blue);}   .ey.b::before{background:var(--blue);}
+.ey.g{color:var(--green);} .ey.g::before{background:var(--green);}
+.ey.a{color:var(--amber);} .ey.a::before{background:var(--amber);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--text);margin-bottom:0.85rem;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--blue-light);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue-light);}
+.btn-cta{background:var(--blue);color:var(--white);border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-cta:hover{background:var(--blue-light);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 25%,rgba(74,127,203,0.09) 0%,transparent 55%),radial-gradient(ellipse 40% 40% at 8% 72%,rgba(139,92,246,0.05) 0%,transparent 50%),radial-gradient(ellipse 35% 40% at 92% 65%,rgba(247,147,26,0.04) 0%,transparent 45%),radial-gradient(ellipse 30% 30% at 50% 95%,rgba(34,211,163,0.03) 0%,transparent 40%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 65% at 50% 40%,black 10%,transparent 75%);}
+/* vault grid accent */
+.hero-vault-grid{position:absolute;top:10%;right:-5%;width:520px;height:520px;opacity:0.04;pointer-events:none;}
+.hvg-cell{position:absolute;border:1px solid var(--blue);border-radius:6px;}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(74,127,203,0.28);border-radius:3px;background:rgba(74,127,203,0.07);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--blue-light);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero-content{position:relative;z-index:2;max-width:900px;}
+.hero h1{color:var(--text);margin-bottom:1.5rem;}
+.hero-principles{display:grid;grid-template-columns:repeat(5,1fr);gap:0.5rem;margin-bottom:2.5rem;}
+.hp-item{padding:0.65rem 0.85rem;background:var(--surface);border:1px solid var(--border);border-radius:5px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);letter-spacing:0.06em;}
+.hero-tagline{font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--text-dim);margin-bottom:2.5rem;letter-spacing:0.06em;}
+.hero-tagline span{color:var(--text-muted);}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--blue);color:var(--white);border:none;padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:var(--blue-light);transform:translateY(-1px);box-shadow:0 8px 30px rgba(74,127,203,0.28);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--blue-border);color:var(--blue-light);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--green);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 40s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--green);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* VAULT CARDS GRID */
+.vaults-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.5rem;}
+.vault-card{background:var(--surface);padding:0;position:relative;overflow:hidden;transition:background 0.25s;}
+.vault-card:hover{background:var(--surface2);}
+.vault-card.featured{background:var(--surface2);}
+.vc-topbar{height:2px;}
+.vc-header{padding:1.75rem 1.75rem 1.25rem;}
+.vc-num{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.vc-icon-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;}
+.vc-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.vc-apy-wrap{text-align:right;}
+.vc-apy{font-family:'Outfit',system-ui,sans-serif;font-size:1.8rem;font-weight:800;line-height:1;}
+.vc-apy-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;color:var(--text-dim);}
+.vc-name{font-family:'Outfit',system-ui,sans-serif;font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:0.3rem;}
+.vc-tagline{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-dim);margin-bottom:0.75rem;letter-spacing:0.06em;}
+.vc-desc{font-size:0.77rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.25rem;}
+.vc-body{padding:0 1.75rem 1.75rem;}
+.vc-alloc-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.55rem;}
+.vc-alloc-bar{height:4px;border-radius:2px;overflow:hidden;display:flex;margin-bottom:0.5rem;}
+.vc-seg{height:100%;}
+.vc-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:0.4rem;margin-top:1rem;}
+.vc-metric{background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:4px;padding:0.55rem 0.65rem;}
+.vc-m-label{font-family:"JetBrains Mono",monospace;font-size:0.5rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.2rem;}
+.vc-m-val{font-family:"JetBrains Mono",monospace;font-size:0.68rem;}
+.vc-btn{margin:0 1.75rem 1.75rem;display:block;padding:0.62rem;text-align:center;border-radius:5px;font-family:"JetBrains Mono",monospace;font-size:0.62rem;letter-spacing:0.1em;cursor:pointer;background:transparent;transition:all 0.2s;border:1px solid;}
+
+/* two-bottom vaults full-width */
+.vaults-bottom{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+
+/* VAULT DETAIL PANELS */
+.vault-detail{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.vd-topbar{height:2px;}
+.vd-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.vd-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.vd-apy{font-family:'Outfit',system-ui,sans-serif;font-size:1.2rem;font-weight:700;}
+.vd-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.vdm-item{background:var(--surface);padding:0.9rem 1.1rem;}
+.vdm-label{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.3rem;}
+.vdm-val{font-family:'Outfit',system-ui,sans-serif;font-size:0.95rem;font-weight:700;line-height:1;}
+.vdm-sub{font-family:"JetBrains Mono",monospace;font-size:0.52rem;color:var(--text-dim);margin-top:0.15rem;}
+.vd-alloc{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);}
+.vda-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.6rem;}
+.vda-bar{height:6px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:0.5rem;}
+.vda-legend{display:flex;flex-wrap:wrap;gap:0.4rem 0.9rem;}
+.vda-leg{display:flex;align-items:center;gap:4px;font-family:"JetBrains Mono",monospace;font-size:0.55rem;color:var(--text-dim);}
+.vda-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+/* position table */
+.vd-table{padding:0.25rem 0;}
+.vdt-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:0.65rem 1.75rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;align-items:center;transition:background 0.15s;}
+.vdt-row:last-child{border-bottom:none;}
+.vdt-row:hover{background:rgba(255,255,255,0.02);}
+.vdt-row.hdr{background:rgba(0,0,0,0.2);}
+.vdt-cell{color:var(--text-muted);}
+.vdt-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.vdt-yield{color:var(--green);}
+.vdt-status{padding:0.16rem 0.5rem;border-radius:2px;font-size:0.52rem;letter-spacing:0.08em;display:inline-block;}
+.st-ok{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.st-lock{background:var(--blue-dim);color:var(--blue-light);border:1px solid var(--blue-border);}
+.st-act{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-border);}
+
+/* GOVERNANCE FRAMEWORK */
+.gov-layout{display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:start;}
+.gov-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.gp-topbar{height:2px;background:linear-gradient(90deg,var(--blue),var(--v3),var(--v4),var(--amber));}
+.gp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.gp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+/* governance pillars */
+.gov-pillars{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);}
+.gvp-item{background:var(--surface);padding:1.1rem 1rem;text-align:center;transition:background 0.2s;}
+.gvp-item:hover{background:var(--surface2);}
+.gvp-icon{font-size:0.9rem;margin-bottom:0.4rem;}
+.gvp-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);}
+/* position record */
+.gov-record{padding:1.25rem 1.75rem;border-top:1px solid var(--border);}
+.gr-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.gr-rows{display:flex;flex-direction:column;gap:0;}
+.gr-row{display:flex;justify-content:space-between;align-items:center;padding:0.52rem 0;border-bottom:1px solid var(--border);}
+.gr-row:last-child{border-bottom:none;}
+.gr-event{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.gr-status-ok{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--green);}
+.gr-status-lock{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--blue-light);}
+/* transparency features */
+.trans-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.tf-item{display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;transition:border-color 0.2s;}
+.tf-item:hover{border-color:var(--border-md);}
+.tf-icon{color:var(--blue);font-size:0.8rem;flex-shrink:0;margin-top:2px;}
+.tf-body h4{font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.tf-body p{font-size:0.73rem;}
+.gov-mandate{margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--blue-border);border-radius:5px;background:var(--blue-dim);font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--blue-light);}
+
+/* DASHBOARD */
+.dash-panels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.dash-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp-topbar{height:2px;}
+.dp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.dp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.dp-metric{background:var(--surface);padding:1rem 1.1rem;}
+.dp-m-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.dp-m-val{font-family:'Outfit',system-ui,sans-serif;font-size:1rem;font-weight:700;}
+.dp-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-top:0.18rem;}
+.dp-rows{padding:0.25rem 0;}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.6rem;border-bottom:1px solid var(--border);}
+.dp-row:last-child{border-bottom:none;}
+.dp-row-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.dp-row-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);}
+
+/* VAULT OVERVIEW TABLE */
+.vault-overview{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;margin-top:3rem;}
+.vo-topbar{height:2px;background:linear-gradient(90deg,var(--v1),var(--v2),var(--v3),var(--v4),var(--v5));}
+.vo-header{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.vo-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.vo-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--green);}
+.vo-table{padding:0.25rem 0;}
+.vot-row{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1fr 1fr;padding:0.72rem 1.75rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;align-items:center;transition:background 0.15s;}
+.vot-row:last-child{border-bottom:none;}
+.vot-row:hover{background:rgba(255,255,255,0.02);}
+.vot-row.hdr{background:rgba(0,0,0,0.2);}
+.vot-cell{color:var(--text-muted);}
+.vot-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.vot-vault{display:flex;align-items:center;gap:8px;}
+.vot-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.vot-name{color:var(--text);}
+.vot-apy{color:var(--green);}
+
+/* FINAL CTA */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(74,127,203,0.07) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--text);margin-bottom:0.75rem;max-width:580px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:460px;margin:0 auto 0.75rem;}
+.fc-mandate{font-family:"JetBrains Mono",monospace;font-size:0.68rem;color:var(--text-dim);margin-bottom:2.5rem;display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;}
+.fc-mandate span{color:var(--text-muted);}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-final{background:var(--blue);color:var(--white);border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{background:var(--blue-light);box-shadow:0 8px 30px rgba(74,127,203,0.28);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--blue-border);color:var(--blue-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:'Outfit',system-ui,sans-serif;font-size:1.15rem;font-weight:700;color:var(--text);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--blue-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-item-wrap.active .nav-trigger{color:var(--blue-light);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--blue-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .vaults-grid{grid-template-columns:repeat(2,1fr);}
+  .gov-pillars{grid-template-columns:repeat(3,1fr);}
+  .vot-row{grid-template-columns:2fr 1fr 1fr 1fr;}
+  .vot-row>*:nth-child(5),.vot-row>*:nth-child(6),.vot-row.hdr>*:nth-child(5),.vot-row.hdr>*:nth-child(6){display:none;}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .two-col,.gov-layout,.dash-panels,.vaults-bottom{grid-template-columns:1fr;}
+  .vaults-grid{grid-template-columns:1fr;}
+  .hero-principles{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .vc-metrics{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap active">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>2.6 · KAPITOR VAULTS · 5 VAULTS ACTIVE · ALL LEDGER-GOVERNED</div>
+      <h1 style="color:var(--text);">Structured Investment<br><span style="color:var(--blue-light);">Strategies.</span></h1>
+      <div class="hero-principles">
+        <div class="hp-item">Defined strategy mandate</div>
+        <div class="hp-item">Risk ceiling enforced</div>
+        <div class="hp-item">Capital lock framework</div>
+        <div class="hp-item">Performance transparency</div>
+        <div class="hp-item">Reserve reconciliation</div>
+      </div>
+      <div class="hero-tagline">No discretionary opacity. <span>No hidden leverage.</span> <span>Vaults are managed systems — not blind pools.</span></div>
+      <div class="hero-btns">
+        <button class="btn-hero"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="white" stroke-width="1.4" fill="none" opacity="0.5"/><circle cx="6.5" cy="6.5" r="2.5" fill="white"/></svg>Open Smart Wallet</button>
+        <button class="btn-out">Compare Vaults →</button>
+        <button class="btn-out">Request Institutional Access →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Total Vault AUM</div>
+          <div class="hm-val" style="color:var(--blue-light);">$620M</div>
+          <div class="hm-sub"><span class="up">▲ 3.4%</span> MTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Active Vaults</div>
+          <div class="hm-val" style="color:var(--v3);">5</div>
+          <div class="hm-sub">All strategies live</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Avg Net Return</div>
+          <div class="hm-val" style="color:var(--green);">10.4%</div>
+          <div class="hm-sub">Blended APY</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Capital Locked</div>
+          <div class="hm-val" style="color:var(--amber);">$580M</div>
+          <div class="hm-sub">Across all vaults</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Hidden Leverage</div>
+          <div class="hm-val" style="font-size:1.1rem;color:var(--green);">Zero</div>
+          <div class="hm-sub">Full disclosure</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">STABLE INCOME VAULT</span><span class="up">5.2% APY ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">BITCOIN YIELD VAULT</span><span class="up">8.4% APY ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">BOND-BACKED VAULT</span><span class="up">6.8% APY ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TRADE FINANCE VAULT</span><span class="up">14.2% APY ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">CAPITAL PROTECTED VAULT</span><span class="up">4.8% APY ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">BTC/USD</span><span class="up">$68,420 ▲1.4%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TOTAL AUM</span>$620M</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">LEDGER SYNC</span><span class="up">REAL-TIME</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">RISK ENGINE</span><span class="up">ALL VAULTS CLEAR</span></span>
+    <!-- dupe -->
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">STABLE INCOME VAULT</span><span class="up">5.2% APY ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">BITCOIN YIELD VAULT</span><span class="up">8.4% APY ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">BOND-BACKED VAULT</span><span class="up">6.8% APY ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TRADE FINANCE VAULT</span><span class="up">14.2% APY ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">CAPITAL PROTECTED VAULT</span><span class="up">4.8% APY ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TOTAL AUM</span>$620M</span>
+  </div>
+</div>
+
+<!-- ═══ VAULT CARDS ═══ -->
+<section class="section" id="vaults">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey b">Five Vault Strategies</div>
+      <h2 style="color:var(--text);">Pre-Built. Risk-Governed.<br>Fully Transparent.</h2>
+      <p>Each vault follows a defined strategy mandate with an enforced risk ceiling, capital lock framework, and reserve reconciliation against the Unified Ledger. No discretionary opacity.</p>
+    </div>
+
+    <!-- TOP 3 VAULTS -->
+    <div class="vaults-grid">
+      <!-- V1: STABLE INCOME -->
+      <div class="vault-card">
+        <div class="vc-topbar" style="background:var(--v1);"></div>
+        <div class="vc-header">
+          <div class="vc-num">VAULT 01</div>
+          <div class="vc-icon-row">
+            <div class="vc-icon" style="background:var(--v1-dim);border:1px solid var(--v1-border);color:var(--v1);">◈</div>
+            <div class="vc-apy-wrap">
+              <div class="vc-apy" style="color:var(--v1);">5.2%</div>
+              <div class="vc-apy-label">EST. APY</div>
+            </div>
+          </div>
+          <div class="vc-name">Stable Income Vault</div>
+          <div class="vc-tagline" style="color:var(--v1);">PREDICTABLE YIELD · CONTROLLED VOLATILITY</div>
+          <p class="vc-desc">Steady income generation with minimal drawdown exposure. No speculative derivatives. Strict counterparty screening with daily liquidity monitoring.</p>
+        </div>
+        <div class="vc-body">
+          <div class="vc-alloc-label">Allocation Mix</div>
+          <div class="vc-alloc-bar">
+            <div class="vc-seg" style="width:35%;background:var(--v1);opacity:0.8;"></div>
+            <div class="vc-seg" style="width:30%;background:var(--v1);opacity:0.55;"></div>
+            <div class="vc-seg" style="width:20%;background:var(--v1);opacity:0.38;"></div>
+            <div class="vc-seg" style="width:15%;background:var(--v1);opacity:0.22;"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:var(--v1-dim);color:var(--v1);border:1px solid var(--v1-border);border-radius:2px;">Treasury 35%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Lending 30%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Stable Pools 20%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Arbitrage 15%</span>
+          </div>
+          <div class="vc-metrics">
+            <div class="vc-metric"><div class="vc-m-label">Lock Period</div><div class="vc-m-val" style="color:var(--text);">30 days</div></div>
+            <div class="vc-metric"><div class="vc-m-label">Risk Level</div><div class="vc-m-val" style="color:var(--green);">LOW</div></div>
+            <div class="vc-metric"><div class="vc-m-label">Min. Deposit</div><div class="vc-m-val" style="color:var(--text);">$1,000</div></div>
+            <div class="vc-metric"><div class="vc-m-label">AUM</div><div class="vc-m-val" style="color:var(--text);">$180M</div></div>
+          </div>
+        </div>
+        <button class="vc-btn" style="border-color:var(--v1-border);color:var(--v1);background:var(--v1-dim);">ENTER VAULT →</button>
+      </div>
+
+      <!-- V2: BITCOIN YIELD -->
+      <div class="vault-card featured">
+        <div class="vc-topbar" style="background:var(--v2);"></div>
+        <div style="position:absolute;top:1.4rem;right:1.4rem;font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--v2-dim);color:var(--v2);border:1px solid var(--v2-border);">MOST POPULAR</div>
+        <div class="vc-header">
+          <div class="vc-num">VAULT 02</div>
+          <div class="vc-icon-row">
+            <div class="vc-icon" style="background:var(--v2-dim);border:1px solid var(--v2-border);color:var(--v2);">₿</div>
+            <div class="vc-apy-wrap">
+              <div class="vc-apy" style="color:var(--v2);">8.4%</div>
+              <div class="vc-apy-label">EST. APY</div>
+            </div>
+          </div>
+          <div class="vc-name">Bitcoin Yield Vault</div>
+          <div class="vc-tagline" style="color:var(--v2);">BTC EXPOSURE · STRUCTURED YIELD</div>
+          <p class="vc-desc">Yield generation on Bitcoin holdings without liquidating exposure. BTC remains visible in the Smart Wallet at all times. No unsecured lending.</p>
+        </div>
+        <div class="vc-body">
+          <div class="vc-alloc-label">Strategy Components</div>
+          <div class="vc-alloc-bar">
+            <div class="vc-seg" style="width:40%;background:var(--v2);opacity:0.8;"></div>
+            <div class="vc-seg" style="width:25%;background:var(--v2);opacity:0.55;"></div>
+            <div class="vc-seg" style="width:20%;background:var(--v2);opacity:0.38;"></div>
+            <div class="vc-seg" style="width:15%;background:var(--v2);opacity:0.22;"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:var(--v2-dim);color:var(--v2);border:1px solid var(--v2-border);border-radius:2px;">BTC Lending 40%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Basis Arb 25%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Funding Rate 20%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Covered 15%</span>
+          </div>
+          <div class="vc-metrics">
+            <div class="vc-metric"><div class="vc-m-label">Lock Period</div><div class="vc-m-val" style="color:var(--text);">60 days</div></div>
+            <div class="vc-metric"><div class="vc-m-label">Risk Level</div><div class="vc-m-val" style="color:var(--amber);">MEDIUM</div></div>
+            <div class="vc-metric"><div class="vc-m-label">Min. Deposit</div><div class="vc-m-val" style="color:var(--text);">0.05 BTC</div></div>
+            <div class="vc-metric"><div class="vc-m-label">AUM</div><div class="vc-m-val" style="color:var(--text);">$240M</div></div>
+          </div>
+        </div>
+        <button class="vc-btn" style="border-color:var(--v2-border);color:var(--v2);background:var(--v2-dim);">ENTER VAULT →</button>
+      </div>
+
+      <!-- V3: BOND-BACKED -->
+      <div class="vault-card">
+        <div class="vc-topbar" style="background:var(--v3);"></div>
+        <div class="vc-header">
+          <div class="vc-num">VAULT 03</div>
+          <div class="vc-icon-row">
+            <div class="vc-icon" style="background:var(--v3-dim);border:1px solid var(--v3-border);color:var(--v3);">§</div>
+            <div class="vc-apy-wrap">
+              <div class="vc-apy" style="color:var(--v3);">6.8%</div>
+              <div class="vc-apy-label">EST. APY</div>
+            </div>
+          </div>
+          <div class="vc-name">Bond-Backed Vault</div>
+          <div class="vc-tagline" style="color:var(--v3);">TOKENIZED FIXED-INCOME</div>
+          <p class="vc-desc">Tokenized and traditional bond-backed instruments — government, corporate, and short-term credit — with duration visibility and yield-to-maturity tracking.</p>
+        </div>
+        <div class="vc-body">
+          <div class="vc-alloc-label">Bond Categories</div>
+          <div class="vc-alloc-bar">
+            <div class="vc-seg" style="width:45%;background:var(--v3);opacity:0.8;"></div>
+            <div class="vc-seg" style="width:30%;background:var(--v3);opacity:0.55;"></div>
+            <div class="vc-seg" style="width:15%;background:var(--v3);opacity:0.38;"></div>
+            <div class="vc-seg" style="width:10%;background:var(--v3);opacity:0.22;"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:var(--v3-dim);color:var(--v3);border:1px solid var(--v3-border);border-radius:2px;">Gov. Bonds 45%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Corporate 30%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Short Credit 15%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Reserve-Backed 10%</span>
+          </div>
+          <div class="vc-metrics">
+            <div class="vc-metric"><div class="vc-m-label">Lock Period</div><div class="vc-m-val" style="color:var(--text);">90 days</div></div>
+            <div class="vc-metric"><div class="vc-m-label">Risk Level</div><div class="vc-m-val" style="color:var(--green);">LOW-MED</div></div>
+            <div class="vc-metric"><div class="vc-m-label">Min. Deposit</div><div class="vc-m-val" style="color:var(--text);">$5,000</div></div>
+            <div class="vc-metric"><div class="vc-m-label">AUM</div><div class="vc-m-val" style="color:var(--text);">$84M</div></div>
+          </div>
+        </div>
+        <button class="vc-btn" style="border-color:var(--v3-border);color:var(--v3);background:var(--v3-dim);">ENTER VAULT →</button>
+      </div>
+    </div>
+
+    <!-- BOTTOM 2 VAULTS -->
+    <div class="vaults-bottom">
+      <!-- V4: TRADE FINANCE -->
+      <div class="vault-card">
+        <div class="vc-topbar" style="background:var(--v4);"></div>
+        <div class="vc-header">
+          <div class="vc-num">VAULT 04</div>
+          <div class="vc-icon-row">
+            <div class="vc-icon" style="background:var(--v4-dim);border:1px solid var(--v4-border);color:var(--v4);">⇄</div>
+            <div class="vc-apy-wrap">
+              <div class="vc-apy" style="color:var(--v4);">14.2%</div>
+              <div class="vc-apy-label">EST. APY</div>
+            </div>
+          </div>
+          <div class="vc-name">Trade Finance Vault</div>
+          <div class="vc-tagline" style="color:var(--v4);">REAL-WORLD CAPITAL DEPLOYMENT</div>
+          <p class="vc-desc">Deploys capital into trade finance transactions and structured commercial flows — LC-backed deals, commodity financing, and cross-border invoice discounting. Connects directly with Kapitor's institutional infrastructure.</p>
+        </div>
+        <div class="vc-body">
+          <div class="vc-alloc-label">Capital Utilization</div>
+          <div class="vc-alloc-bar">
+            <div class="vc-seg" style="width:38%;background:var(--v4);opacity:0.8;"></div>
+            <div class="vc-seg" style="width:28%;background:var(--v4);opacity:0.55;"></div>
+            <div class="vc-seg" style="width:22%;background:var(--v4);opacity:0.38;"></div>
+            <div class="vc-seg" style="width:12%;background:var(--v4);opacity:0.22;"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:var(--v4-dim);color:var(--v4);border:1px solid var(--v4-border);border-radius:2px;">LC-Backed 38%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Comm. Settlement 28%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Commodity Trade 22%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Invoice Disc. 12%</span>
+          </div>
+          <div class="vc-metrics">
+            <div class="vc-metric"><div class="vc-m-label">Lock Period</div><div class="vc-m-val" style="color:var(--text);">Deal-Maturity</div></div>
+            <div class="vc-metric"><div class="vc-m-label">Risk Level</div><div class="vc-m-val" style="color:var(--amber);">MEDIUM-HIGH</div></div>
+            <div class="vc-metric"><div class="vc-m-label">Min. Deposit</div><div class="vc-m-val" style="color:var(--text);">$25,000</div></div>
+            <div class="vc-metric"><div class="vc-m-label">AUM</div><div class="vc-m-val" style="color:var(--text);">$72M</div></div>
+          </div>
+        </div>
+        <button class="vc-btn" style="border-color:var(--v4-border);color:var(--v4);background:var(--v4-dim);">ENTER VAULT →</button>
+      </div>
+
+      <!-- V5: CAPITAL PROTECTED -->
+      <div class="vault-card">
+        <div class="vc-topbar" style="background:var(--v5);"></div>
+        <div class="vc-header">
+          <div class="vc-num">VAULT 05</div>
+          <div class="vc-icon-row">
+            <div class="vc-icon" style="background:var(--v5-dim);border:1px solid var(--v5-border);color:var(--v5);">⬡</div>
+            <div class="vc-apy-wrap">
+              <div class="vc-apy" style="color:var(--v5);">4.8%</div>
+              <div class="vc-apy-label">BASE + UPSIDE</div>
+            </div>
+          </div>
+          <div class="vc-name">Capital Protected Vault</div>
+          <div class="vc-tagline" style="color:var(--v5);">STRUCTURED DOWNSIDE PROTECTION</div>
+          <p class="vc-desc">Preserves principal while offering controlled upside exposure via options overlay and structured derivatives. Capital floor mechanisms with scenario stress testing. Principal preservation over aggressive yield.</p>
+        </div>
+        <div class="vc-body">
+          <div class="vc-alloc-label">Protection Structure</div>
+          <div class="vc-alloc-bar">
+            <div class="vc-seg" style="width:55%;background:var(--v5);opacity:0.8;"></div>
+            <div class="vc-seg" style="width:25%;background:var(--v5);opacity:0.5;"></div>
+            <div class="vc-seg" style="width:12%;background:var(--v5);opacity:0.35;"></div>
+            <div class="vc-seg" style="width:8%;background:var(--v5);opacity:0.2;"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:var(--v5-dim);color:var(--v5);border:1px solid var(--v5-border);border-radius:2px;">Treasury Core 55%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Options Hedge 25%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Structured Deriv. 12%</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.56rem;padding:0.18rem 0.5rem;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);border-radius:2px;">Buffer 8%</span>
+          </div>
+          <div class="vc-metrics">
+            <div class="vc-metric"><div class="vc-m-label">Lock Period</div><div class="vc-m-val" style="color:var(--text);">12 months</div></div>
+            <div class="vc-metric"><div class="vc-m-label">Protection</div><div class="vc-m-val" style="color:var(--green);">100% FLOOR</div></div>
+            <div class="vc-metric"><div class="vc-m-label">Min. Deposit</div><div class="vc-m-val" style="color:var(--text);">$10,000</div></div>
+            <div class="vc-metric"><div class="vc-m-label">AUM</div><div class="vc-m-val" style="color:var(--text);">$44M</div></div>
+          </div>
+        </div>
+        <button class="vc-btn" style="border-color:var(--v5-border);color:var(--v5);background:var(--v5-dim);">ENTER VAULT →</button>
+      </div>
+    </div>
+
+    <!-- VAULT OVERVIEW TABLE -->
+    <div class="vault-overview">
+      <div class="vo-topbar"></div>
+      <div class="vo-header">
+        <div class="vo-title">All Vaults — Live Overview</div>
+        <div class="vo-live"><div class="ld"></div>LEDGER SYNC ACTIVE</div>
+      </div>
+      <div class="vo-table">
+        <div class="vot-row hdr">
+          <span class="vot-cell hdr">VAULT</span>
+          <span class="vot-cell hdr">AUM</span>
+          <span class="vot-cell hdr">APY</span>
+          <span class="vot-cell hdr">LOCK</span>
+          <span class="vot-cell hdr">RISK</span>
+          <span class="vot-cell hdr">STATUS</span>
+        </div>
+        <div class="vot-row">
+          <div class="vot-vault"><div class="vot-dot" style="background:var(--v1);"></div><span class="vot-name">Stable Income Vault</span></div>
+          <span class="vot-cell">$180M</span>
+          <span class="vot-apy">5.2%</span>
+          <span class="vot-cell">30d</span>
+          <span class="vot-cell" style="color:var(--green);">LOW</span>
+          <span><span class="vdt-status st-ok">ACTIVE</span></span>
+        </div>
+        <div class="vot-row">
+          <div class="vot-vault"><div class="vot-dot" style="background:var(--v2);"></div><span class="vot-name">Bitcoin Yield Vault</span></div>
+          <span class="vot-cell">$240M</span>
+          <span class="vot-apy">8.4%</span>
+          <span class="vot-cell">60d</span>
+          <span class="vot-cell" style="color:var(--amber);">MEDIUM</span>
+          <span><span class="vdt-status st-ok">ACTIVE</span></span>
+        </div>
+        <div class="vot-row">
+          <div class="vot-vault"><div class="vot-dot" style="background:var(--v3);"></div><span class="vot-name">Bond-Backed Vault</span></div>
+          <span class="vot-cell">$84M</span>
+          <span class="vot-apy">6.8%</span>
+          <span class="vot-cell">90d</span>
+          <span class="vot-cell" style="color:var(--green);">LOW-MED</span>
+          <span><span class="vdt-status st-ok">ACTIVE</span></span>
+        </div>
+        <div class="vot-row">
+          <div class="vot-vault"><div class="vot-dot" style="background:var(--v4);"></div><span class="vot-name">Trade Finance Vault</span></div>
+          <span class="vot-cell">$72M</span>
+          <span class="vot-apy">14.2%</span>
+          <span class="vot-cell">Deal-based</span>
+          <span class="vot-cell" style="color:var(--amber);">MED-HIGH</span>
+          <span><span class="vdt-status st-ok">ACTIVE</span></span>
+        </div>
+        <div class="vot-row">
+          <div class="vot-vault"><div class="vot-dot" style="background:var(--v5);"></div><span class="vot-name">Capital Protected Vault</span></div>
+          <span class="vot-cell">$44M</span>
+          <span class="vot-apy">4.8%</span>
+          <span class="vot-cell">12mo</span>
+          <span class="vot-cell" style="color:var(--green);">PROTECTED</span>
+          <span><span class="vdt-status st-ok">ACTIVE</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ VAULT DETAIL: BTC YIELD ═══ -->
+<section class="section" id="btc-vault">
+  <div class="container">
+    <div class="two-col">
+      <div>
+        <div class="ey a" style="color:var(--v2);">Featured Vault · Bitcoin Yield Vault</div>
+        <h2 style="color:var(--text);">BTC Exposure With<br>Structured Yield</h2>
+        <p style="margin-top:0.85rem;">Yield generation on Bitcoin holdings without liquidating exposure. BTC remains visible and recorded in the Smart Wallet at all times. No unsecured lending, dynamic exposure caps, market volatility monitoring.</p>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;">
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--v2);">
+            <div style="min-width:0;"><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">BTC-Backed Lending</h4><p style="font-size:0.73rem;">Overcollateralized lending using BTC as collateral. LTV monitored continuously.</p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--v2);">
+            <div style="min-width:0;"><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">Basis Trade Arbitrage</h4><p style="font-size:0.73rem;">Captures spread between spot and futures pricing on major exchanges.</p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--v2);">
+            <div style="min-width:0;"><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">Funding Rate Optimization</h4><p style="font-size:0.73rem;">Earns perpetual contract funding rates when conditions are favourable.</p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--v2);">
+            <div style="min-width:0;"><h4 style="font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;">Structured Covered Strategies</h4><p style="font-size:0.73rem;">Defined-risk options structures to generate premium income on BTC positions.</p></div>
+          </div>
+        </div>
+        <div style="margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--v2-border);border-radius:5px;background:var(--v2-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--v2);">BTC remains visible in the Smart Wallet at all times. No unsecured lending.</div>
+      </div>
+      <div>
+        <div class="vault-detail">
+          <div class="vd-topbar" style="background:var(--v2);"></div>
+          <div class="vd-header">
+            <div class="vd-title">Bitcoin Yield Vault — Live</div>
+            <div class="vd-apy" style="color:var(--v2);">8.4% APY</div>
+          </div>
+          <div class="vd-metrics">
+            <div class="vdm-item"><div class="vdm-label">BTC Allocated</div><div class="vdm-val" style="color:var(--text);">42.80 BTC</div><div class="vdm-sub" style="color:var(--v2);">$2.9M equiv.</div></div>
+            <div class="vdm-item"><div class="vdm-label">Yield Generated</div><div class="vdm-val" style="color:var(--green);">3.60 BTC</div><div class="vdm-sub">+8.4% APY</div></div>
+            <div class="vdm-item"><div class="vdm-label">Unrealized Exp.</div><div class="vdm-val" style="color:var(--amber);">12.4%</div><div class="vdm-sub">Within caps</div></div>
+            <div class="vdm-item"><div class="vdm-label">Lock Remaining</div><div class="vdm-val" style="color:var(--amber);">38 Days</div><div class="vdm-sub">Withdrawal eligible</div></div>
+            <div class="vdm-item"><div class="vdm-label">Risk Score</div><div class="vdm-val" style="color:var(--green);">MEDIUM</div><div class="vdm-sub">Exposure monitored</div></div>
+            <div class="vdm-item"><div class="vdm-label">Maturity Value</div><div class="vdm-val" style="color:var(--text);">46.40 BTC</div><div class="vdm-sub">Projected</div></div>
+          </div>
+          <div class="vd-alloc">
+            <div class="vda-label">Strategy Allocation Breakdown</div>
+            <div class="vda-bar">
+              <div class="vc-seg" style="width:40%;background:var(--v2);opacity:0.8;"></div>
+              <div class="vc-seg" style="width:25%;background:var(--v2);opacity:0.55;"></div>
+              <div class="vc-seg" style="width:20%;background:var(--v2);opacity:0.38;"></div>
+              <div class="vc-seg" style="width:15%;background:var(--v2);opacity:0.22;"></div>
+            </div>
+            <div class="vda-legend">
+              <div class="vda-leg"><div class="vda-dot" style="background:var(--v2);opacity:0.8;"></div>BTC Lending 40%</div>
+              <div class="vda-leg"><div class="vda-dot" style="background:var(--v2);opacity:0.55;"></div>Basis Arb 25%</div>
+              <div class="vda-leg"><div class="vda-dot" style="background:var(--v2);opacity:0.38;"></div>Funding Rate 20%</div>
+              <div class="vda-leg"><div class="vda-dot" style="background:var(--v2);opacity:0.22;"></div>Covered 15%</div>
+            </div>
+          </div>
+          <div class="vd-table">
+            <div class="vdt-row hdr">
+              <span class="vdt-cell hdr">COMPONENT</span>
+              <span class="vdt-cell hdr">ALLOCATED</span>
+              <span class="vdt-cell hdr">YIELD</span>
+              <span class="vdt-cell hdr">STATUS</span>
+            </div>
+            <div class="vdt-row">
+              <span class="vdt-cell">BTC-Backed Lending</span>
+              <span class="vdt-cell">17.12 BTC</span>
+              <span class="vdt-yield">+1.44 BTC</span>
+              <span><span class="vdt-status st-ok">ACTIVE</span></span>
+            </div>
+            <div class="vdt-row">
+              <span class="vdt-cell">Basis Trade Arbitrage</span>
+              <span class="vdt-cell">10.70 BTC</span>
+              <span class="vdt-yield">+0.90 BTC</span>
+              <span><span class="vdt-status st-ok">RUNNING</span></span>
+            </div>
+            <div class="vdt-row">
+              <span class="vdt-cell">Funding Rate Opt.</span>
+              <span class="vdt-cell">8.56 BTC</span>
+              <span class="vdt-yield">+0.72 BTC</span>
+              <span><span class="vdt-status st-ok">ACTIVE</span></span>
+            </div>
+            <div class="vdt-row">
+              <span class="vdt-cell">Structured Covered</span>
+              <span class="vdt-cell">6.42 BTC</span>
+              <span class="vdt-yield">+0.54 BTC</span>
+              <span><span class="vdt-status st-lock">LOCKED</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GOVERNANCE FRAMEWORK ═══ -->
+<section class="section" id="governance">
+  <div class="container">
+    <div class="gov-layout">
+      <div>
+        <div class="gov-panel">
+          <div class="gp-topbar"></div>
+          <div class="gp-header"><div class="gp-title">Vault Governance Framework</div></div>
+          <div class="gov-pillars">
+            <div class="gvp-item"><div class="gvp-icon" style="color:var(--blue);">§</div><div class="gvp-label">Unified Ledger</div></div>
+            <div class="gvp-item"><div class="gvp-icon" style="color:var(--amber);">⊘</div><div class="gvp-label">Risk Engine</div></div>
+            <div class="gvp-item"><div class="gvp-icon" style="color:var(--green);">⬡</div><div class="gvp-label">Compliance Screen</div></div>
+            <div class="gvp-item"><div class="gvp-icon" style="color:var(--v3);">▣</div><div class="gvp-label">Reserve Mapping</div></div>
+            <div class="gvp-item"><div class="gvp-icon" style="color:var(--v4);">◈</div><div class="gvp-label">Lock Enforcement</div></div>
+          </div>
+          <div class="gov-record">
+            <div class="gr-label">Position Events — Every vault entry generates</div>
+            <div class="gr-rows">
+              <div class="gr-row"><span class="gr-event">Capital Lock Record</span><span class="gr-status-ok">LEDGER ENTRY</span></div>
+              <div class="gr-row"><span class="gr-event">Strategy Allocation Entry</span><span class="gr-status-ok">CONFIRMED</span></div>
+              <div class="gr-row"><span class="gr-event">Yield Accrual Log</span><span class="gr-status-ok">REAL-TIME</span></div>
+              <div class="gr-row"><span class="gr-event">Risk Score Update</span><span class="gr-status-ok">CONTINUOUS</span></div>
+              <div class="gr-row"><span class="gr-event">Maturity Timeline</span><span class="gr-status-lock">LOCKED</span></div>
+              <div class="gr-row"><span class="gr-event">Reserve Mapping</span><span class="gr-status-ok">ACTIVE</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey b">Governance Framework</div>
+        <h2 style="color:var(--text);">No Vault Can Deploy Capital<br>Outside Ledger Visibility.</h2>
+        <p style="margin-top:0.85rem;">All Kapitor Vaults operate under five integrated governance systems — every vault position creates six simultaneous records, ensuring complete traceability from capital entry to maturity.</p>
+        <div class="trans-features">
+          <div class="tf-item"><div class="tf-icon">◈</div><div class="tf-body"><h4>Strategy Documentation</h4><p>Every vault publishes its full strategy mandate, allocation rules, and risk ceiling before accepting capital.</p></div></div>
+          <div class="tf-item"><div class="tf-icon">◈</div><div class="tf-body"><h4>Risk Disclosure</h4><p>Risk category, stress test scenarios, historical drawdown, and liquidity assessment — disclosed at the vault level.</p></div></div>
+          <div class="tf-item"><div class="tf-icon">◈</div><div class="tf-body"><h4>Historical Performance</h4><p>Audited performance history, drawdown records, and risk-adjusted return data available per vault.</p></div></div>
+          <div class="tf-item"><div class="tf-icon">◈</div><div class="tf-body"><h4>Downloadable Statements</h4><p>Institutional-grade position statements, tax reporting integration, and treasury analytics for Prime clients.</p></div></div>
+        </div>
+        <div class="gov-mandate">No discretionary opacity. No hidden leverage. Vaults are managed systems — not blind pools.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD SNAPSHOT ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey b">Dashboard Snapshot</div>
+      <h2 style="color:var(--text);">User & Institutional<br>Vault Views</h2>
+    </div>
+    <div class="dash-panels">
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--v1),var(--v2),var(--v3));"></div>
+        <div class="dp-header"><div class="dp-title">User Vault Dashboard</div><div class="dp-tag">RETAIL</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Total Vault Allocation</div><div class="dp-m-val" style="color:var(--text);">$84,200</div><div class="dp-m-sub" style="color:var(--text-dim);">3 vaults</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Yield Accrued</div><div class="dp-m-val" style="color:var(--green);">$6,840</div><div class="dp-m-sub" style="color:var(--green);">+8.1% avg</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Locked Capital</div><div class="dp-m-val" style="color:var(--amber);">$72,000</div><div class="dp-m-sub" style="color:var(--text-dim);">Across 3 vaults</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Withdrawal Eligible</div><div class="dp-m-val" style="color:var(--green);">$12,200</div><div class="dp-m-sub" style="color:var(--green);">Available now</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Active Vault Positions</span><span class="dp-row-val">3 vaults · 8 sub-positions</span></div>
+          <div class="dp-row"><span class="dp-row-key">Risk Score (Blended)</span><span class="dp-row-val" style="color:var(--amber);">MEDIUM</span></div>
+          <div class="dp-row"><span class="dp-row-key">Next Maturity</span><span class="dp-row-val">Stable Income · 22 days</span></div>
+          <div class="dp-row"><span class="dp-row-key">Smart Wallet Sync</span><span class="dp-row-val" style="color:var(--green);">Real-time</span></div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--v4),var(--v5),var(--amber));"></div>
+        <div class="dp-header"><div class="dp-title">Institutional Vault View</div><div class="dp-tag" style="color:var(--amber);border-color:var(--amber-border);background:var(--amber-dim);">PRIME</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Treasury Allocated</div><div class="dp-m-val" style="color:var(--text);">$12.4M</div><div class="dp-m-sub" style="color:var(--text-dim);">5 vaults</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Yield (MTD)</div><div class="dp-m-val" style="color:var(--green);">$108K</div><div class="dp-m-sub" style="color:var(--green);">Blended 10.4%</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Exposure Modeling</div><div class="dp-m-val" style="color:var(--blue-light);">Active</div><div class="dp-m-sub" style="color:var(--text-dim);">All vaults</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Custom Structuring</div><div class="dp-m-val" style="color:var(--amber);">Available</div><div class="dp-m-sub" style="color:var(--text-dim);">Bespoke vaults</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Treasury Analytics</span><span class="dp-row-val">Daily reports</span></div>
+          <div class="dp-row"><span class="dp-row-key">Stress Test Simulations</span><span class="dp-row-val">5 scenarios · All pass</span></div>
+          <div class="dp-row"><span class="dp-row-key">Custom Vault Options</span><span class="dp-row-val" style="color:var(--green);">Enabled</span></div>
+          <div class="dp-row"><span class="dp-row-key">Compliance Flags (MTD)</span><span class="dp-row-val" style="color:var(--green);">0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey b" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Structured Capital. Governed Strategy.</div>
+      <h2>Vaults Are Managed Systems —<br>Not Blind Pools.</h2>
+      <p>Kapitor Vaults provide predefined, risk-scored investment structures engineered for transparency and controlled exposure.</p>
+      <div class="fc-mandate">
+        <span>Predefined strategies</span><span style="color:var(--text-dim);">·</span>
+        <span>Risk-scored</span><span style="color:var(--text-dim);">·</span>
+        <span>Full transparency</span><span style="color:var(--text-dim);">·</span>
+        <span>Controlled exposure</span>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="white" stroke-width="1.4" fill="none" opacity="0.5"/><circle cx="6.5" cy="6.5" r="2.5" fill="white"/></svg>Open Smart Wallet</button>
+        <button class="btn-final-out">Compare Vaults</button>
+        <button class="btn-final-out">Request Institutional Vault Access</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="kapitor-smart-wallet.html">Smart Wallet</a></li><li><a href="kapitor-pay.html">Kapitor Pay</a></li><li><a href="kapitor-trade.html">Trade</a></li><li><a href="kapitor-earn.html">Earn</a></li><li><a href="kapitor-stake.html">Stake</a></li><li><a href="kapitor-vaults.html">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="kaloft-ept.html">Kaloft</a></li><li><a href="digitalassets.html">Digital Assets</a></li><li><a href="rwa.html">Real-World Assets</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="custody.html">Custody</a></li><li><a href="fx.html">FX</a></li><li><a href="api.html">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Infrastructure</h5><ul><li><a href="compliance.html">Compliance</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="company.html">About Kapitor</a></li><li><a href="company.html">Contact</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Risk Disclosure</a><a href="#">AML Policy</a><a href="#">Cookie Policy</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  window.addEventListener("scroll",()=>{document.getElementById("hdr").style.padding=window.scrollY>60?"0.65rem 2.5rem":"1rem 2.5rem";});
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});},{threshold:0.06});
+  document.querySelectorAll(".vault-card,.vot-row,.vdt-row,.gvp-item,.gr-row,.tf-item,.dp-metric,.dp-row,.hp-item").forEach(el=>{
+    el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);
+  });
+
+  (function(){
+    var header=document.getElementById("hdr");
+    var mobileToggle=document.querySelector(".nav-mobile-toggle");
+    function isMobile(){return window.innerWidth<=900;}
+    if(mobileToggle&&header){
+      mobileToggle.addEventListener("click",function(){
+        header.classList.toggle("header-mobile-open");
+        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+      });
+    }
+    document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+      btn.addEventListener("click",function(e){
+        if(isMobile()){
+          e.preventDefault();
+          var wrap=btn.closest(".nav-item-wrap");
+          wrap.classList.toggle("open");
+          btn.setAttribute("aria-expanded",wrap.classList.contains("open"));
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

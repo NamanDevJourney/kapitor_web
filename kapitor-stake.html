@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitor Stake – Structured Staking Infrastructure</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+:root {
+  /* KAP light theme */
+  --bg: #FCF8E8;
+  --surface: #FFFFFF;
+  --surface2: #F5ECD6;
+  --surface3: #F5ECD6;
+  --border: rgba(15,23,42,0.08);
+  --border-md: rgba(15,23,42,0.16);
+  --border-hi: rgba(15,23,42,0.2);
+
+  --blue: #4a7fcb;
+  --blue-light: #6b9de0;
+  --blue-dim: rgba(74,127,203,0.09);
+  --blue-border: rgba(74,127,203,0.2);
+
+  --green: #3db87a;
+  --green-light: #5ed498;
+  --green-dim: rgba(61,184,122,0.09);
+  --green-border: rgba(61,184,122,0.2);
+
+  --amber: #f0a030;
+  --amber-light: #f5bc5a;
+  --amber-dim: rgba(240,160,48,0.09);
+  --amber-border: rgba(240,160,48,0.2);
+
+  /* Network accent colors */
+  --eth: #627eea;
+  --eth-dim: rgba(98,126,234,0.09);
+  --eth-border: rgba(98,126,234,0.2);
+
+  --sol: #9945ff;
+  --sol-dim: rgba(153,69,255,0.09);
+  --sol-border: rgba(153,69,255,0.2);
+
+  --dot: #e6007a;
+  --dot-dim: rgba(230,0,122,0.09);
+  --dot-border: rgba(230,0,122,0.2);
+
+  --atom: #2e3148;
+  --atom-acc: #6f7cba;
+  --atom-dim: rgba(111,124,186,0.09);
+  --atom-border: rgba(111,124,186,0.2);
+
+  --text: #111827;
+  --text-muted: #6B6B6B;
+  --text-dim: #9CA3AF;
+  --white: #ffffff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:300;line-height:1.65;overflow-x:hidden;
+}
+
+h1,h2,h3{font-family:'Outfit',system-ui,sans-serif;font-weight:700;letter-spacing:-0.03em;color:var(--text);}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.b{color:var(--blue);}         .ey.b::before{background:var(--blue);}
+.ey.g{color:var(--green);}        .ey.g::before{background:var(--green);}
+.ey.a{color:var(--amber);}        .ey.a::before{background:var(--amber);}
+.ey.eth{color:var(--eth);}        .ey.eth::before{background:var(--eth);}
+.ey.sol{color:var(--sol);}        .ey.sol::before{background:var(--sol);}
+.ey.dot{color:var(--dot);}        .ey.dot::before{background:var(--dot);}
+.ey.atom{color:var(--atom-acc);}  .ey.atom::before{background:var(--atom-acc);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;position:relative;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--text);margin-bottom:0.85rem;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+.two-col-r{display:grid;grid-template-columns:1.15fr 1fr;gap:5rem;align-items:start;}
+
+/* HEADER */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(252,248,232,0.92);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);transition:padding 0.3s;
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+.nav-wrap{display:flex;align-items:center;}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--blue-light);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue-light);}
+.btn-cta{background:var(--blue);color:var(--white);border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.2s;}
+.btn-cta:hover{background:var(--blue-light);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 55% 50% at 50% 25%, rgba(74,127,203,0.1) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 10% 70%, rgba(98,126,234,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 35% 40% at 90% 65%, rgba(153,69,255,0.04) 0%, transparent 45%),
+    radial-gradient(ellipse 30% 30% at 50% 95%, rgba(61,184,122,0.04) 0%, transparent 40%);
+}
+.hero-grid-bg{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 80% 65% at 50% 40%, black 10%, transparent 75%);
+}
+/* network orbit rings */
+.hero-orbits{position:absolute;top:50%;left:58%;transform:translate(-50%,-50%);pointer-events:none;opacity:0.12;}
+.orbit{position:absolute;border-radius:50%;border:1px solid var(--blue);top:50%;left:50%;transform:translate(-50%,-50%);}
+.orbit-1{width:280px;height:280px;animation:spin 12s linear infinite;}
+.orbit-2{width:420px;height:420px;animation:spin 20s linear infinite reverse;border-color:var(--eth);}
+.orbit-3{width:560px;height:560px;animation:spin 30s linear infinite;border-color:var(--sol);}
+@keyframes spin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+.hero-content{position:relative;z-index:2;max-width:900px;}
+.live-pill{
+  display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;
+  padding:0.35rem 0.9rem;border:1px solid rgba(74,127,203,0.28);border-radius:3px;
+  background:rgba(74,127,203,0.07);font-family:"JetBrains Mono",monospace;
+  font-size:0.59rem;letter-spacing:0.14em;color:var(--blue-light);
+}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero h1{color:var(--text);margin-bottom:1.75rem;}
+.network-tags{display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem;}
+.net-tag{
+  display:flex;align-items:center;gap:6px;padding:0.4rem 0.85rem;
+  border:1px solid var(--border-md);border-radius:4px;background:var(--surface);
+  font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);
+  transition:all 0.2s;cursor:default;
+}
+.net-tag:hover{background:var(--surface2);}
+.net-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;animation:blink 2s infinite;}
+.hero-sub{font-size:0.95rem;max-width:560px;color:rgba(204,212,232,0.5);margin-bottom:2.5rem;line-height:1.8;}
+.hero-pillars{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:2.5rem;}
+.hero-pillar{display:flex;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;font-size:0.65rem;color:var(--text-muted);}
+.hero-pillar::before{content:"✓";color:var(--green);font-size:0.7rem;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--blue);color:var(--white);border:none;padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:var(--blue-light);transform:translateY(-1px);box-shadow:0 8px 30px rgba(74,127,203,0.28);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--blue-border);color:var(--blue-light);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--green);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 38s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--green);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* NETWORK PANELS */
+.networks-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;}
+.net-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;transition:border-color 0.3s,transform 0.3s;}
+.net-panel:hover{transform:translateY(-3px);}
+.np-topbar{height:2px;}
+.np-header{padding:1.5rem 1.75rem;border-bottom:1px solid var(--border);}
+.np-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;}
+.np-symbol-wrap{display:flex;align-items:center;gap:0.75rem;}
+.np-symbol{
+  width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Outfit',system-ui,sans-serif;font-size:0.85rem;font-weight:700;flex-shrink:0;
+}
+.np-name{font-family:'Outfit',system-ui,sans-serif;font-size:1rem;font-weight:700;color:var(--text);}
+.np-network{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);}
+.np-apy-badge{font-family:'Outfit',system-ui,sans-serif;font-size:1.4rem;font-weight:800;line-height:1;}
+.np-apy-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;color:var(--text-dim);margin-top:1px;}
+.np-desc{font-size:0.78rem;color:var(--text-muted);line-height:1.7;}
+/* metrics row */
+.np-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.npm-item{background:var(--surface);padding:0.9rem 1rem;}
+.npm-label{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.3rem;}
+.npm-val{font-family:'Outfit',system-ui,sans-serif;font-size:0.95rem;font-weight:700;line-height:1;}
+.npm-sub{font-family:"JetBrains Mono",monospace;font-size:0.52rem;color:var(--text-dim);margin-top:0.15rem;}
+/* validator distribution */
+.np-validators{padding:1.1rem 1.75rem;border-top:1px solid var(--border);}
+.npv-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.6rem;}
+.npv-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;display:flex;margin-bottom:0.4rem;}
+.npv-seg{height:100%;}
+.npv-legend{display:flex;flex-wrap:wrap;gap:0.4rem 0.9rem;}
+.npv-leg-item{display:flex;align-items:center;gap:4px;font-family:"JetBrains Mono",monospace;font-size:0.55rem;color:var(--text-dim);}
+.npv-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+/* controls */
+.np-controls{padding:1rem 1.75rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:0.3rem;}
+.npc-row{display:flex;align-items:center;gap:7px;font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);}
+.npc-row::before{content:"◈";font-size:0.55rem;flex-shrink:0;}
+.np-stake-btn{
+  margin:0 1.75rem 1.5rem;padding:0.65rem;border-radius:5px;
+  font-family:"JetBrains Mono",monospace;font-size:0.65rem;letter-spacing:0.1em;
+  cursor:pointer;background:transparent;transition:all 0.2s;text-align:center;width:calc(100% - 3.5rem);border:1px solid;
+}
+
+/* LAYERED YIELD MODEL */
+.layers-wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:start;}
+.layers-visual{
+  background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;
+}
+.lv-topbar{height:2px;background:linear-gradient(90deg,var(--blue),var(--green),var(--amber),var(--eth));}
+.lv-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.lv-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.layers-stack{padding:1.5rem;}
+.layer-block{
+  border-radius:8px;padding:1.25rem 1.5rem;margin-bottom:0.75rem;position:relative;overflow:hidden;
+  border:1px solid;
+}
+.layer-block:last-child{margin-bottom:0;}
+.lb-num{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:0.4rem;}
+.lb-name{font-family:'Outfit',system-ui,sans-serif;font-size:0.95rem;font-weight:700;color:var(--text);margin-bottom:0.4rem;}
+.lb-desc{font-size:0.75rem;line-height:1.65;}
+.lb-items{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.75rem;}
+.lb-item{font-family:"JetBrains Mono",monospace;font-size:0.58rem;padding:0.22rem 0.65rem;border-radius:3px;background:rgba(255,255,255,0.04);color:var(--text-muted);border:1px solid var(--border);}
+/* flow arrow */
+.layer-arrow{text-align:center;color:var(--text-dim);font-size:0.8rem;margin-bottom:0.5rem;letter-spacing:0.05em;font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+/* layer descriptions */
+.layer-features{display:flex;flex-direction:column;gap:0.75rem;margin-top:2rem;}
+.lf-item{
+  display:flex;align-items:flex-start;gap:12px;padding:0.9rem 1.1rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;transition:border-color 0.2s;
+}
+.lf-item:hover{border-color:var(--border-md);}
+.lf-num{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--blue);flex-shrink:0;margin-top:2px;}
+.lf-body h4{font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.lf-body p{font-size:0.73rem;}
+
+/* RISK & GOVERNANCE */
+.risk-wrap{display:grid;grid-template-columns:1fr 1.1fr;gap:5rem;align-items:start;}
+.risk-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.rp-topbar{height:2px;background:linear-gradient(90deg,var(--amber),var(--blue));}
+.rp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.rp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.rp-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--green);}
+.risk-indicators{display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem;padding:1.25rem 1.75rem;}
+.ri-item{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:0.9rem 1rem;}
+.ri-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.4rem;}
+.ri-val{font-family:'Outfit',system-ui,sans-serif;font-size:1rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.ri-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.ri-bar-fill{height:100%;border-radius:2px;}
+.risk-mitigations{padding:0 1.75rem 1.5rem;}
+.rm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.rm-items{display:flex;flex-direction:column;gap:0.35rem;}
+.rm-row{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border);}
+.rm-row:last-child{border-bottom:none;}
+.rm-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.rm-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;}
+/* slashing log */
+.slashing-log{margin:0 0 1.5rem;border-top:1px solid var(--border);padding:1.25rem 1.75rem;}
+.sl-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.sl-row{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;}
+.sl-row:last-child{border-bottom:none;}
+.sl-event{color:var(--text-muted);}
+.sl-status-ok{color:var(--green);}
+/* risk features */
+.risk-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.rf-item{
+  display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  border-left:2px solid var(--amber);transition:border-color 0.2s;
+}
+.rf-item:hover{border-color:var(--border-md);}
+.rf-body h4{font-size:0.8rem;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.rf-body p{font-size:0.73rem;}
+.risk-note{margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--amber-border);border-radius:5px;background:var(--amber-dim);font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:var(--amber);}
+
+/* STAKING DASHBOARD */
+.staking-dash{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.sd-topbar{height:2px;background:linear-gradient(90deg,var(--blue),var(--eth),var(--sol),var(--dot),var(--atom-acc));}
+.sd-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.sd-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+.sd-status{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--green);}
+.sd-overview{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.sdo-item{background:var(--surface);padding:1rem 1.1rem;}
+.sdo-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.sdo-val{font-family:'Outfit',system-ui,sans-serif;font-size:1.05rem;font-weight:700;line-height:1;margin-bottom:0.15rem;}
+.sdo-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;color:var(--text-dim);}
+/* asset rows */
+.sd-assets{padding:0.25rem 0;}
+.sda-row{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;
+  padding:0.7rem 1.6rem;border-bottom:1px solid var(--border);
+  align-items:center;transition:background 0.15s;
+}
+.sda-row:last-child{border-bottom:none;}
+.sda-row:hover{background:rgba(255,255,255,0.02);}
+.sda-row.hdr{background:rgba(0,0,0,0.2);}
+.sda-cell{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.sda-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.sda-asset{display:flex;align-items:center;gap:8px;}
+.sda-icon{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-family:"JetBrains Mono",monospace;font-weight:500;flex-shrink:0;}
+.sda-name{font-family:"JetBrains Mono",monospace;font-size:0.65rem;color:var(--text);}
+.sda-apy{color:var(--green);}
+.sda-status{padding:0.16rem 0.5rem;border-radius:2px;font-size:0.52rem;letter-spacing:0.08em;display:inline-block;}
+.stat-ok{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.stat-lock{background:var(--blue-dim);color:var(--blue-light);border:1px solid var(--blue-border);}
+.stat-unbond{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-border);}
+/* validator distribution chart */
+.sd-validator-dist{padding:1.25rem 1.6rem;border-top:1px solid var(--border);}
+.sdv-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.sdv-bars{display:flex;flex-direction:column;gap:0.45rem;}
+.sdv-bar-row{display:grid;grid-template-columns:80px 1fr 60px;gap:0.5rem;align-items:center;}
+.sdv-net{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);}
+.sdv-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.sdv-fill{height:100%;border-radius:3px;}
+.sdv-pct{font-family:"JetBrains Mono",monospace;font-size:0.55rem;color:var(--text-dim);text-align:right;}
+/* reward stream */
+.sd-rewards{padding:0 1.6rem 1.25rem;border-top:1px solid var(--border);padding-top:1.25rem;}
+.sdr-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.sdr-rows{display:flex;flex-direction:column;gap:0;}
+.sdr-row{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border);}
+.sdr-row:last-child{border-bottom:none;}
+.sdr-event{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.sdr-amount{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--green);}
+.sdr-time{font-family:"JetBrains Mono",monospace;font-size:0.56rem;color:var(--text-dim);}
+
+/* DASH SPLIT */
+.dash-split{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.dash-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp-topbar{height:2px;}
+.dp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp-title{font-family:'Outfit',system-ui,sans-serif;font-size:0.88rem;font-weight:600;color:var(--text);}
+.dp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.dp-metric{background:var(--surface);padding:1rem 1.1rem;}
+.dp-m-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.dp-m-val{font-family:'Outfit',system-ui,sans-serif;font-size:1rem;font-weight:700;}
+.dp-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-top:0.18rem;}
+.dp-rows{padding:0.25rem 0;}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.6rem;border-bottom:1px solid var(--border);}
+.dp-row:last-child{border-bottom:none;}
+.dp-row-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.dp-row-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);}
+
+/* FINAL CTA */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%, rgba(74,127,203,0.07) 0%, transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--text);margin-bottom:0.75rem;max-width:600px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:480px;margin:0 auto 0.75rem;}
+.fc-mandate{font-family:"JetBrains Mono",monospace;font-size:0.68rem;color:var(--text-dim);margin-bottom:2.5rem;display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;}
+.fc-mandate span{color:var(--text-muted);}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-final{background:var(--blue);color:var(--white);border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{background:var(--blue-light);box-shadow:0 8px 30px rgba(74,127,203,0.28);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--blue-border);color:var(--blue-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:'Outfit',system-ui,sans-serif;font-size:1.15rem;font-weight:700;color:var(--text);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--blue-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-item-wrap.active .nav-trigger{color:var(--blue-light);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--blue-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .two-col,.two-col-r,.layers-wrap,.risk-wrap,.dash-split{grid-template-columns:1fr;}
+  .networks-grid{grid-template-columns:1fr;}
+  .sda-row{grid-template-columns:2fr 1fr 1fr;}
+  .sda-row>*:nth-child(4),.sda-row>*:nth-child(5),.sda-row.hdr>*:nth-child(4),.sda-row.hdr>*:nth-child(5){display:none;}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .np-metrics{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo">
+    <img src="assets/kapitor.svg" alt="Kapitor">
+    <span class="logo-text">Kapitor</span>
+  </a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap active">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="hero-orbits">
+    <div class="orbit orbit-1"></div>
+    <div class="orbit orbit-2"></div>
+    <div class="orbit orbit-3"></div>
+  </div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill">
+        <div class="ld"></div>
+        2.5 · KAPITOR STAKE · 4 NETWORKS · VALIDATORS ACTIVE
+      </div>
+      <h1>Structured Staking<br>Infrastructure.</h1>
+      <div class="network-tags">
+        <div class="net-tag"><div class="net-dot" style="background:var(--eth);"></div>Ethereum ETH</div>
+        <div class="net-tag"><div class="net-dot" style="background:var(--sol);" style="animation-delay:0.5s"></div>Solana SOL</div>
+        <div class="net-tag"><div class="net-dot" style="background:var(--dot);" style="animation-delay:1s"></div>Polkadot DOT</div>
+        <div class="net-tag"><div class="net-dot" style="background:var(--atom-acc);"></div>Cosmos ATOM</div>
+      </div>
+      <p class="hero-sub">Protocol-level participation in major proof-of-stake networks — maintained under Unified Ledger governance and institutional-grade risk control. All staked assets visible in the Smart Wallet. All rewards ledger-recorded.</p>
+      <div class="hero-pillars">
+        <div class="hero-pillar">All staked assets remain visible inside the Smart Wallet</div>
+        <div class="hero-pillar">All rewards are ledger-recorded in real time</div>
+        <div class="hero-pillar">All risks are disclosed, monitored, and mitigated</div>
+        <div class="hero-pillar">Staking is integrated, controlled, and transparent</div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="white" stroke-width="1.4" fill="none" opacity="0.5"/><circle cx="6.5" cy="6.5" r="2.5" fill="white"/></svg>
+          Open Smart Wallet
+        </button>
+        <button class="btn-out">Stake Assets →</button>
+        <button class="btn-out">View Validator Infrastructure →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Total Assets Staked</div>
+          <div class="hm-val" style="color:var(--blue-light);">$284M</div>
+          <div class="hm-sub"><span class="up">▲ 2.8%</span> MTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Aggregate Yield Rate</div>
+          <div class="hm-val" style="color:var(--green);">6.9%</div>
+          <div class="hm-sub">Blended APR</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Rewards Earned (MTD)</div>
+          <div class="hm-val" style="color:var(--amber);">$1.64M</div>
+          <div class="hm-sub">Across 4 networks</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Active Validators</div>
+          <div class="hm-val">840</div>
+          <div class="hm-sub">Diversified</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Slashing Events</div>
+          <div class="hm-val" style="color:var(--green);font-size:1.1rem;">Zero</div>
+          <div class="hm-sub">All-time record</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">ETH STAKE APR</span><span class="up">5.4% ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SOL STAKE APR</span><span class="up">7.2% ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">DOT STAKE APR</span><span class="up">12.8% ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ATOM STAKE APR</span><span class="up">14.5% ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ETH/USD</span><span class="up">$3,210 ▲0.9%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SOL/USD</span><span class="up">$142.80 ▲3.2%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">DOT/USD</span><span class="up">$8.42 ▲2.1%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ATOM/USD</span><span class="up">$9.18 ▲1.8%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">VALIDATORS ACTIVE</span><span class="up">840 ONLINE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SLASHING EVENTS</span>0 ALL-TIME</span>
+    <!-- dupe -->
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ETH STAKE APR</span><span class="up">5.4% ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SOL STAKE APR</span><span class="up">7.2% ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">DOT STAKE APR</span><span class="up">12.8% ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ATOM STAKE APR</span><span class="up">14.5% ▲</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ETH/USD</span><span class="up">$3,210 ▲0.9%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">VALIDATORS ACTIVE</span><span class="up">840 ONLINE</span></span>
+  </div>
+</div>
+
+<!-- ═══ NETWORK PANELS ═══ -->
+<section class="section" id="networks">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey b">Staking Networks</div>
+      <h2 style="color:var(--text);">Four Proof-of-Stake<br>Networks. One Ledger.</h2>
+      <p>Protocol-level participation across Ethereum, Solana, Polkadot, and Cosmos — each with dedicated validator infrastructure, risk monitoring, and real-time reward reconciliation.</p>
+    </div>
+    <div class="networks-grid">
+
+      <!-- ETH -->
+      <div class="net-panel" style="border-color:rgba(98,126,234,0.15);">
+        <div class="np-topbar" style="background:var(--eth);"></div>
+        <div class="np-header">
+          <div class="np-header-row">
+            <div class="np-symbol-wrap">
+              <div class="np-symbol" style="background:var(--eth-dim);color:var(--eth);border:1px solid var(--eth-border);">Ξ</div>
+              <div>
+                <div class="np-name">Ethereum</div>
+                <div class="np-network">ETH · LIQUID STAKING</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="np-apy-badge" style="color:var(--eth);">5.4%</div>
+              <div class="np-apy-label">EST. APR</div>
+            </div>
+          </div>
+          <p class="np-desc">Validator participation via distributed infrastructure with liquid staking representation. kETH liquid staking token remains usable within approved Kapitor Earn and Vault strategies.</p>
+        </div>
+        <div class="np-metrics">
+          <div class="npm-item"><div class="npm-label">Total ETH Staked</div><div class="npm-val" style="color:var(--text);">4,820 ETH</div><div class="npm-sub" style="color:var(--eth);">$15.5M</div></div>
+          <div class="npm-item"><div class="npm-label">Rewards Earned</div><div class="npm-val" style="color:var(--green);">48.2 ETH</div><div class="npm-sub">+5.4% APR</div></div>
+          <div class="npm-item"><div class="npm-label">Validators</div><div class="npm-val">152</div><div class="npm-sub" style="color:var(--green);">All healthy</div></div>
+        </div>
+        <div class="np-validators">
+          <div class="npv-label">Validator Distribution</div>
+          <div class="npv-bar">
+            <div class="npv-seg" style="width:35%;background:var(--eth);opacity:0.8;"></div>
+            <div class="npv-seg" style="width:28%;background:var(--eth);opacity:0.6;"></div>
+            <div class="npv-seg" style="width:22%;background:var(--eth);opacity:0.45;"></div>
+            <div class="npv-seg" style="width:15%;background:var(--eth);opacity:0.3;"></div>
+          </div>
+          <div class="npv-legend">
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--eth);opacity:0.8;"></div>Cluster A 35%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--eth);opacity:0.6;"></div>Cluster B 28%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--eth);opacity:0.45;"></div>Cluster C 22%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--eth);opacity:0.3;"></div>Cluster D 15%</div>
+          </div>
+        </div>
+        <div class="np-controls">
+          <div class="npc-row" style="color:var(--text-muted);">Liquid staking · kETH representation in Smart Wallet</div>
+          <div class="npc-row" style="color:var(--text-muted);">Withdrawal queue visible · Slashing monitoring active</div>
+          <div class="npc-row" style="color:var(--text-muted);">kETH eligible for Earn strategies (subject to risk tier)</div>
+        </div>
+        <button class="np-stake-btn" style="border-color:var(--eth-border);color:var(--eth);background:var(--eth-dim);">STAKE ETH →</button>
+      </div>
+
+      <!-- SOL -->
+      <div class="net-panel" style="border-color:rgba(153,69,255,0.15);">
+        <div class="np-topbar" style="background:var(--sol);"></div>
+        <div class="np-header">
+          <div class="np-header-row">
+            <div class="np-symbol-wrap">
+              <div class="np-symbol" style="background:var(--sol-dim);color:var(--sol);border:1px solid var(--sol-border);">◎</div>
+              <div>
+                <div class="np-name">Solana</div>
+                <div class="np-network">SOL · DELEGATED STAKING</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="np-apy-badge" style="color:var(--sol);">7.2%</div>
+              <div class="np-apy-label">EST. APR</div>
+            </div>
+          </div>
+          <p class="np-desc">Controlled validator infrastructure with performance tracking and delegation transparency. High-performance network yield with diversified validator selection.</p>
+        </div>
+        <div class="np-metrics">
+          <div class="npm-item"><div class="npm-label">SOL Delegated</div><div class="npm-val" style="color:var(--text);">84,200 SOL</div><div class="npm-sub" style="color:var(--sol);">$12.0M</div></div>
+          <div class="npm-item"><div class="npm-label">Rewards Earned</div><div class="npm-val" style="color:var(--green);">842 SOL</div><div class="npm-sub">+7.2% APR</div></div>
+          <div class="npm-item"><div class="npm-label">Validators</div><div class="npm-val">240</div><div class="npm-sub" style="color:var(--green);">All healthy</div></div>
+        </div>
+        <div class="np-validators">
+          <div class="npv-label">Validator Distribution</div>
+          <div class="npv-bar">
+            <div class="npv-seg" style="width:30%;background:var(--sol);opacity:0.8;"></div>
+            <div class="npv-seg" style="width:25%;background:var(--sol);opacity:0.6;"></div>
+            <div class="npv-seg" style="width:25%;background:var(--sol);opacity:0.45;"></div>
+            <div class="npv-seg" style="width:20%;background:var(--sol);opacity:0.3;"></div>
+          </div>
+          <div class="npv-legend">
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--sol);opacity:0.8;"></div>Group A 30%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--sol);opacity:0.6;"></div>Group B 25%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--sol);opacity:0.45;"></div>Group C 25%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--sol);opacity:0.3;"></div>Group D 20%</div>
+          </div>
+        </div>
+        <div class="np-controls">
+          <div class="npc-row" style="color:var(--text-muted);">Validator diversification across 240 active nodes</div>
+          <div class="npc-row" style="color:var(--text-muted);">Performance tracking · Slashing risk monitoring active</div>
+          <div class="npc-row" style="color:var(--text-muted);">Fully reconciled with Unified Ledger</div>
+        </div>
+        <button class="np-stake-btn" style="border-color:var(--sol-border);color:var(--sol);background:var(--sol-dim);">STAKE SOL →</button>
+      </div>
+
+      <!-- DOT -->
+      <div class="net-panel" style="border-color:rgba(230,0,122,0.15);">
+        <div class="np-topbar" style="background:var(--dot);"></div>
+        <div class="np-header">
+          <div class="np-header-row">
+            <div class="np-symbol-wrap">
+              <div class="np-symbol" style="background:var(--dot-dim);color:var(--dot);border:1px solid var(--dot-border);">⬡</div>
+              <div>
+                <div class="np-name">Polkadot</div>
+                <div class="np-network">DOT · NOMINATION STAKING</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="np-apy-badge" style="color:var(--dot);">12.8%</div>
+              <div class="np-apy-label">EST. APR</div>
+            </div>
+          </div>
+          <p class="np-desc">Nomination-based participation with validator exposure limits and unbonding period transparency. Era-based reward tracking with full nomination diversification.</p>
+        </div>
+        <div class="np-metrics">
+          <div class="npm-item"><div class="npm-label">DOT Active Stake</div><div class="npm-val" style="color:var(--text);">420K DOT</div><div class="npm-sub" style="color:var(--dot);">$3.5M</div></div>
+          <div class="npm-item"><div class="npm-label">Rewards Pending</div><div class="npm-val" style="color:var(--green);">2,840 DOT</div><div class="npm-sub">+12.8% APR</div></div>
+          <div class="npm-item"><div class="npm-label">Unbonding</div><div class="npm-val" style="color:var(--amber);">18,000 DOT</div><div class="npm-sub">28d period</div></div>
+        </div>
+        <div class="np-validators">
+          <div class="npv-label">Nomination Distribution</div>
+          <div class="npv-bar">
+            <div class="npv-seg" style="width:32%;background:var(--dot);opacity:0.8;"></div>
+            <div class="npv-seg" style="width:28%;background:var(--dot);opacity:0.6;"></div>
+            <div class="npv-seg" style="width:24%;background:var(--dot);opacity:0.45;"></div>
+            <div class="npv-seg" style="width:16%;background:var(--dot);opacity:0.3;"></div>
+          </div>
+          <div class="npv-legend">
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--dot);opacity:0.8;"></div>Set A 32%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--dot);opacity:0.6;"></div>Set B 28%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--dot);opacity:0.45;"></div>Set C 24%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--dot);opacity:0.3;"></div>Set D 16%</div>
+          </div>
+        </div>
+        <div class="np-controls">
+          <div class="npc-row" style="color:var(--text-muted);">Nomination diversification · Era-based reward tracking</div>
+          <div class="npc-row" style="color:var(--text-muted);">Validator exposure limits enforced by Risk Engine</div>
+          <div class="npc-row" style="color:var(--text-muted);">Integrates with Earn Balanced & Growth tiers where eligible</div>
+        </div>
+        <button class="np-stake-btn" style="border-color:var(--dot-border);color:var(--dot);background:var(--dot-dim);">STAKE DOT →</button>
+      </div>
+
+      <!-- ATOM -->
+      <div class="net-panel" style="border-color:rgba(111,124,186,0.15);">
+        <div class="np-topbar" style="background:var(--atom-acc);"></div>
+        <div class="np-header">
+          <div class="np-header-row">
+            <div class="np-symbol-wrap">
+              <div class="np-symbol" style="background:var(--atom-dim);color:var(--atom-acc);border:1px solid var(--atom-border);">⚛</div>
+              <div>
+                <div class="np-name">Cosmos</div>
+                <div class="np-network">ATOM · DELEGATED STAKING</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="np-apy-badge" style="color:var(--atom-acc);">14.5%</div>
+              <div class="np-apy-label">EST. APR</div>
+            </div>
+          </div>
+          <p class="np-desc">Cosmos ecosystem staking with validator performance screening and slashing event monitoring. Reward rate transparency and unstaking period visibility.</p>
+        </div>
+        <div class="np-metrics">
+          <div class="npm-item"><div class="npm-label">ATOM Staked</div><div class="npm-val" style="color:var(--text);">128K ATOM</div><div class="npm-sub" style="color:var(--atom-acc);">$1.2M</div></div>
+          <div class="npm-item"><div class="npm-label">Rewards Accrued</div><div class="npm-val" style="color:var(--green);">1,240 ATOM</div><div class="npm-sub">+14.5% APR</div></div>
+          <div class="npm-item"><div class="npm-label">Validators</div><div class="npm-val">188</div><div class="npm-sub" style="color:var(--green);">Screened</div></div>
+        </div>
+        <div class="np-validators">
+          <div class="npv-label">Validator Distribution</div>
+          <div class="npv-bar">
+            <div class="npv-seg" style="width:28%;background:var(--atom-acc);opacity:0.8;"></div>
+            <div class="npv-seg" style="width:26%;background:var(--atom-acc);opacity:0.6;"></div>
+            <div class="npv-seg" style="width:26%;background:var(--atom-acc);opacity:0.45;"></div>
+            <div class="npv-seg" style="width:20%;background:var(--atom-acc);opacity:0.3;"></div>
+          </div>
+          <div class="npv-legend">
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--atom-acc);opacity:0.8;"></div>Pool A 28%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--atom-acc);opacity:0.6;"></div>Pool B 26%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--atom-acc);opacity:0.45;"></div>Pool C 26%</div>
+            <div class="npv-leg-item"><div class="npv-dot" style="background:var(--atom-acc);opacity:0.3;"></div>Pool D 20%</div>
+          </div>
+        </div>
+        <div class="np-controls">
+          <div class="npc-row" style="color:var(--text-muted);">Validator performance screening before delegation</div>
+          <div class="npc-row" style="color:var(--text-muted);">Slashing event monitoring · Unstaking period: 21 days</div>
+          <div class="npc-row" style="color:var(--text-muted);">Risk-scored under Kapitor Risk Engine</div>
+        </div>
+        <button class="np-stake-btn" style="border-color:var(--atom-border);color:var(--atom-acc);background:var(--atom-dim);">STAKE ATOM →</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STAKING DASHBOARD ═══ -->
+<section class="section" id="dashboard">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey b">Staking Dashboard</div>
+      <h2 style="color:var(--text);">All Networks. One View.<br>Real-Time Rewards.</h2>
+    </div>
+    <div class="staking-dash">
+      <div class="sd-topbar"></div>
+      <div class="sd-header">
+        <div class="sd-title">Unified Staking Dashboard</div>
+        <div class="sd-status"><div class="ld"></div>REWARDS STREAMING LIVE</div>
+      </div>
+      <div class="sd-overview">
+        <div class="sdo-item"><div class="sdo-label">Total Assets Staked</div><div class="sdo-val" style="color:var(--text);">$32,240</div><div class="sdo-sub">Across 4 networks</div></div>
+        <div class="sdo-item"><div class="sdo-label">Aggregate Yield Rate</div><div class="sdo-val" style="color:var(--green);">6.9% APR</div><div class="sdo-sub">Blended all networks</div></div>
+        <div class="sdo-item"><div class="sdo-label">Rewards Earned</div><div class="sdo-val" style="color:var(--amber);">$1,842.40</div><div class="sdo-sub">YTD · all networks</div></div>
+        <div class="sdo-item"><div class="sdo-label">Locked Capital</div><div class="sdo-val" style="color:var(--amber);">$28,800</div><div class="sdo-sub">Bonded positions</div></div>
+        <div class="sdo-item"><div class="sdo-label">Withdrawable</div><div class="sdo-val" style="color:var(--green);">$3,440</div><div class="sdo-sub">Available rewards</div></div>
+        <div class="sdo-item"><div class="sdo-label">Risk Score</div><div class="sdo-val" style="color:var(--green);">LOW</div><div class="sdo-sub">Diversified exposure</div></div>
+      </div>
+      <!-- ASSET ROWS -->
+      <div class="sd-assets">
+        <div class="sda-row hdr">
+          <span class="sda-cell hdr">NETWORK / ASSET</span>
+          <span class="sda-cell hdr">STAKED VALUE</span>
+          <span class="sda-cell hdr">APR</span>
+          <span class="sda-cell hdr">REWARDS</span>
+          <span class="sda-cell hdr">STATUS</span>
+        </div>
+        <div class="sda-row">
+          <div class="sda-asset">
+            <div class="sda-icon" style="background:var(--eth-dim);color:var(--eth);border:1px solid var(--eth-border);">Ξ</div>
+            <div class="sda-name">ETH (kETH) · Ethereum</div>
+          </div>
+          <span class="sda-cell">$15,500 · 4,820 ETH</span>
+          <span class="sda-apy">5.4%</span>
+          <span class="sda-cell" style="color:var(--green);">+48.2 ETH</span>
+          <span><span class="sda-status stat-ok">STAKING</span></span>
+        </div>
+        <div class="sda-row">
+          <div class="sda-asset">
+            <div class="sda-icon" style="background:var(--sol-dim);color:var(--sol);border:1px solid var(--sol-border);">◎</div>
+            <div class="sda-name">SOL · Solana</div>
+          </div>
+          <span class="sda-cell">$12,000 · 84.2K SOL</span>
+          <span class="sda-apy">7.2%</span>
+          <span class="sda-cell" style="color:var(--green);">+842 SOL</span>
+          <span><span class="sda-status stat-ok">DELEGATED</span></span>
+        </div>
+        <div class="sda-row">
+          <div class="sda-asset">
+            <div class="sda-icon" style="background:var(--dot-dim);color:var(--dot);border:1px solid var(--dot-border);">⬡</div>
+            <div class="sda-name">DOT · Polkadot</div>
+          </div>
+          <span class="sda-cell">$3,500 · 420K DOT</span>
+          <span class="sda-apy">12.8%</span>
+          <span class="sda-cell" style="color:var(--green);">+2,840 DOT</span>
+          <span><span class="sda-status stat-unbond">PARTIAL UNBOND</span></span>
+        </div>
+        <div class="sda-row">
+          <div class="sda-asset">
+            <div class="sda-icon" style="background:var(--atom-dim);color:var(--atom-acc);border:1px solid var(--atom-border);">⚛</div>
+            <div class="sda-name">ATOM · Cosmos</div>
+          </div>
+          <span class="sda-cell">$1,240 · 128K ATOM</span>
+          <span class="sda-apy">14.5%</span>
+          <span class="sda-cell" style="color:var(--green);">+1,240 ATOM</span>
+          <span><span class="sda-status stat-ok">STAKING</span></span>
+        </div>
+      </div>
+      <!-- VALIDATOR DISTRIBUTION -->
+      <div class="sd-validator-dist">
+        <div class="sdv-label">Validator Allocation Distribution</div>
+        <div class="sdv-bars">
+          <div class="sdv-bar-row">
+            <div class="sdv-net" style="color:var(--eth);">ETH · 152</div>
+            <div class="sdv-track"><div class="sdv-fill" style="width:48%;background:var(--eth);opacity:0.7;"></div></div>
+            <div class="sdv-pct">48.1%</div>
+          </div>
+          <div class="sdv-bar-row">
+            <div class="sdv-net" style="color:var(--sol);">SOL · 240</div>
+            <div class="sdv-track"><div class="sdv-fill" style="width:37%;background:var(--sol);opacity:0.7;"></div></div>
+            <div class="sdv-pct">37.9%</div>
+          </div>
+          <div class="sdv-bar-row">
+            <div class="sdv-net" style="color:var(--dot);">DOT · 260</div>
+            <div class="sdv-track"><div class="sdv-fill" style="width:11%;background:var(--dot);opacity:0.7;"></div></div>
+            <div class="sdv-pct">11.0%</div>
+          </div>
+          <div class="sdv-bar-row">
+            <div class="sdv-net" style="color:var(--atom-acc);">ATOM · 188</div>
+            <div class="sdv-track"><div class="sdv-fill" style="width:3.7%;background:var(--atom-acc);opacity:0.7;"></div></div>
+            <div class="sdv-pct">3.7%</div>
+          </div>
+        </div>
+      </div>
+      <!-- REWARD STREAM -->
+      <div class="sd-rewards">
+        <div class="sdr-label">Live Reward Stream</div>
+        <div class="sdr-rows">
+          <div class="sdr-row">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="color:var(--eth);font-size:0.8rem;">Ξ</span>
+              <span class="sdr-event">ETH Staking Reward</span>
+            </div>
+            <span class="sdr-amount">+0.00048 ETH</span>
+            <span class="sdr-time">14:22:08</span>
+          </div>
+          <div class="sdr-row">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="color:var(--sol);font-size:0.8rem;">◎</span>
+              <span class="sdr-event">SOL Epoch Reward</span>
+            </div>
+            <span class="sdr-amount">+0.840 SOL</span>
+            <span class="sdr-time">14:20:00</span>
+          </div>
+          <div class="sdr-row">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="color:var(--atom-acc);font-size:0.8rem;">⚛</span>
+              <span class="sdr-event">ATOM Block Reward</span>
+            </div>
+            <span class="sdr-amount">+1.24 ATOM</span>
+            <span class="sdr-time">14:18:42</span>
+          </div>
+          <div class="sdr-row">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="color:var(--eth);font-size:0.8rem;">Ξ</span>
+              <span class="sdr-event">ETH Staking Reward</span>
+            </div>
+            <span class="sdr-amount">+0.00048 ETH</span>
+            <span class="sdr-time">14:09:08</span>
+          </div>
+          <div class="sdr-row">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="color:var(--dot);font-size:0.8rem;">⬡</span>
+              <span class="sdr-event">DOT Era Reward</span>
+            </div>
+            <span class="sdr-amount">+14.2 DOT</span>
+            <span class="sdr-time">13:45:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LAYERED YIELD MODEL ═══ -->
+<section class="section" id="layers">
+  <div class="container">
+    <div class="layers-wrap">
+      <div>
+        <div class="layers-visual">
+          <div class="lv-topbar"></div>
+          <div class="lv-header"><div class="lv-title">Layered Yield Architecture</div></div>
+          <div class="layers-stack">
+            <div class="layer-block" style="background:var(--blue-dim);border-color:var(--blue-border);">
+              <div class="lb-num" style="color:var(--blue);">LAYER 1</div>
+              <div class="lb-name">Base Network Yield</div>
+              <div class="lb-desc" style="color:rgba(107,157,224,0.7);">Protocol-level staking rewards from each PoS network — generated by validators on your behalf.</div>
+              <div class="lb-items">
+                <span class="lb-item" style="color:var(--eth);">ETH 5.4%</span>
+                <span class="lb-item" style="color:var(--sol);">SOL 7.2%</span>
+                <span class="lb-item" style="color:var(--dot);">DOT 12.8%</span>
+                <span class="lb-item" style="color:var(--atom-acc);">ATOM 14.5%</span>
+              </div>
+            </div>
+            <div class="layer-arrow">↓ ELIGIBLE LSDs MAY FLOW INTO</div>
+            <div class="layer-block" style="background:var(--green-dim);border-color:var(--green-border);">
+              <div class="lb-num" style="color:var(--green);">LAYER 2</div>
+              <div class="lb-name">Yield Optimization</div>
+              <div class="lb-desc" style="color:rgba(94,212,152,0.7);">Eligible liquid staking derivatives (e.g. kETH) may be deployed into additional yield sources, subject to risk tier.</div>
+              <div class="lb-items">
+                <span class="lb-item">Approved Lending</span>
+                <span class="lb-item">Structured Vaults</span>
+                <span class="lb-item">Arbitrage Strategies</span>
+              </div>
+            </div>
+            <div class="layer-arrow">↓ ALL FLOWS PASS THROUGH</div>
+            <div class="layer-block" style="background:var(--amber-dim);border-color:var(--amber-border);">
+              <div class="lb-num" style="color:var(--amber);">LAYER 3</div>
+              <div class="lb-name">Risk Governance</div>
+              <div class="lb-desc" style="color:rgba(245,188,90,0.7);">Every layered yield flow is governed by exposure caps, margin stress tests, slashing buffers, and liquidity rules.</div>
+              <div class="lb-items">
+                <span class="lb-item">Exposure Caps</span>
+                <span class="lb-item">Margin Stress Tests</span>
+                <span class="lb-item">Slashing Buffers</span>
+                <span class="lb-item">Liquidity Rules</span>
+              </div>
+            </div>
+            <div class="layer-arrow">↓ EVERY ACTION CREATES</div>
+            <div class="layer-block" style="background:rgba(74,127,203,0.06);border-color:var(--blue-border);">
+              <div class="lb-num" style="color:var(--blue);">LAYER 4</div>
+              <div class="lb-name">Unified Ledger Mapping</div>
+              <div class="lb-desc" style="color:rgba(107,157,224,0.7);">Every staking action generates a complete ledger record. No staking activity exists outside ledger visibility.</div>
+              <div class="lb-items">
+                <span class="lb-item">Locked Capital Record</span>
+                <span class="lb-item">Reward Accrual Entry</span>
+                <span class="lb-item">Validator Mapping</span>
+                <span class="lb-item">Risk Score Update</span>
+                <span class="lb-item">Compliance Log</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey b">Layered Yield Model</div>
+        <h2 style="color:var(--text);">Staking as a Capital Layer —<br>Not a Standalone Tool</h2>
+        <p style="margin-top:0.85rem;">Kapitor Stake operates within a layered yield architecture — protocol rewards at the base, optional yield optimization above, risk governance throughout, and unified ledger recording at every step.</p>
+        <div class="layer-features">
+          <div class="lf-item">
+            <div class="lf-num" style="color:var(--blue);">L1</div>
+            <div class="lf-body"><h4>Base Network Yield</h4><p>Direct protocol rewards from ETH, SOL, DOT, and ATOM validators — the foundation of every staking position.</p></div>
+          </div>
+          <div class="lf-item">
+            <div class="lf-num" style="color:var(--green);">L2</div>
+            <div class="lf-body"><h4>Yield Optimization Layer</h4><p>Liquid staking derivatives (where eligible) can be deployed into Earn strategies, increasing total yield while maintaining ledger visibility.</p></div>
+          </div>
+          <div class="lf-item">
+            <div class="lf-num" style="color:var(--amber);">L3</div>
+            <div class="lf-body"><h4>Risk Governance Throughout</h4><p>Exposure caps, slashing risk buffers, and margin stress tests govern every flow — not just at entry, but continuously.</p></div>
+          </div>
+          <div class="lf-item">
+            <div class="lf-num" style="color:var(--blue-light);">L4</div>
+            <div class="lf-body"><h4>Unified Ledger Mapping</h4><p>No staking activity exists outside ledger visibility. Every reward, every delegation, every validator change is recorded.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RISK & GOVERNANCE ═══ -->
+<section class="section" id="risk">
+  <div class="container">
+    <div class="risk-wrap">
+      <div>
+        <div class="ey a">Risk & Governance</div>
+        <h2 style="color:var(--text);">Staking Risks Are Disclosed,<br>Monitored, and Mitigated.</h2>
+        <p style="margin-top:0.85rem;">Staking involves validator slashing risk, network downtime exposure, market volatility, and unbonding lock periods. Kapitor mitigates all four through structural controls — not just disclosures.</p>
+        <div class="risk-features">
+          <div class="rf-item"><div class="rf-body"><h4>Validator Diversification</h4><p>No single validator or cluster receives concentrated delegation. Risk is spread across hundreds of independent operators per network.</p></div></div>
+          <div class="rf-item"><div class="rf-body"><h4>Continuous Performance Monitoring</h4><p>Validator health, uptime, and slashing events are monitored 24/7 with automatic rebalancing triggers if performance degrades.</p></div></div>
+          <div class="rf-item"><div class="rf-body"><h4>Capital Buffers</h4><p>Reserve buffers absorb slashing events before they affect user balances. Buffer adequacy is stress-tested quarterly.</p></div></div>
+          <div class="rf-item"><div class="rf-body"><h4>Tier-Based Staking Access</h4><p>Network access, staking limits, and liquid staking eligibility are determined by compliance tier and risk profile — not open to all by default.</p></div></div>
+        </div>
+        <div class="risk-note">Staking is available based on compliance tier and risk profile selection.</div>
+      </div>
+      <div>
+        <div class="risk-panel">
+          <div class="rp-topbar"></div>
+          <div class="rp-header">
+            <div class="rp-title">Staking Risk Monitor</div>
+            <div class="rp-live"><div class="ld"></div>LIVE</div>
+          </div>
+          <div class="risk-indicators">
+            <div class="ri-item">
+              <div class="ri-label">Validator Slashing Risk</div>
+              <div class="ri-val" style="color:var(--green);">MINIMAL</div>
+              <div class="ri-bar"><div class="ri-bar-fill" style="width:8%;background:var(--green);"></div></div>
+            </div>
+            <div class="ri-item">
+              <div class="ri-label">Network Downtime</div>
+              <div class="ri-val" style="color:var(--green);">0 EVENTS</div>
+              <div class="ri-bar"><div class="ri-bar-fill" style="width:2%;background:var(--green);"></div></div>
+            </div>
+            <div class="ri-item">
+              <div class="ri-label">Market Volatility</div>
+              <div class="ri-val" style="color:var(--amber);">MODERATE</div>
+              <div class="ri-bar"><div class="ri-bar-fill" style="width:52%;background:var(--amber);"></div></div>
+            </div>
+            <div class="ri-item">
+              <div class="ri-label">Liquidity Risk</div>
+              <div class="ri-val" style="color:var(--amber);">LOW-MED</div>
+              <div class="ri-bar"><div class="ri-bar-fill" style="width:30%;background:var(--amber);"></div></div>
+            </div>
+            <div class="ri-item">
+              <div class="ri-label">Concentration Risk</div>
+              <div class="ri-val" style="color:var(--green);">DIVERSIFIED</div>
+              <div class="ri-bar"><div class="ri-bar-fill" style="width:15%;background:var(--green);"></div></div>
+            </div>
+            <div class="ri-item">
+              <div class="ri-label">Buffer Adequacy</div>
+              <div class="ri-val" style="color:var(--green);">ADEQUATE</div>
+              <div class="ri-bar"><div class="ri-bar-fill" style="width:78%;background:var(--green);"></div></div>
+            </div>
+          </div>
+          <div class="slashing-log">
+            <div class="sl-label">Slashing Event Monitor</div>
+            <div class="sl-row"><span class="sl-event">ETH — 152 validators</span><span class="sl-status-ok">0 events · All clear</span></div>
+            <div class="sl-row"><span class="sl-event">SOL — 240 validators</span><span class="sl-status-ok">0 events · All clear</span></div>
+            <div class="sl-row"><span class="sl-event">DOT — 260 nominators</span><span class="sl-status-ok">0 events · All clear</span></div>
+            <div class="sl-row"><span class="sl-event">ATOM — 188 validators</span><span class="sl-status-ok">0 events · All clear</span></div>
+          </div>
+          <div class="risk-mitigations">
+            <div class="rm-label">Risk Controls Status</div>
+            <div class="rm-items">
+              <div class="rm-row"><span class="rm-key">Validator Diversification</span><span class="rm-val" style="color:var(--green);">840 ACTIVE</span></div>
+              <div class="rm-row"><span class="rm-key">Continuous Monitoring</span><span class="rm-val" style="color:var(--green);">24/7 ACTIVE</span></div>
+              <div class="rm-row"><span class="rm-key">Capital Buffers</span><span class="rm-val" style="color:var(--green);">ADEQUATE</span></div>
+              <div class="rm-row"><span class="rm-key">Last Stress Test</span><span class="rm-val">Jan 31, 2026</span></div>
+              <div class="rm-row"><span class="rm-key">Tier-Based Access</span><span class="rm-val">ENFORCED</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD VIEWS ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey b">Dashboard Overview</div>
+      <h2 style="color:var(--text);">User & Institutional<br>Staking Views</h2>
+    </div>
+    <div class="dash-split">
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--blue),var(--eth),var(--sol));"></div>
+        <div class="dp-header">
+          <div class="dp-title">User Staking View</div>
+          <div class="dp-tag">TIER 2</div>
+        </div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Total Assets Staked</div><div class="dp-m-val" style="color:var(--text);">$32,240</div><div class="dp-m-sub" style="color:var(--text-dim);">4 networks</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Aggregate Yield</div><div class="dp-m-val" style="color:var(--green);">6.9% APR</div><div class="dp-m-sub" style="color:var(--text-dim);">Blended</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Rewards Earned</div><div class="dp-m-val" style="color:var(--amber);">$1,842</div><div class="dp-m-sub" style="color:var(--green);">+$48 today</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Risk Score</div><div class="dp-m-val" style="color:var(--green);">LOW</div><div class="dp-m-sub" style="color:var(--text-dim);">All clear</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Locked vs Withdrawable</span><span class="dp-row-val">$28,800 / $3,440</span></div>
+          <div class="dp-row"><span class="dp-row-key">Validator Allocation</span><span class="dp-row-val">840 validators · 4 nets</span></div>
+          <div class="dp-row"><span class="dp-row-key">Next Unbonding</span><span class="dp-row-val">DOT · 18 days remaining</span></div>
+          <div class="dp-row"><span class="dp-row-key">LSD (kETH) in Earn</span><span class="dp-row-val" style="color:var(--green);">$8,200 active</span></div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--amber),var(--dot),var(--atom-acc));"></div>
+        <div class="dp-header">
+          <div class="dp-title">Institutional View</div>
+          <div class="dp-tag" style="color:var(--amber);border-color:var(--amber-border);background:var(--amber-dim);">PRIME</div>
+        </div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Total Staked (Inst.)</div><div class="dp-m-val" style="color:var(--text);">$84M</div><div class="dp-m-sub" style="color:var(--text-dim);">4 networks</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Rewards (MTD)</div><div class="dp-m-val" style="color:var(--green);">$484K</div><div class="dp-m-sub" style="color:var(--green);">Blended 6.9%</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Validator Analytics</div><div class="dp-m-val" style="color:var(--amber);">Active</div><div class="dp-m-sub" style="color:var(--text-dim);">840 nodes</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Infra Reports</div><div class="dp-m-val" style="color:var(--blue-light);">Weekly</div><div class="dp-m-sub" style="color:var(--text-dim);">Auto-generated</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Validator Distribution Analytics</span><span class="dp-row-val" style="color:var(--green);">Enabled</span></div>
+          <div class="dp-row"><span class="dp-row-key">Performance Benchmarking</span><span class="dp-row-val">vs Network avg</span></div>
+          <div class="dp-row"><span class="dp-row-key">Staking Infra Reports</span><span class="dp-row-val">Daily downloadable</span></div>
+          <div class="dp-row"><span class="dp-row-key">Risk Exposure Modeling</span><span class="dp-row-val" style="color:var(--green);">All networks clear</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey b" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Network Participation Under Governance</div>
+      <h2>Staking is Integrated.<br>Controlled. Transparent.</h2>
+      <p>Kapitor Stake enables structured participation in major proof-of-stake networks while maintaining liquidity visibility, ledger reconciliation, and institutional-grade oversight.</p>
+      <div class="fc-mandate">
+        <span>Liquidity visibility</span>
+        <span style="color:var(--text-dim);">·</span>
+        <span>Ledger reconciliation</span>
+        <span style="color:var(--text-dim);">·</span>
+        <span>Institutional-grade oversight</span>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="white" stroke-width="1.4" fill="none" opacity="0.5"/><circle cx="6.5" cy="6.5" r="2.5" fill="white"/></svg>
+          Open Smart Wallet
+        </button>
+        <button class="btn-final-out">Stake Assets</button>
+        <button class="btn-final-out">View Validator Infrastructure</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row">
+          <img src="assets/kapitor.svg" alt="Kapitor">
+          <span>Kapitor</span>
+        </div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="kapitor-smart-wallet.html">Smart Wallet</a></li><li><a href="kapitor-pay.html">Kapitor Pay</a></li><li><a href="index.html#trade">Trade</a></li><li><a href="kapitor-earn.html">Earn</a></li><li><a href="kapitor-stake.html">Stake</a></li><li><a href="rwa.html">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="kaloft-ept.html">Kaloft</a></li><li><a href="digitalassets.html">Digital Assets</a></li><li><a href="rwa.html">Real-World Assets</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="custody.html">Custody</a></li><li><a href="fx.html">FX</a></li><li><a href="api.html">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Infrastructure</h5><ul><li><a href="compliance.html">Compliance</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="company.html">About Kapitor</a></li><li><a href="company.html">Contact</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal">
+        <a href="#">Terms of Service</a><a href="#">Privacy Policy</a><a href="#">Risk Disclosure</a><a href="#">AML Policy</a><a href="#">Cookie Policy</a>
+      </div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  window.addEventListener("scroll", () => {
+    document.getElementById("hdr").style.padding = window.scrollY > 60 ? "0.65rem 2.5rem" : "1rem 2.5rem";
+  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}
+    });
+  }, {threshold:0.06});
+  document.querySelectorAll(
+    ".net-panel,.layer-block,.layer-arrow,.lf-item,.rf-item,.ri-item,.rm-row,.sl-row,.sda-row,.sdo-item,.sdv-bar-row,.sdr-row,.dp-metric,.dp-row,.npm-item,.npc-row"
+  ).forEach(el => {
+    el.style.opacity="0";el.style.transform="translateY(10px)";
+    el.style.transition="opacity 0.42s ease,transform 0.42s ease";
+    obs.observe(el);
+  });
+
+  (function(){
+    var header=document.getElementById("hdr");
+    var mobileToggle=document.querySelector(".nav-mobile-toggle");
+    function isMobile(){return window.innerWidth<=900;}
+    if(mobileToggle&&header){
+      mobileToggle.addEventListener("click",function(){
+        header.classList.toggle("header-mobile-open");
+        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+      });
+    }
+    document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+      btn.addEventListener("click",function(e){
+        if(isMobile()){
+          e.preventDefault();
+          var wrap=btn.closest(".nav-item-wrap");
+          wrap.classList.toggle("open");
+          btn.setAttribute("aria-expanded",wrap.classList.contains("open"));
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

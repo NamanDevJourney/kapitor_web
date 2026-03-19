@@ -1,0 +1,260 @@
+/* ========================================================================
+   KAPITOR – LIGHT THEME DESIGN TOKENS
+   ======================================================================== */
+
+:root {
+  /* Core surfaces */
+  --bg: #FCF8E8;
+  --surface: #FFFFFF;
+  --surface2: #F5ECD6;
+
+  /* Borders & outlines */
+  --border: rgba(15, 23, 42, 0.08);
+  --border-md: rgba(15, 23, 42, 0.16);
+
+  /* Brand colors */
+  --blue: #1A6FB8;            /* Primary / buttons */
+  --blue-light: #2B83D1;
+  --blue-dim: rgba(26, 111, 184, 0.10);
+  --blue-glow: rgba(26, 111, 184, 0.12);
+
+  --green: #33B269;           /* Accent Green */
+  --green-dim: rgba(51, 178, 105, 0.12);
+
+  --amber: #F7AE40;           /* Accent Orange */
+  --amber-dim: rgba(247, 174, 64, 0.14);
+  --amber-light: #FFD27A;
+
+  /* Semantic states */
+  --success: #0F9D58;
+  --warning: #F59E0B;
+  --error: #E53535;
+
+  /* Typography */
+  --text: #111827;
+  --text-muted: #6B6B6B;      /* Paragraph text */
+  --text-dim: #9CA3AF;
+  --white: #000000;
+}
+
+/* ========================================================================
+   TYPOGRAPHY OVERRIDES
+   ======================================================================== */
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  color: var(--text);
+}
+
+p {
+  color: var(--text-muted);
+}
+
+.mono,
+.metric-label,
+.label-tag {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+/* ========================================================================
+   HEADER & NAV
+   ======================================================================== */
+
+header#main-header {
+  background: rgba(252, 248, 232, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-text {
+  color: var(--text);
+}
+
+.logo img {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+nav a {
+  color: var(--text-muted);
+}
+
+nav a:hover {
+  color: var(--text);
+}
+
+.btn-ghost {
+  border-color: var(--border-md);
+  color: var(--text-muted);
+}
+
+.btn-ghost:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.btn-primary,
+.btn-hero-primary {
+  background: var(--blue);
+  color: #ffffff;
+}
+
+.btn-primary:hover,
+.btn-hero-primary:hover {
+  background: var(--blue-light);
+}
+
+.btn-hero-ghost {
+  border-color: var(--border-md);
+  color: var(--text-muted);
+}
+
+.btn-hero-ghost:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+/* ========================================================================
+   HERO & METRICS
+   ======================================================================== */
+
+.hero {
+  background: radial-gradient(circle at top, rgba(26, 111, 184, 0.06) 0, transparent 55%),
+    radial-gradient(circle at bottom left, rgba(51, 178, 105, 0.05) 0, transparent 55%),
+    radial-gradient(circle at bottom right, rgba(247, 174, 64, 0.05) 0, transparent 55%);
+}
+
+.hero h1 {
+  color: var(--text);
+}
+
+.hero-sub {
+  color: rgba(17, 24, 39, 0.7);
+}
+
+.metrics-strip {
+  border-color: var(--border);
+  /* background: var(--surface); */
+}
+
+.metric-value.blue {
+  color: var(--blue);
+}
+
+.metric-value.green {
+  color: var(--green);
+}
+
+.metric-value.amber {
+  color: var(--amber);
+}
+
+/* ========================================================================
+   CARDS, WALLETS & PANELS
+   ======================================================================== */
+
+.wallet-visual,
+.yield-row,
+.token-card,
+.gips-cap,
+.gips-tagline,
+.inst-item,
+.comp-item,
+.por-feat,
+.footer-grid,
+.wallet-asset,
+.gips-intro,
+.yield-sources .ys-item {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.wallet-visual::before {
+  background: linear-gradient(90deg, var(--blue), var(--green), var(--amber));
+}
+
+.wallet-badge {
+  background: var(--blue-dim);
+  border-color: rgba(26, 111, 184, 0.3);
+  color: var(--blue);
+}
+
+.ledger-note {
+  border-color: rgba(51, 178, 105, 0.4);
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.yr-pill.low {
+  background: var(--blue-dim);
+  color: var(--blue);
+  border-color: rgba(26, 111, 184, 0.35);
+}
+
+.yr-pill.med {
+  background: var(--green-dim);
+  color: var(--green);
+  border-color: rgba(51, 178, 105, 0.35);
+}
+
+.yr-pill.high {
+  background: var(--amber-dim);
+  color: var(--amber);
+  border-color: rgba(247, 174, 64, 0.35);
+}
+
+/* ========================================================================
+   FOOTER
+   ======================================================================== */
+
+footer {
+  border-top: 1px solid var(--border);
+}
+
+.footer-logo-wrap img {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.footer-copy {
+  color: var(--text-muted);
+}
+
+/* ========================================================================
+   UTILITIES
+   ======================================================================== */
+
+.label-tag {
+  color: var(--blue);
+}
+
+.label-tag::before {
+  background: var(--blue);
+}
+
+.check-item::before {
+  color: var(--green);
+}
+
+.tick .up {
+  color: var(--green);
+}
+
+.tick .dn {
+  color: var(--error);
+}
+

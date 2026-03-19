@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compliance & Governance | Kapitor</title>
+<link
+  href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap"
+  rel="stylesheet"
+>
+<style> 
+:root {
+  /* Core surfaces – match Kapitor brand light theme */
+  --bg: #FCF8E8;
+  --surface: #FFFFFF;
+  --surface2: #F5ECD6;
+  --surface3: #F5ECD6;
+
+  /* Borders & outlines */
+  --border: rgba(15, 23, 42, 0.08);
+  --border-md: rgba(15, 23, 42, 0.16);
+  --border-hi: rgba(15, 23, 42, 0.22);
+
+  /* Brand colors */
+  --blue: #1A6FB8;
+  --blue-light: #2B83D1;
+  --blue-dim: rgba(26, 111, 184, 0.10);
+  --blue-glow: rgba(26, 111, 184, 0.12);
+  --green: #33B269;
+  --green-dim: rgba(51, 178, 105, 0.12);
+  --green-border: rgba(51, 178, 105, 0.20);
+  --amber: #F7AE40;
+  --amber-dim: rgba(247, 174, 64, 0.14);
+  --amber-border: rgba(247, 174, 64, 0.22);
+
+  /* Semantic states */
+  --success: #0F9D58;
+  --warning: #F59E0B;
+  --error: #E53535;
+
+  /* Typography */
+  --text: #111827;
+  --text-muted: #6B6B6B;
+  --text-dim: #9CA3AF;
+  --white: #FFFFFF;
+
+  /* Compliance: slate-graphite / cool white / enforcement red-to-green gradient */
+  --cg:#b0b8d8;      /* cool slate */
+  --cg-light:#d0d8f0;
+  --cg-dim:rgba(176,184,216,0.07);    --cg-border:rgba(176,184,216,0.16);
+  --cg-slate:#6878a0; --cg-slate-dim:rgba(104,120,160,0.08);
+  --cg-jade:#1aa878;  --cg-jade-dim:rgba(26,168,120,0.09); --cg-jade-border:rgba(26,168,120,0.22);
+
+  /* pillar accent colours */
+  --kyc-c:#4a90d8;   /* KYC - trust blue */
+  --kyb-c:#8860d0;   /* KYB - corporate purple */
+  --aml-c:#d05050;   /* AML - enforcement red */
+  --risk-c:#d88820;  /* Risk - amber */
+  --jur-c:#1a9a78;   /* Jurisdiction - teal */
+  --lim-c:#c07840;   /* Limits - ochre */
+  --aud-c:#5080c8;   /* Audit - steel blue */
+  --por-c:#2ab8b0;   /* PoR - cyan-teal */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:300;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+body::after{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+h1,h2,h3{
+  font-family:'Outfit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:700;
+  letter-spacing:-0.03em;
+}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.cg{color:var(--cg-light);}   .ey.cg::before{background:var(--cg-light);}
+.ey.jade{color:var(--cg-jade);}  .ey.jade::before{background:var(--cg-jade);}
+.ey.red{color:#e07070;}           .ey.red::before{background:#e07070;}
+.ey.amber{color:var(--amber);}    .ey.amber::before{background:var(--amber);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--white);margin-bottom:0.85rem;}
+
+/* ─── HEADER ─── */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--cg-light);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--cg-border);color:var(--cg-light);}
+.btn-cta{background:var(--cg-jade);color:var(--white);border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.2s;}
+.btn-cta:hover{background:var(--green);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:"Epilogue",sans-serif;cursor:pointer;}
+
+/* ─── HERO ─── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:
+  radial-gradient(ellipse 55% 45% at 52% 28%,rgba(176,184,216,0.05) 0%,transparent 55%),
+  radial-gradient(ellipse 35% 35% at 8% 72%,rgba(26,168,120,0.04) 0%,transparent 50%),
+  radial-gradient(ellipse 28% 28% at 92% 65%,rgba(208,80,80,0.03) 0%,transparent 45%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.011) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.011) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 65% at 50% 40%,black 10%,transparent 72%);}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(176,184,216,0.2);border-radius:3px;background:rgba(176,184,216,0.05);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--cg-light);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero-content{position:relative;z-index:2;max-width:900px;}
+.hero h1{color:var(--white);margin-bottom:0.6rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.64rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:560px;color:rgba(160,168,192,0.5);margin-bottom:2rem;line-height:1.8;}
+/* four pillars horizontal */
+.four-laws{display:flex;gap:0;margin-bottom:2rem;}
+.fl-item{flex:1;padding:0.65rem 1rem;border:1px solid var(--border-md);border-right:none;font-family:"JetBrains Mono",monospace;font-size:0.6rem;letter-spacing:0.07em;color:var(--text-muted);transition:all 0.2s;}
+.fl-item:first-child{border-radius:4px 0 0 4px;}
+.fl-item:last-child{border-right:1px solid var(--border-md);border-radius:0 4px 4px 0;}
+.fl-item:hover{background:rgba(255,255,255,0.025);color:var(--cg-light);}
+.fl-label{font-size:0.5rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.2rem;}
+.fl-val{color:var(--cg-light);}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--cg-jade);color:var(--white);border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:var(--green);transform:translateY(-1px);box-shadow:0 10px 40px rgba(26,168,120,0.25);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--cg-border);color:var(--cg-light);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:"Syne",sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--green);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 50s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--green);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* ─── 8 PILLAR CARDS ─── */
+.pillars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.pc-card{background:var(--surface);overflow:hidden;transition:background 0.25s;}
+.pc-card:hover{background:var(--surface2);}
+.pcc-topbar{height:3px;}
+.pcc-header{padding:1.5rem 1.5rem 0.85rem;}
+.pcc-num{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.pcc-icon-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;}
+.pcc-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:0.62rem;font-weight:500;flex-shrink:0;}
+.pcc-stat{text-align:right;}
+.pcc-stat-val{font-family:"Syne",sans-serif;font-size:1.1rem;font-weight:800;line-height:1;}
+.pcc-stat-label{font-family:"JetBrains Mono",monospace;font-size:0.48rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-top:2px;}
+.pcc-name{font-family:"Syne",sans-serif;font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:0.15rem;}
+.pcc-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.07em;margin-bottom:0.55rem;}
+.pcc-desc{font-size:0.74rem;color:var(--text-muted);line-height:1.65;margin-bottom:0.75rem;}
+.pcc-body{padding:0 1.5rem;}
+.pcc-items{display:flex;flex-direction:column;gap:0;margin-bottom:1rem;}
+.pcc-item{display:flex;align-items:center;gap:6px;padding:0.33rem 0;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.57rem;color:var(--text-muted);}
+.pcc-item:last-child{border-bottom:none;}
+.pcc-item::before{content:"→";font-size:0.55rem;flex-shrink:0;opacity:0.35;}
+
+/* ─── TRANSACTION FILTER FLOW ─── */
+.filter-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:12px;overflow:hidden;}
+.fp2-topbar{height:2px;background:linear-gradient(90deg,var(--kyc-c),var(--aml-c),var(--jur-c),var(--cg-jade));}
+.fp2-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.fp2-title{font-family:"Syne",sans-serif;font-size:0.95rem;font-weight:700;color:var(--white);}
+.fp2-badge{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+/* 7-gate vertical flow + sample tx */
+.filter-body{display:grid;grid-template-columns:1fr 1.4fr;gap:0;border-bottom:1px solid var(--border);}
+.filter-gates{padding:1.5rem 1.75rem;border-right:1px solid var(--border);}
+.fg-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.fg-steps{display:flex;flex-direction:column;gap:0.35rem;}
+.fg-step{display:flex;align-items:center;gap:10px;padding:0.55rem 0.75rem;border-radius:5px;border:1px solid var(--border);border-left:2px solid;}
+.fg-num{font-family:"JetBrains Mono",monospace;font-size:0.58rem;width:18px;flex-shrink:0;}
+.fg-text{font-family:"JetBrains Mono",monospace;font-size:0.61rem;color:var(--text-muted);}
+.fg-pass{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-left:auto;flex-shrink:0;}
+/* sample tx */
+.filter-tx{padding:1.5rem 1.75rem;}
+.ftx-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.ftx-card{background:var(--surface2);border:1px solid var(--cg-jade-border);border-radius:8px;overflow:hidden;margin-bottom:0.75rem;}
+.ftx-topbar{height:2px;background:var(--cg-jade);}
+.ftx-rows{padding:0.25rem 0;}
+.ftx-row{display:flex;justify-content:space-between;align-items:center;padding:0.45rem 1rem;border-bottom:1px solid var(--border);}
+.ftx-row:last-child{border-bottom:none;}
+.ftx-key{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);}
+.ftx-val{font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+/* check list */
+.ftx-checks{display:flex;flex-direction:column;gap:0.28rem;}
+.ftx-check{display:flex;align-items:center;gap:7px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--text-muted);}
+.ftx-check-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+/* proof panel */
+.filter-footer{padding:0.85rem 1.75rem;display:flex;gap:2rem;flex-wrap:wrap;}
+.ff2-item{display:flex;align-items:center;gap:7px;font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+.ff2-dot{width:6px;height:6px;border-radius:50%;}
+.ff2-label{color:var(--text-muted);}
+.ff2-val{color:var(--cg-light);}
+
+/* ─── PROOF OF RESERVES ─── */
+.por-layout{display:grid;grid-template-columns:1fr 1.05fr;gap:5rem;align-items:start;}
+.por-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.pp-topbar{height:2px;background:linear-gradient(90deg,var(--por-c),var(--cg-jade));}
+.pp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.pp-title{font-family:"Syne",sans-serif;font-size:0.9rem;font-weight:600;color:var(--white);}
+.pp-badge{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:rgba(42,184,176,0.1);color:#5ad8d0;border:1px solid rgba(42,184,176,0.25);}
+/* reserve bars */
+.reserve-bars{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.rb-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.rb-rows{display:flex;flex-direction:column;gap:0.55rem;}
+.rb-row{display:grid;grid-template-columns:1fr 2fr 60px;gap:0.75rem;align-items:center;}
+.rb-name{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);}
+.rb-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.rb-fill{height:100%;border-radius:3px;}
+.rb-ratio{font-family:"JetBrains Mono",monospace;font-size:0.6rem;text-align:right;}
+/* por rows */
+.por-rows{padding:0.25rem 0;}
+.pr-row{display:flex;justify-content:space-between;align-items:center;padding:0.55rem 1.75rem;border-bottom:1px solid var(--border);}
+.pr-row:last-child{border-bottom:none;}
+.pr-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.pr-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;}
+/* por features */
+.por-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.pf-item{display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid rgba(42,184,176,0.5);transition:border-color 0.2s;}
+.pf-item:hover{border-color:rgba(42,184,176,0.8);}
+.pf-body h4{font-size:0.8rem;font-family:"Epilogue",sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.pf-body p{font-size:0.73rem;}
+
+/* ─── TIER TABLE ─── */
+.tier-table-wrap{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.ttw-topbar{height:2px;background:linear-gradient(90deg,var(--kyc-c),var(--kyb-c),var(--cg-jade));}
+.ttw-header{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.ttw-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:600;color:var(--white);}
+.tier-grid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:1px;background:var(--border);}
+.tg-cell{background:var(--surface);padding:0.65rem 0.9rem;font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+.tg-cell.hdr{background:rgba(0,0,0,0.2);color:var(--text-dim);font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;}
+.tg-cell.feature{color:var(--text-muted);}
+.tg-cell.tier-name{font-family:"Syne",sans-serif;font-size:0.75rem;font-weight:700;text-align:center;}
+.tg-check{text-align:center;}
+.tg-yes{color:var(--green);}
+.tg-limit{color:var(--amber);}
+.tg-no{color:var(--text-dim);}
+
+/* ─── DASHBOARD ─── */
+.dash-panels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.dash-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp-topbar{height:2px;}
+.dp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:600;color:var(--white);}
+.dp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.dp-metric{background:var(--surface);padding:1rem 1.1rem;}
+.dp-m-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.dp-m-val{font-family:"Syne",sans-serif;font-size:1rem;font-weight:700;}
+.dp-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-top:0.18rem;}
+.dp-rows{padding:0.25rem 0;}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.6rem;border-bottom:1px solid var(--border);}
+.dp-row:last-child{border-bottom:none;}
+.dp-row-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.dp-row-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);}
+/* exposure heatmap mini */
+.exp-heatmap{padding:0 1.6rem 1.25rem;border-top:1px solid var(--border);}
+.eh-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin:0.85rem 0 0.5rem;}
+.eh-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;}
+.eh-cell{height:28px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:0.5rem;}
+
+/* ─── FINAL CTA ─── */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(26,168,120,0.06) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--white);margin-bottom:0.75rem;max-width:600px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:460px;margin:0 auto 2rem;}
+/* four laws strip */
+.fc-laws{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;max-width:640px;margin:0 auto 2.5rem;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.fcl-item{background:var(--surface);padding:0.85rem 0.75rem;text-align:center;}
+.fcl-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--cg-light);margin-bottom:0.18rem;}
+.fcl-sub{font-family:"JetBrains Mono",monospace;font-size:0.52rem;color:var(--text-dim);}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-final{background:var(--cg-jade);color:var(--white);border:none;padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;font-weight:600;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{background:var(--green);box-shadow:0 10px 40px rgba(26,168,120,0.25);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--cg-border);color:var(--cg-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:"Syne",sans-serif;font-size:1.15rem;font-weight:700;color:var(--white);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--cg-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--cg-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .pillars-grid{grid-template-columns:repeat(2,1fr);}
+  .tier-grid{grid-template-columns:1.2fr repeat(2,1fr);}
+  .tier-grid>*:nth-child(4n),.tier-grid>*:nth-child(4n-1){display:none;}
+  .fc-laws{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .por-layout,.dash-panels,.filter-body{grid-template-columns:1fr;}
+  .filter-body .filter-gates{border-right:none;border-bottom:1px solid var(--border);}
+  .four-laws{flex-wrap:wrap;}
+  .fl-item{flex:1 1 45%;}
+  .fl-item:last-child{border-right:1px solid var(--border-md);}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .pillars-grid{grid-template-columns:1fr;}
+  .fc-laws{grid-template-columns:repeat(2,1fr);}
+  .fl-item{flex:1 1 100%;}
+}
+</style>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link">Global Payments</a>
+    <a href="compliance.html" class="nav-link active">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>7 · COMPLIANCE & GOVERNANCE · ARCHITECTURE-LEVEL · ALL MODULES ACTIVE</div>
+      <h1 style="color:var(--white);">Governance<br><span style="color:var(--cg-light);">Is Infrastructure.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip" style="background:var(--cg-dim);border:1px solid var(--cg-border);color:var(--cg-light);">COMPLIANCE</span>
+        <span class="token-chip" style="background:var(--cg-jade-dim);border:1px solid var(--cg-jade-border);color:#5adab0;">GOVERNANCE</span>
+        <span style="color:var(--text-dim);">Embedded · Not a Department · Full Traceability</span>
+      </div>
+      <p class="hero-sub">Kapitor operates as a governed financial operating system. Compliance is embedded into the architecture — not layered on top. Every user, transaction, and instrument is filtered through identity verification, risk classification, jurisdiction rules, exposure limits, ledger recording, and audit frameworks.</p>
+      <div class="four-laws">
+        <div class="fl-item"><div class="fl-label">Principle</div><div class="fl-val">Identity Verified</div></div>
+        <div class="fl-item"><div class="fl-label">Principle</div><div class="fl-val">Risk Scored</div></div>
+        <div class="fl-item"><div class="fl-label">Principle</div><div class="fl-val">Capital Limited</div></div>
+        <div class="fl-item"><div class="fl-label">Principle</div><div class="fl-val">Reserves Mapped</div></div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Complete Verification</button>
+        <button class="btn-out">View Compliance Framework →</button>
+        <button class="btn-out">Download Transparency Report →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Verified Users</div>
+          <div class="hm-val" style="color:var(--cg-light);">284K+</div>
+          <div class="hm-sub">KYC tier-classified</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">KYB Entities</div>
+          <div class="hm-val" style="color:var(--white);">1,840</div>
+          <div class="hm-sub">Corporate + institutional</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">AML Screened (MTD)</div>
+          <div class="hm-val" style="color:var(--cg-light);">100%</div>
+          <div class="hm-sub"><span class="up">All transactions</span></div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Modules Governed</div>
+          <div class="hm-val" style="color:var(--white);">8</div>
+          <div class="hm-sub">Zero bypass</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Shadow Accounting</div>
+          <div class="hm-val" style="color:var(--green);font-size:1rem;padding-top:0.18rem;">None</div>
+          <div class="hm-sub">All ledger-recorded</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">KYC STATUS</span><span class="up">284K+ VERIFIED</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">KYB ENTITIES</span>1,840 CORPORATE</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">AML</span><span class="up">CONTINUOUS · NOT PERIODIC</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">JURISDICTION CONTROLS</span><span class="up">ALL REGIONS</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">PROOF OF RESERVES</span><span class="up">ON-LEDGER VERIFIED</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SHADOW ACCOUNTING</span>NONE</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">MODULES GOVERNED</span>8 · ZERO BYPASS</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">ANONYMOUS ACCESS</span>PROHIBITED</span>
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">KYC STATUS</span><span class="up">284K+ VERIFIED</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">AML</span><span class="up">CONTINUOUS · NOT PERIODIC</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">PROOF OF RESERVES</span><span class="up">ON-LEDGER VERIFIED</span></span>
+  </div>
+</div>
+
+<!-- ═══ 8 COMPLIANCE PILLARS ═══ -->
+<section class="section" id="pillars">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey cg">Eight Compliance Pillars</div>
+      <h2 style="color:var(--white);">No Access Without Compliance.<br>No Capital Without Control.</h2>
+      <p>Every Kapitor module passes through eight compliance layers — from identity verification at onboarding to reserve reconciliation at settlement. Compliance is not added post-transaction. It is the first and last step of every flow.</p>
+    </div>
+    <div class="pillars-grid">
+
+      <!-- KYC -->
+      <div class="pc-card">
+        <div class="pcc-topbar" style="background:var(--kyc-c);"></div>
+        <div class="pcc-header">
+          <div class="pcc-num">PILLAR 01</div>
+          <div class="pcc-icon-row">
+            <div class="pcc-icon" style="background:rgba(74,144,216,0.12);border:1px solid rgba(74,144,216,0.25);color:#80b0e8;">KYC</div>
+            <div class="pcc-stat"><div class="pcc-stat-val" style="color:#80b0e8;">284K+</div><div class="pcc-stat-label">VERIFIED</div></div>
+          </div>
+          <div class="pcc-name">KYC</div>
+          <div class="pcc-sub" style="color:#80b0e8;">KNOW YOUR CUSTOMER</div>
+          <p class="pcc-desc">Structured identity verification for all individual users. Government ID, biometric verification, address confirmation, sanctions screening, and PEP checks before any access is granted.</p>
+        </div>
+        <div class="pcc-body">
+          <div class="pcc-items">
+            <div class="pcc-item">Government-issued ID validation</div>
+            <div class="pcc-item">Biometric / liveness check</div>
+            <div class="pcc-item">Sanctions + PEP screening</div>
+            <div class="pcc-item">4 access tiers enforced</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KYB -->
+      <div class="pc-card">
+        <div class="pcc-topbar" style="background:var(--kyb-c);"></div>
+        <div class="pcc-header">
+          <div class="pcc-num">PILLAR 02</div>
+          <div class="pcc-icon-row">
+            <div class="pcc-icon" style="background:rgba(136,96,208,0.12);border:1px solid rgba(136,96,208,0.25);color:#b090e8;">KYB</div>
+            <div class="pcc-stat"><div class="pcc-stat-val" style="color:#b090e8;">1,840</div><div class="pcc-stat-label">ENTITIES</div></div>
+          </div>
+          <div class="pcc-name">KYB</div>
+          <div class="pcc-sub" style="color:#b090e8;">KNOW YOUR BUSINESS</div>
+          <p class="pcc-desc">Corporate and institutional verification including company registration, beneficial ownership declaration, board authorization, and jurisdictional compliance clearance. UBO identification enforced.</p>
+        </div>
+        <div class="pcc-body">
+          <div class="pcc-items">
+            <div class="pcc-item">UBO identification</div>
+            <div class="pcc-item">Corporate structure mapping</div>
+            <div class="pcc-item">Risk category assignment</div>
+            <div class="pcc-item">Industry classification</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AML -->
+      <div class="pc-card">
+        <div class="pcc-topbar" style="background:var(--aml-c);"></div>
+        <div class="pcc-header">
+          <div class="pcc-num">PILLAR 03</div>
+          <div class="pcc-icon-row">
+            <div class="pcc-icon" style="background:rgba(208,80,80,0.12);border:1px solid rgba(208,80,80,0.25);color:#e89090;">AML</div>
+            <div class="pcc-stat"><div class="pcc-stat-val" style="color:#e89090;">100%</div><div class="pcc-stat-label">SCREENED</div></div>
+          </div>
+          <div class="pcc-name">AML Framework</div>
+          <div class="pcc-sub" style="color:#e89090;">CONTINUOUS MONITORING</div>
+          <p class="pcc-desc">Live AML framework across all modules. Transaction pattern analysis, behavioral anomaly detection, cross-border risk scoring, velocity monitoring, and source-of-funds validation. Continuous — not periodic.</p>
+        </div>
+        <div class="pcc-body">
+          <div class="pcc-items">
+            <div class="pcc-item">Before execution</div>
+            <div class="pcc-item">During settlement</div>
+            <div class="pcc-item">After reconciliation</div>
+            <div class="pcc-item">EDD triggers on flagging</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RISK PROFILING -->
+      <div class="pc-card">
+        <div class="pcc-topbar" style="background:var(--risk-c);"></div>
+        <div class="pcc-header">
+          <div class="pcc-num">PILLAR 04</div>
+          <div class="pcc-icon-row">
+            <div class="pcc-icon" style="background:rgba(216,136,32,0.12);border:1px solid rgba(216,136,32,0.25);color:#e8b060;">RISK</div>
+            <div class="pcc-stat"><div class="pcc-stat-val" style="color:#e8b060;">Dynamic</div><div class="pcc-stat-label">PROFILE</div></div>
+          </div>
+          <div class="pcc-name">Risk Profiling</div>
+          <div class="pcc-sub" style="color:#e8b060;">STRUCTURED CLASSIFICATION</div>
+          <p class="pcc-desc">Dynamic risk profiles assigned to every user — updated automatically with behavioral change. Inputs include financial background, investment experience, geographic exposure, and capital deployment patterns.</p>
+        </div>
+        <div class="pcc-body">
+          <div class="pcc-items">
+            <div class="pcc-item">Conservative / Balanced / Growth / Inst.</div>
+            <div class="pcc-item">Derivative access governed</div>
+            <div class="pcc-item">Vault + leverage eligibility</div>
+            <div class="pcc-item">Auto-updates with behavior</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JURISDICTION -->
+      <div class="pc-card">
+        <div class="pcc-topbar" style="background:var(--jur-c);"></div>
+        <div class="pcc-header">
+          <div class="pcc-num">PILLAR 05</div>
+          <div class="pcc-icon-row">
+            <div class="pcc-icon" style="background:rgba(26,154,120,0.12);border:1px solid rgba(26,154,120,0.25);color:#5ad8a8;">JUR</div>
+            <div class="pcc-stat"><div class="pcc-stat-val" style="color:#5ad8a8;">Global</div><div class="pcc-stat-label">COVERAGE</div></div>
+          </div>
+          <div class="pcc-name">Jurisdiction Controls</div>
+          <div class="pcc-sub" style="color:#5ad8a8;">GEOGRAPHIC ACCESS GOVERNANCE</div>
+          <p class="pcc-desc">Region-based onboarding restrictions, sanctioned country blocking, product eligibility filtering, tax reporting obligations, and regulatory compliance routing. No product is universally accessible.</p>
+        </div>
+        <div class="pcc-body">
+          <div class="pcc-items">
+            <div class="pcc-item">Sanctioned country blocking</div>
+            <div class="pcc-item">Product eligibility filtering</div>
+            <div class="pcc-item">Transaction caps by region</div>
+            <div class="pcc-item">Cross-border doc requirements</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INVESTMENT LIMITS -->
+      <div class="pc-card">
+        <div class="pcc-topbar" style="background:var(--lim-c);"></div>
+        <div class="pcc-header">
+          <div class="pcc-num">PILLAR 06</div>
+          <div class="pcc-icon-row">
+            <div class="pcc-icon" style="background:rgba(192,120,64,0.12);border:1px solid rgba(192,120,64,0.25);color:#e0a070;">LIM</div>
+            <div class="pcc-stat"><div class="pcc-stat-val" style="color:#e0a070;">Enforced</div><div class="pcc-stat-label">ALL TIERS</div></div>
+          </div>
+          <div class="pcc-name">Investment Limits</div>
+          <div class="pcc-sub" style="color:#e0a070;">CONTROLLED EXPOSURE</div>
+          <p class="pcc-desc">Capital limits enforced by KYC tier, risk profile, jurisdiction, asset category, and product type. Maximum vault allocation, derivative margin caps, staking ceilings, Kaloft participation caps.</p>
+        </div>
+        <div class="pcc-body">
+          <div class="pcc-items">
+            <div class="pcc-item">Max vault allocation enforced</div>
+            <div class="pcc-item">Derivative margin caps</div>
+            <div class="pcc-item">Staking exposure ceiling</div>
+            <div class="pcc-item">Institutional adequacy ratios</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUDIT -->
+      <div class="pc-card">
+        <div class="pcc-topbar" style="background:var(--aud-c);"></div>
+        <div class="pcc-header">
+          <div class="pcc-num">PILLAR 07</div>
+          <div class="pcc-icon-row">
+            <div class="pcc-icon" style="background:rgba(80,128,200,0.12);border:1px solid rgba(80,128,200,0.25);color:#80a8e0;">AUD</div>
+            <div class="pcc-stat"><div class="pcc-stat-val" style="color:#80a8e0;">Full</div><div class="pcc-stat-label">TRACEABILITY</div></div>
+          </div>
+          <div class="pcc-name">Audit & Transparency</div>
+          <div class="pcc-sub" style="color:#80a8e0;">VERIFIABLE INFRASTRUCTURE</div>
+          <p class="pcc-desc">Internal financial audits, third-party verification, reserve reconciliation, instrument issuance logs, and transaction traceability. Real-time ledger balance display and NAV reporting.</p>
+        </div>
+        <div class="pcc-body">
+          <div class="pcc-items">
+            <div class="pcc-item">Ledger-recorded flows</div>
+            <div class="pcc-item">Timestamped + counterparty mapped</div>
+            <div class="pcc-item">Instrument lifecycle tracking</div>
+            <div class="pcc-item">No shadow accounting</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROOF OF RESERVES -->
+      <div class="pc-card">
+        <div class="pcc-topbar" style="background:var(--por-c);"></div>
+        <div class="pcc-header">
+          <div class="pcc-num">PILLAR 08</div>
+          <div class="pcc-icon-row">
+            <div class="pcc-icon" style="background:rgba(42,184,176,0.12);border:1px solid rgba(42,184,176,0.25);color:#5ad8d0;">PoR</div>
+            <div class="pcc-stat"><div class="pcc-stat-val" style="color:#5ad8d0;">100%</div><div class="pcc-stat-label">BACKED</div></div>
+          </div>
+          <div class="pcc-name">Proof of Reserves</div>
+          <div class="pcc-sub" style="color:#5ad8d0;">ASSET-BACKED VERIFICATION</div>
+          <p class="pcc-desc">Reserve verification covering fiat balances, digital assets, Kaloft pools, RWA custody, and institutional instrument collateral. User balances are not abstract entries — they are mapped to reserves.</p>
+        </div>
+        <div class="pcc-body">
+          <div class="pcc-items">
+            <div class="pcc-item">On-ledger asset verification</div>
+            <div class="pcc-item">Reserve ratio disclosure</div>
+            <div class="pcc-item">Liability reconciliation</div>
+            <div class="pcc-item">Custody confirmation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TRANSACTION FILTER FLOW ═══ -->
+<section class="section" id="flow">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey cg">Governance Architecture</div>
+      <h2 style="color:var(--white);">Every Transaction. Seven Checks.<br>No Module Bypasses Governance.</h2>
+    </div>
+    <div class="filter-panel">
+      <div class="fp2-topbar"></div>
+      <div class="fp2-header">
+        <div class="fp2-title">Transaction Governance Flow — All Modules</div>
+        <div class="fp2-badge">ZERO BYPASS ARCHITECTURE</div>
+      </div>
+      <div class="filter-body">
+        <!-- gates -->
+        <div class="filter-gates">
+          <div class="fg-label">Seven Mandatory Gates — Every Transaction</div>
+          <div class="fg-steps">
+            <div class="fg-step" style="background:rgba(74,144,216,0.07);border-left-color:var(--kyc-c);">
+              <span class="fg-num" style="color:#80b0e8;">01</span>
+              <span class="fg-text">Identity Validation — KYC / KYB tier check</span>
+              <span class="fg-pass" style="color:var(--green);">PASS →</span>
+            </div>
+            <div class="fg-step" style="background:rgba(208,80,80,0.06);border-left-color:var(--aml-c);">
+              <span class="fg-num" style="color:#e89090;">02</span>
+              <span class="fg-text">AML Screening — pattern + source check</span>
+              <span class="fg-pass" style="color:var(--green);">PASS →</span>
+            </div>
+            <div class="fg-step" style="background:rgba(216,136,32,0.06);border-left-color:var(--risk-c);">
+              <span class="fg-num" style="color:#e8b060;">03</span>
+              <span class="fg-text">Risk Scoring — dynamic profile applied</span>
+              <span class="fg-pass" style="color:var(--green);">PASS →</span>
+            </div>
+            <div class="fg-step" style="background:rgba(26,154,120,0.06);border-left-color:var(--jur-c);">
+              <span class="fg-num" style="color:#5ad8a8;">04</span>
+              <span class="fg-text">Jurisdiction Check — eligibility verified</span>
+              <span class="fg-pass" style="color:var(--green);">PASS →</span>
+            </div>
+            <div class="fg-step" style="background:rgba(192,120,64,0.06);border-left-color:var(--lim-c);">
+              <span class="fg-num" style="color:#e0a070;">05</span>
+              <span class="fg-text">Limit Verification — exposure ceiling check</span>
+              <span class="fg-pass" style="color:var(--green);">PASS →</span>
+            </div>
+            <div class="fg-step" style="background:rgba(80,128,200,0.06);border-left-color:var(--aud-c);">
+              <span class="fg-num" style="color:#80a8e0;">06</span>
+              <span class="fg-text">Ledger Entry — Unified Ledger recorded</span>
+              <span class="fg-pass" style="color:var(--green);">PASS →</span>
+            </div>
+            <div class="fg-step" style="background:rgba(42,184,176,0.06);border-left-color:var(--por-c);">
+              <span class="fg-num" style="color:#5ad8d0;">07</span>
+              <span class="fg-text">Settlement Confirmation — reserve mapped</span>
+              <span class="fg-pass" style="color:var(--green);">✓ DONE</span>
+            </div>
+          </div>
+        </div>
+        <!-- sample tx -->
+        <div class="filter-tx">
+          <div class="ftx-label">Sample Transaction — Full Governance Trace</div>
+          <div class="ftx-card">
+            <div class="ftx-topbar"></div>
+            <div class="ftx-rows">
+              <div class="ftx-row"><span class="ftx-key">Transaction ID</span><span class="ftx-val" style="color:var(--cg-light);">TXN-GOV-00284182</span></div>
+              <div class="ftx-row"><span class="ftx-key">User</span><span class="ftx-val">USR-VRF-2248 · ADVANCED TIER</span></div>
+              <div class="ftx-row"><span class="ftx-key">Type</span><span class="ftx-val">Cross-border Transfer · INR → USD</span></div>
+              <div class="ftx-row"><span class="ftx-key">Amount</span><span class="ftx-val">$84,000</span></div>
+              <div class="ftx-row"><span class="ftx-key">Module</span><span class="ftx-val">GIPS · UPI → SWIFT</span></div>
+              <div class="ftx-row"><span class="ftx-key">Ledger Entry</span><span class="ftx-val" style="color:var(--green);">LDG-00284182 · CREATED</span></div>
+            </div>
+          </div>
+          <div class="ftx-label" style="margin-top:0.75rem;">Governance Checks Passed</div>
+          <div class="ftx-checks">
+            <div class="ftx-check"><div class="ftx-check-dot" style="background:var(--green);"></div>KYC — ADVANCED TIER · Verified</div>
+            <div class="ftx-check"><div class="ftx-check-dot" style="background:var(--green);"></div>AML — 0 flags · Source confirmed</div>
+            <div class="ftx-check"><div class="ftx-check-dot" style="background:var(--green);"></div>Risk — BALANCED profile · Approved</div>
+            <div class="ftx-check"><div class="ftx-check-dot" style="background:var(--green);"></div>Jurisdiction — IN/US corridor · Active</div>
+            <div class="ftx-check"><div class="ftx-check-dot" style="background:var(--green);"></div>Limit — $84K within tier ceiling</div>
+            <div class="ftx-check"><div class="ftx-check-dot" style="background:var(--green);"></div>Ledger — Entry created · Timestamped</div>
+            <div class="ftx-check"><div class="ftx-check-dot" style="background:var(--green);"></div>Reserve — Mapped · Confirmed 14:22:08</div>
+          </div>
+        </div>
+      </div>
+      <!-- footer strip -->
+      <div class="filter-footer">
+        <div class="ff2-item"><div class="ff2-dot" style="background:var(--green);"></div><span class="ff2-label">Modules Governed:</span><span class="ff2-val">8 — All</span></div>
+        <div class="ff2-item"><div class="ff2-dot" style="background:var(--green);"></div><span class="ff2-label">Shadow Accounting:</span><span class="ff2-val">None</span></div>
+        <div class="ff2-item"><div class="ff2-dot" style="background:var(--green);"></div><span class="ff2-label">Anonymous Access:</span><span class="ff2-val">Prohibited</span></div>
+        <div class="ff2-item"><div class="ff2-dot" style="background:var(--amber);"></div><span class="ff2-label">Compliance Is:</span><span class="ff2-val">Architecture — Not a Dept.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROOF OF RESERVES ═══ -->
+<section class="section" id="reserves">
+  <div class="container">
+    <div class="por-layout">
+      <div>
+        <div class="por-panel">
+          <div class="pp-topbar"></div>
+          <div class="pp-header">
+            <div class="pp-title">Proof of Reserves</div>
+            <div class="pp-badge">ON-LEDGER VERIFIED</div>
+          </div>
+          <div class="reserve-bars">
+            <div class="rb-label">Reserve Coverage by Asset Type</div>
+            <div class="rb-rows">
+              <div class="rb-row">
+                <span class="rb-name">Fiat Balances</span>
+                <div class="rb-track"><div class="rb-fill" style="width:100%;background:var(--kyc-c);"></div></div>
+                <span class="rb-ratio" style="color:var(--kyc-c);">100%</span>
+              </div>
+              <div class="rb-row">
+                <span class="rb-name">Digital Assets</span>
+                <div class="rb-track"><div class="rb-fill" style="width:100%;background:var(--cg-jade);"></div></div>
+                <span class="rb-ratio" style="color:var(--cg-jade);">100%</span>
+              </div>
+              <div class="rb-row">
+                <span class="rb-name">Kaloft Pools</span>
+                <div class="rb-track"><div class="rb-fill" style="width:100%;background:var(--kyb-c);"></div></div>
+                <span class="rb-ratio" style="color:var(--kyb-c);">100%</span>
+              </div>
+              <div class="rb-row">
+                <span class="rb-name">RWA Custody</span>
+                <div class="rb-track"><div class="rb-fill" style="width:100%;background:var(--por-c);"></div></div>
+                <span class="rb-ratio" style="color:var(--por-c);">100%</span>
+              </div>
+              <div class="rb-row">
+                <span class="rb-name">Inst. Collateral</span>
+                <div class="rb-track"><div class="rb-fill" style="width:128%;background:var(--risk-c);transform:scaleX(0.78);transform-origin:left;"></div></div>
+                <span class="rb-ratio" style="color:var(--risk-c);">128%</span>
+              </div>
+            </div>
+          </div>
+          <div class="por-rows">
+            <div class="pr-row"><span class="pr-key">On-Ledger Asset Verification</span><span class="pr-val" style="color:var(--green);">ACTIVE</span></div>
+            <div class="pr-row"><span class="pr-key">Reserve Ratio Disclosure</span><span class="pr-val" style="color:var(--cg-light);">Real-time</span></div>
+            <div class="pr-row"><span class="pr-key">Liability Reconciliation</span><span class="pr-val" style="color:var(--cg-light);">Continuous</span></div>
+            <div class="pr-row"><span class="pr-key">Custody Confirmation</span><span class="pr-val" style="color:var(--green);">Independent</span></div>
+            <div class="pr-row"><span class="pr-key">Audit Reference Reporting</span><span class="pr-val" style="color:var(--cg-light);">Quarterly + on-demand</span></div>
+            <div class="pr-row"><span class="pr-key">User Balances Are</span><span class="pr-val" style="color:var(--cg-light);">Reserve-mapped · Not abstract</span></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey jade">Proof of Reserves</div>
+        <h2 style="color:var(--white);">User Balances Are Not<br>Abstract Entries.</h2>
+        <p style="margin-top:0.85rem;">Every balance held inside Kapitor is mapped to a corresponding reserve — fiat balances, digital assets, Kaloft pool capital, RWA custody allocations, and institutional instrument collateral. Reserve verification is on-ledger, continuous, and independently confirmed.</p>
+        <div class="por-features">
+          <div class="pf-item"><div class="pf-body"><h4>On-Ledger Asset Verification</h4><p>Every customer asset position is verified against the Unified Ledger in real time. No balance exists without a corresponding reserve entry.</p></div></div>
+          <div class="pf-item"><div class="pf-body"><h4>Liability Reconciliation</h4><p>Total customer liabilities are reconciled against reserve holdings continuously. Discrepancies trigger automatic review — not periodic audits.</p></div></div>
+          <div class="pf-item"><div class="pf-body"><h4>Institutional Instrument Collateral</h4><p>KFI instruments, lending facilities, and Prime institutional positions maintain collateral ratios above minimum thresholds. Current blended ratio: 128%.</p></div></div>
+          <div class="pf-item"><div class="pf-body"><h4>Audit Reference Reporting</h4><p>Proof of Reserves audit reports are published quarterly and available on-demand to institutional clients through Kapitor Prime transparency tools.</p></div></div>
+        </div>
+        <div style="margin-top:1.75rem;padding:0.85rem 1.2rem;border:1px solid var(--cg-jade-border);border-radius:5px;background:var(--cg-jade-dim);font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--cg-jade);">User balances are mapped to reserves. No shadow accounting. No unmapped balances. Full traceability.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TIER TABLE ═══ -->
+<section class="section" id="tiers">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey amber">Access Tiers</div>
+      <h2 style="color:var(--white);">KYC & KYB Tier Access Control.<br>No Anonymous Access.</h2>
+    </div>
+    <div class="tier-table-wrap">
+      <div class="ttw-topbar"></div>
+      <div class="ttw-header">
+        <div class="ttw-title">Product Access by Compliance Tier</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text-muted);">All limits enforced at system level — not advisory</div>
+      </div>
+      <div class="tier-grid">
+        <!-- headers -->
+        <div class="tg-cell hdr feature">PRODUCT / CAPABILITY</div>
+        <div class="tg-cell hdr tier-name" style="color:#80b0e8;">BASIC</div>
+        <div class="tg-cell hdr tier-name" style="color:#5ad8a8;">VERIFIED</div>
+        <div class="tg-cell hdr tier-name" style="color:#e8b060;">ADVANCED</div>
+        <div class="tg-cell hdr tier-name" style="color:#b090e8;">INSTITUTIONAL</div>
+        <!-- rows -->
+        <div class="tg-cell feature">Deposits</div>
+        <div class="tg-cell tg-check"><span class="tg-limit">Limited</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Full</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Full</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Unlimited</span></div>
+
+        <div class="tg-cell feature">Withdrawals</div>
+        <div class="tg-cell tg-check"><span class="tg-limit">Capped</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Retail</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Extended</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Enterprise</span></div>
+
+        <div class="tg-cell feature">Kapitor Pay</div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ API</span></div>
+
+        <div class="tg-cell feature">Trading</div>
+        <div class="tg-cell tg-check"><span class="tg-no">—</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Spot</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ + Derivatives</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Full + Leverage</span></div>
+
+        <div class="tg-cell feature">Earn / Staking</div>
+        <div class="tg-cell tg-check"><span class="tg-no">—</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Base tier</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Full access</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Institutional</span></div>
+
+        <div class="tg-cell feature">Vaults</div>
+        <div class="tg-cell tg-check"><span class="tg-no">—</span></div>
+        <div class="tg-cell tg-check"><span class="tg-limit">Capped</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Full</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Unlimited</span></div>
+
+        <div class="tg-cell feature">Kaloft (EPT)</div>
+        <div class="tg-cell tg-check"><span class="tg-no">—</span></div>
+        <div class="tg-cell tg-check"><span class="tg-limit">Eligible</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Full</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Prime pools</span></div>
+
+        <div class="tg-cell feature">KFI / Trade Finance</div>
+        <div class="tg-cell tg-check"><span class="tg-no">—</span></div>
+        <div class="tg-cell tg-check"><span class="tg-no">—</span></div>
+        <div class="tg-cell tg-check"><span class="tg-limit">Selected</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Full KFI</span></div>
+
+        <div class="tg-cell feature">Kapitor Prime</div>
+        <div class="tg-cell tg-check"><span class="tg-no">—</span></div>
+        <div class="tg-cell tg-check"><span class="tg-no">—</span></div>
+        <div class="tg-cell tg-check"><span class="tg-no">—</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ KYB Required</span></div>
+
+        <div class="tg-cell feature">RWA Access</div>
+        <div class="tg-cell tg-check"><span class="tg-no">—</span></div>
+        <div class="tg-cell tg-check"><span class="tg-limit">Selected</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Full</span></div>
+        <div class="tg-cell tg-check"><span class="tg-yes">✓ Inst. allocation</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey cg">Dashboard Overview</div>
+      <h2 style="color:var(--white);">User & Institutional<br>Compliance Views</h2>
+    </div>
+    <div class="dash-panels">
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--kyc-c),var(--jur-c));"></div>
+        <div class="dp-header"><div class="dp-title">User Compliance View</div><div class="dp-tag">VERIFIED TIER</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Verification Status</div><div class="dp-m-val" style="color:var(--green);">VERIFIED</div><div class="dp-m-sub" style="color:var(--text-dim);">Advanced tier</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Risk Profile</div><div class="dp-m-val" style="color:var(--amber);">BALANCED</div><div class="dp-m-sub" style="color:var(--text-dim);">Auto-updated</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Jurisdiction</div><div class="dp-m-val" style="color:var(--cg-light);">🇮🇳 IN</div><div class="dp-m-sub" style="color:var(--text-dim);">Full access</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Compliance Alerts</div><div class="dp-m-val" style="color:var(--green);">0</div><div class="dp-m-sub" style="color:var(--text-dim);">All clear</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Investment Limit</span><span class="dp-row-val">$200K vault · $50K derivatives</span></div>
+          <div class="dp-row"><span class="dp-row-key">Document Expiry</span><span class="dp-row-val">ID — Mar 2028 · No action</span></div>
+          <div class="dp-row"><span class="dp-row-key">AML Status</span><span class="dp-row-val" style="color:var(--green);">Clear · 0 flags</span></div>
+          <div class="dp-row"><span class="dp-row-key">Proof of Balance</span><span class="dp-row-val" style="color:var(--green);">Reserve-mapped</span></div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--kyb-c),var(--aml-c));"></div>
+        <div class="dp-header"><div class="dp-title">Institutional Compliance View</div><div class="dp-tag" style="color:var(--cg-light);border-color:var(--cg-border);background:var(--cg-dim);">PRIME / KYB</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">AML Flags (MTD)</div><div class="dp-m-val" style="color:var(--green);">0</div><div class="dp-m-sub" style="color:var(--text-dim);">All transactions</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Capital Adequacy</div><div class="dp-m-val" style="color:var(--cg-light);">128%</div><div class="dp-m-sub" style="color:var(--green);">Above min.</div></div>
+          <div class="dp-metric"><div class="dp-m-label">AML Analytics</div><div class="dp-m-val" style="color:var(--amber);">Live</div><div class="dp-m-sub" style="color:var(--text-dim);">Risk Engine</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Regulatory Reports</div><div class="dp-m-val" style="color:var(--cg-light);">Ready</div><div class="dp-m-sub" style="color:var(--text-dim);">Export-ready</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Exposure Heatmap</span><span class="dp-row-val">6 entities — all LOW/MED</span></div>
+          <div class="dp-row"><span class="dp-row-key">Compliance Event Log</span><span class="dp-row-val">284 events · All resolved</span></div>
+          <div class="dp-row"><span class="dp-row-key">UBO Verification</span><span class="dp-row-val" style="color:var(--green);">All entities confirmed</span></div>
+        </div>
+        <!-- mini exposure heatmap -->
+        <div class="exp-heatmap">
+          <div class="eh-label">Exposure Heatmap</div>
+          <div class="eh-grid">
+            <div class="eh-cell" style="background:var(--green-dim);color:var(--green);">LOW</div>
+            <div class="eh-cell" style="background:var(--green-dim);color:var(--green);">LOW</div>
+            <div class="eh-cell" style="background:var(--amber-dim);color:var(--amber);">MED</div>
+            <div class="eh-cell" style="background:var(--green-dim);color:var(--green);">LOW</div>
+            <div class="eh-cell" style="background:var(--green-dim);color:var(--green);">LOW</div>
+            <div class="eh-cell" style="background:var(--green-dim);color:var(--green);">LOW</div>
+            <div class="eh-cell" style="background:var(--green-dim);color:var(--green);">LOW</div>
+            <div class="eh-cell" style="background:var(--amber-dim);color:var(--amber);">MED</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey cg" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Governance Is Infrastructure</div>
+      <h2>Built on Structured Compliance,<br>Controlled Access, Transparent Reporting.</h2>
+      <p>That's how a financial system survives regulation — and scrutiny.</p>
+      <div class="fc-laws">
+        <div class="fcl-item"><div class="fcl-val">Identity Verified</div><div class="fcl-sub">KYC / KYB required</div></div>
+        <div class="fcl-item"><div class="fcl-val">Risk Scored</div><div class="fcl-sub">Dynamic · Auto-updated</div></div>
+        <div class="fcl-item"><div class="fcl-val">Capital Limited</div><div class="fcl-sub">Tier enforced</div></div>
+        <div class="fcl-item"><div class="fcl-val">Reserves Mapped</div><div class="fcl-sub">Not abstract entries</div></div>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Complete Verification</button>
+        <button class="btn-final-out">View Compliance Framework</button>
+        <button class="btn-final-out">Download Transparency Report</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="index.html">Smart Wallet</a></li><li><a href="gp.html">Pay</a></li><li><a href="#">Trade</a></li><li><a href="#">Earn</a></li><li><a href="#">Stake</a></li><li><a href="#">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="#">Kaloft (EPT)</a></li><li><a href="#">Katoin</a></li><li><a href="#">EQOUIN</a></li><li><a href="#">KFI</a></li><li><a href="rwa.html">RWA</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="#">Custody</a></li><li><a href="#">Treasury</a></li><li><a href="#">FX</a></li><li><a href="#">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Payments</h5><ul><li><a href="#">GIPS</a></li><li><a href="#">Corridors</a></li><li><a href="#">FX Engine</a></li><li><a href="#">Institutional</a></li></ul></div>
+      <div class="footer-col"><h5>Compliance</h5><ul>
+        <li><a href="#" style="color:var(--cg-light);">KYC / KYB</a></li>
+        <li><a href="#" style="color:var(--cg-light);">AML Framework</a></li>
+        <li><a href="#">Proof of Reserves</a></li>
+        <li><a href="#">Audit Reports</a></li>
+        <li><a href="#">Transparency</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">AML Policy</a><a href="#">Risk Disclosure</a><a href="#">Transparency Report</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  window.addEventListener("scroll",()=>{document.getElementById("hdr").style.padding=window.scrollY>60?"0.65rem 2.5rem":"1rem 2.5rem";});
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});},{threshold:0.05});
+  document.querySelectorAll(
+    ".pc-card,.pcc-item,.fg-step,.ftx-row,.ftx-check,.rb-row,.pr-row,.pf-item,.tg-cell,.dp-metric,.dp-row,.eh-cell,.fcl-item,.ff2-item"
+  ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
+  (function(){
+    var header=document.getElementById("hdr");
+    var mobileToggle=document.querySelector(".nav-mobile-toggle");
+    function isMobile(){return window.innerWidth<=900;}
+    if(mobileToggle&&header){
+      mobileToggle.addEventListener("click",function(){
+        header.classList.toggle("header-mobile-open");
+        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+      });
+    }
+    document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+      btn.addEventListener("click",function(e){
+        if(isMobile()){e.preventDefault();var wrap=btn.closest(".nav-item-wrap");wrap.classList.toggle("open");btn.setAttribute("aria-expanded",wrap.classList.contains("open"));}
+      });
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RWA – Real-World Assets | Kapitor</title>
+<link
+  href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap"
+  rel="stylesheet"
+>
+<style> 
+:root {
+  /* Core surfaces – match Kapitor brand light theme */
+  --bg: #FCF8E8;
+  --surface: #FFFFFF;
+  --surface2: #F5ECD6;
+  --surface3: #F5ECD6;
+
+  /* Borders & outlines */
+  --border: rgba(15, 23, 42, 0.08);
+  --border-md: rgba(15, 23, 42, 0.16);
+  --border-hi: rgba(15, 23, 42, 0.22);
+
+  /* Brand colors */
+  --blue: #1A6FB8;
+  --blue-light: #2B83D1;
+  --blue-dim: rgba(26, 111, 184, 0.10);
+  --blue-glow: rgba(26, 111, 184, 0.12);
+  --green: #33B269;
+  --green-dim: rgba(51, 178, 105, 0.12);
+  --green-border: rgba(51, 178, 105, 0.20);
+  --amber: #F7AE40;
+  --amber-dim: rgba(247, 174, 64, 0.14);
+  --amber-border: rgba(247, 174, 64, 0.22);
+
+  /* Semantic states */
+  --success: #0F9D58;
+  --warning: #F59E0B;
+  --error: #E53535;
+
+  /* Typography */
+  --text: #111827;
+  --text-muted: #6B6B6B;
+  --text-dim: #9CA3AF;
+  --white: #FFFFFF;
+
+  /* RWA: muted earth-jade palette — timeless, not tech */
+  --rwa: #2ecc8a;
+  --rwa-light: #5eddaa;
+  --rwa-dim: rgba(46, 204, 138, 0.08);
+  --rwa-border: rgba(46, 204, 138, 0.2);
+  --rwa-jade: #1a9e6a;
+  --rwa-jade-dim: rgba(26, 158, 106, 0.07);
+  --rwa-stone: #8aa898;
+  --rwa-stone-dim: rgba(138, 168, 152, 0.06);
+  --rwa-stone-border: rgba(138, 168, 152, 0.18);
+  --rwa-gold: #c4a24e;
+  --rwa-gold-dim: rgba(196, 162, 78, 0.09);
+  --rwa-gold-border: rgba(196, 162, 78, 0.22);
+
+  /* per-asset class colours */
+  --bond: #5b8dee;   /* bonds - cool blue */
+  --gold-c: #d4a844; /* gold - warm gold */
+  --re: #e07850;     /* real estate - terracotta */
+  --carbon: #4caf78; /* carbon - leaf green */
+  --pcredit: #9b7fe8;/* private credit - lavender */
+  --trade: #e8962a;  /* trade finance - amber */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:300;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+body::after{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+h1,h2,h3{
+  font-family:'Outfit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:700;
+  letter-spacing:-0.03em;
+}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.rwa{color:var(--rwa-light);}    .ey.rwa::before{background:var(--rwa-light);}
+.ey.stone{color:var(--rwa-stone);}  .ey.stone::before{background:var(--rwa-stone);}
+.ey.gold{color:var(--rwa-gold);}    .ey.gold::before{background:var(--rwa-gold);}
+.ey.g{color:#4caf78;}               .ey.g::before{background:#4caf78;}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--white);margin-bottom:0.85rem;}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+.nav-wrap{display:flex;align-items:center;gap:0.4rem;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-item-wrap{position:relative;display:flex;align-items:center;}
+.nav-trigger{background:transparent;border:none;color:var(--text-muted);font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-trigger:hover{color:var(--text);}
+.nav-item-wrap.active>.nav-trigger{color:var(--rwa-light);}
+.chevron{font-size:0.7rem;opacity:0.8;}
+.nav-main-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-main-link:hover{color:var(--text);}
+.nav-main-link.active{color:var(--rwa-light);}
+.nav-dropdown{position:absolute;top:100%;left:0;margin-top:0.35rem;min-width:260px;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 18px 45px rgba(15,23,42,0.18);padding:0.6rem 0;display:none;}
+.nav-item-wrap:hover>.nav-dropdown{display:block;}
+.nav-dropdown-head{display:block;padding:0.5rem 1rem;font-size:0.78rem;font-weight:600;color:var(--text);text-decoration:none;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-dropdown-inner{padding:0 0 0.4rem 0.85rem;display:flex;flex-direction:column;}
+.nav-dropdown-inner a{padding:0.3rem 0.9rem;font-size:0.74rem;color:var(--text-muted);text-decoration:none;border-radius:3px;display:block;}
+.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--rwa);color:var(--rwa-light);}
+.btn-cta{background:var(--rwa-jade);color:var(--white);border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.2s;}
+.btn-cta:hover{background:var(--rwa);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:"Epilogue",sans-serif;cursor:pointer;}
+.nav-mobile-toggle{display:none;background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.3rem 0.6rem;border-radius:4px;font-size:0.9rem;cursor:pointer;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 65% 55% at 52% 28%,rgba(46,204,138,0.08) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 6% 72%,rgba(196,162,78,0.04) 0%,transparent 50%),
+    radial-gradient(ellipse 35% 35% at 92% 65%,rgba(91,141,238,0.03) 0%,transparent 45%);}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 65% at 50% 40%,black 10%,transparent 75%);}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(46,204,138,0.3);border-radius:3px;background:rgba(46,204,138,0.07);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--rwa-light);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--rwa);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero-content{position:relative;z-index:2;max-width:900px;}
+.hero h1{color:var(--white);margin-bottom:0.6rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.64rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:560px;color:rgba(191,212,200,0.5);margin-bottom:2rem;line-height:1.8;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--rwa-jade);color:var(--white);border:none;padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:var(--rwa);transform:translateY(-1px);box-shadow:0 8px 30px rgba(46,204,138,0.18);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.82rem 1.9rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--rwa-border);color:var(--rwa-light);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:"Syne",sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--rwa-light);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 48s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--rwa-light);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* ─── PILLARS STRIP ─── */
+.pillars{display:flex;gap:1px;background:var(--border);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.pillar-item{flex:1;background:var(--surface);padding:0.85rem 1.25rem;display:flex;align-items:center;gap:8px;transition:background 0.2s;}
+.pillar-item:hover{background:var(--surface2);}
+.pi-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.pi-text{font-family:"JetBrains Mono",monospace;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);}
+.pi-text span{color:var(--rwa-light);}
+
+/* ─── ASSET CLASS GRID ─── */
+.asset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.ac-card{background:var(--surface);position:relative;overflow:hidden;transition:background 0.25s;cursor:default;}
+.ac-card:hover{background:var(--surface2);}
+.acc-topbar{height:3px;}
+.acc-header{padding:1.75rem 1.75rem 1rem;}
+.acc-num{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.6rem;}
+.acc-icon-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.65rem;}
+.acc-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0;}
+.acc-aum{text-align:right;}
+.acc-aum-val{font-family:"Syne",sans-serif;font-size:1.3rem;font-weight:800;line-height:1;}
+.acc-aum-label{font-family:"JetBrains Mono",monospace;font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-top:2px;}
+.acc-name{font-family:"Syne",sans-serif;font-size:1rem;font-weight:700;color:var(--white);margin-bottom:0.18rem;}
+.acc-sub{font-family:"JetBrains Mono",monospace;font-size:0.56rem;letter-spacing:0.07em;margin-bottom:0.7rem;}
+.acc-desc{font-size:0.76rem;color:var(--text-muted);line-height:1.7;}
+.acc-body{padding:0 1.75rem;}
+/* token fields */
+.acc-fields{display:flex;flex-direction:column;gap:0;margin:0.85rem 0;}
+.acc-f-row{display:flex;justify-content:space-between;align-items:center;padding:0.42rem 0;border-bottom:1px solid var(--border);}
+.acc-f-row:last-child{border-bottom:none;}
+.acc-f-key{font-family:"JetBrains Mono",monospace;font-size:0.57rem;color:var(--text-muted);}
+.acc-f-val{font-family:"JetBrains Mono",monospace;font-size:0.6rem;}
+/* token attributes as chips */
+.acc-attrs{display:flex;flex-wrap:wrap;gap:0.35rem;margin:0.75rem 0 1.25rem;}
+.acc-attr{font-family:"JetBrains Mono",monospace;font-size:0.54rem;padding:0.2rem 0.55rem;border-radius:3px;border:1px solid var(--border);color:var(--text-muted);background:rgba(255,255,255,0.03);}
+.acc-cta{display:block;margin:0 1.75rem 1.75rem;padding:0.55rem;text-align:center;border-radius:4px;font-family:"JetBrains Mono",monospace;font-size:0.6rem;letter-spacing:0.1em;cursor:pointer;border:1px solid;background:transparent;transition:all 0.2s;}
+
+/* ─── GOVERNANCE & CUSTODY ─── */
+.gov-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.gov-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.gp-topbar{height:2px;}
+.gp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);}
+.gp-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:600;color:var(--white);}
+.gp-items{padding:0.25rem 0;}
+.gp-item{display:flex;justify-content:space-between;align-items:center;padding:0.62rem 1.6rem;border-bottom:1px solid var(--border);}
+.gp-item:last-child{border-bottom:none;}
+.gp-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.gp-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;}
+/* 4 gates */
+.four-gates{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);margin-top:3rem;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.fg-item{background:var(--surface);padding:1.25rem 1.4rem;transition:background 0.2s;}
+.fg-item:hover{background:var(--surface2);}
+.fg-num{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.4rem;}
+.fg-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);margin-bottom:0.22rem;}
+.fg-desc{font-size:0.73rem;color:var(--text-muted);}
+
+/* ─── ALLOCATION TABLE ─── */
+.alloc-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.alp-topbar{height:2px;background:linear-gradient(90deg,var(--bond),var(--gold-c),var(--re),var(--carbon),var(--pcredit),var(--trade));}
+.alp-header{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.alp-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:600;color:var(--white);}
+.alp-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--rwa-light);}
+/* visual allocation bar */
+.alloc-bar-wrap{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);}
+.alloc-bar-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.65rem;}
+.alloc-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:1px;}
+.ab-seg{height:100%;transition:opacity 0.2s;}
+.ab-seg:hover{opacity:0.75;}
+.alloc-legend{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:0.75rem;}
+.al-item{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.57rem;color:var(--text-muted);}
+.al-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+/* table */
+.alloc-table{padding:0.25rem 0;}
+.at-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;padding:0.65rem 1.75rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.62rem;align-items:center;transition:background 0.15s;}
+.at-row.hdr{background:rgba(0,0,0,0.2);}
+.at-row:last-child{border-bottom:none;}
+.at-row:hover{background:rgba(255,255,255,0.02);}
+.at-cell{color:var(--text-muted);}
+.at-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.at-asset{display:flex;align-items:center;gap:7px;}
+.at-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.at-name{color:var(--text);}
+.at-yield{color:var(--rwa-light);}
+.at-status{padding:0.16rem 0.5rem;border-radius:2px;font-size:0.52rem;letter-spacing:0.08em;display:inline-block;}
+.st-active{background:rgba(46,204,138,0.1);color:var(--rwa-light);border:1px solid var(--rwa-border);}
+.st-pending{background:rgba(240,160,48,0.09);color:#f0a030;border:1px solid rgba(240,160,48,0.2);}
+
+/* ─── DASHBOARD ─── */
+.dash-panels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.dash-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp-topbar{height:2px;}
+.dp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:600;color:var(--white);}
+.dp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.dp-metric{background:var(--surface);padding:1rem 1.1rem;}
+.dp-m-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.dp-m-val{font-family:"Syne",sans-serif;font-size:1rem;font-weight:700;}
+.dp-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-top:0.18rem;}
+.dp-rows{padding:0.25rem 0;}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.6rem;border-bottom:1px solid var(--border);}
+.dp-row:last-child{border-bottom:none;}
+.dp-row-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.dp-row-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);}
+/* category donut-like visual */
+.cat-breakdown{padding:0 1.6rem 1.25rem;border-top:1px solid var(--border);}
+.cat-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin:0.85rem 0 0.5rem;}
+.cat-bars{display:flex;flex-direction:column;gap:0.3rem;}
+.cat-bar-row{display:flex;align-items:center;gap:0.65rem;}
+.cat-bar-name{font-family:"JetBrains Mono",monospace;font-size:0.57rem;color:var(--text-muted);width:80px;flex-shrink:0;}
+.cat-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.cat-fill{height:100%;border-radius:2px;}
+.cat-pct{font-family:"JetBrains Mono",monospace;font-size:0.56rem;color:var(--text-dim);width:28px;text-align:right;flex-shrink:0;}
+
+/* FINAL CTA */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(46,204,138,0.06) 0%,transparent 60%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--white);margin-bottom:0.75rem;max-width:600px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:460px;margin:0 auto 2rem;}
+.fc-four{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;max-width:680px;margin:0 auto 2.5rem;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.ff-item{background:var(--surface);padding:0.85rem 1rem;text-align:center;}
+.ff-title{font-family:"JetBrains Mono",monospace;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--rwa-light);margin-bottom:0.2rem;}
+.ff-sub{font-family:"JetBrains Mono",monospace;font-size:0.55rem;color:var(--text-dim);}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-final{background:var(--rwa-jade);color:var(--white);border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{background:var(--rwa);box-shadow:0 8px 30px rgba(46,204,138,0.18);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--rwa-border);color:var(--rwa-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:"Syne",sans-serif;font-size:1.15rem;font-weight:700;color:var(--white);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--rwa-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .asset-grid{grid-template-columns:repeat(2,1fr);}
+  .at-row{grid-template-columns:2fr 1fr 1fr;}
+  .at-row>*:nth-child(4),.at-row>*:nth-child(5),.at-row.hdr>*:nth-child(4),.at-row.hdr>*:nth-child(5){display:none;}
+}
+@media(max-width:900px){
+  header{padding:0.85rem 1.6rem;}
+  .nav-mobile-toggle{display:inline-flex;align-items:center;justify-content:center;margin-left:auto;margin-right:0.5rem;}
+  .nav-wrap{position:fixed;inset:64px 0 auto 0;background:rgba(252,248,232,0.97);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0.85rem 1.6rem 1.25rem;display:none;flex-direction:column;align-items:flex-start;gap:0.35rem;}
+  .nav-wrap.is-open{display:flex;}
+  .nav-item-wrap{width:100%;flex-direction:column;align-items:flex-start;}
+  .nav-trigger{width:100%;justify-content:space-between;padding:0.55rem 0.4rem;}
+  .nav-dropdown{position:static;margin:0.15rem 0 0.35rem 0;min-width:0;max-width:none;width:100%;box-shadow:none;background:transparent;border:none;padding:0;}
+  .nav-dropdown-head{padding:0.35rem 0;font-size:0.78rem;}
+  .nav-dropdown-inner{padding:0 0 0.2rem 0.7rem;}
+  .nav-dropdown-inner a{padding:0.22rem 0.4rem;font-size:0.74rem;}
+  .hdr-right{display:none;}
+  .gov-layout,.dash-panels{grid-template-columns:1fr;}
+  .asset-grid{grid-template-columns:1fr;}
+  .pillars{flex-wrap:wrap;}
+  .pillar-item{flex:1 1 45%;}
+  .four-gates{grid-template-columns:1fr;}
+  .fc-four{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .pillar-item{flex:1 1 100%;}
+}
+</style>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-main-link active">RWA</a>
+    <a href="prime.html" class="nav-main-link">Prime</a>
+    <a href="gp.html" class="nav-main-link">Global Payments</a>
+    <a href="compliance.html" class="nav-main-link">Compliance</a>
+    <a href="api.html" class="nav-main-link">Developers</a>
+    <a href="company.html" class="nav-main-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>4 · RWA · REAL-WORLD ASSETS · 6 ASSET CLASSES ACTIVE</div>
+      <h1 style="color:var(--white);">Real Assets.<br><span style="color:var(--rwa-light);">Digitally Structured.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip" style="background:var(--rwa-dim);border:1px solid var(--rwa-border);color:var(--rwa-light);">RWA</span>
+        <span class="token-chip" style="background:var(--rwa-stone-dim);border:1px solid var(--rwa-stone-border);color:var(--rwa-stone);">TOKENIZED REAL-WORLD ASSETS</span>
+        <span style="color:var(--text-dim);">Asset-Backed · Custody-Verified · Ledger-Recorded</span>
+      </div>
+      <p class="hero-sub">Structured digital access to regulated, verifiable, off-chain assets — bonds, gold, real estate, carbon credits, private credit, and trade finance. Tokenization is a settlement layer, not a shortcut. All holdings mapped inside the Unified Ledger.</p>
+      <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:2rem;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;padding:0.32rem 0.75rem;border-radius:3px;background:rgba(91,141,238,0.1);border:1px solid rgba(91,141,238,0.22);color:#8ab0f0;">Tokenized Bonds</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;padding:0.32rem 0.75rem;border-radius:3px;background:rgba(212,168,68,0.1);border:1px solid rgba(212,168,68,0.22);color:#e8c86a;">Gold</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;padding:0.32rem 0.75rem;border-radius:3px;background:rgba(224,120,80,0.1);border:1px solid rgba(224,120,80,0.22);color:#f0a880;">Real Estate</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;padding:0.32rem 0.75rem;border-radius:3px;background:rgba(76,175,120,0.1);border:1px solid rgba(76,175,120,0.22);color:#80d8a8;">Carbon Credits</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;padding:0.32rem 0.75rem;border-radius:3px;background:rgba(155,127,232,0.1);border:1px solid rgba(155,127,232,0.22);color:#c0a8f8;">Private Credit</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;padding:0.32rem 0.75rem;border-radius:3px;background:rgba(232,150,42,0.1);border:1px solid rgba(232,150,42,0.22);color:#f0b86a;">Trade Finance</span>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Explore RWA Opportunities</button>
+        <button class="btn-out">View Asset Documentation →</button>
+        <button class="btn-out">Request Institutional Allocation →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Total RWA AUM</div>
+          <div class="hm-val" style="color:var(--rwa-light);">$3.2B</div>
+          <div class="hm-sub"><span class="up">▲ 6.8%</span> YTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Asset Classes</div>
+          <div class="hm-val" style="color:var(--white);">6</div>
+          <div class="hm-sub">All custody-verified</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Yield Generated (MTD)</div>
+          <div class="hm-val" style="color:var(--rwa-gold);">$18.4M</div>
+          <div class="hm-sub">Across all classes</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Custody Verified</div>
+          <div class="hm-val" style="color:var(--white);">100%</div>
+          <div class="hm-sub">All holdings</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Tokenization Model</div>
+          <div class="hm-val" style="color:var(--rwa-light);font-size:1rem;padding-top:0.25rem;">Settlement Layer</div>
+          <div class="hm-sub">Not a shortcut</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">BONDS</span>$1.2B AUM · <span class="up">4.8% AVG YTM</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">GOLD</span>$640M · <span class="up">VAULT VERIFIED</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">REAL ESTATE</span>$480M · <span class="up">8.2% AVG YIELD</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">CARBON CREDITS</span>$180M · REGISTRY LINKED</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">PRIVATE CREDIT</span>$440M · <span class="up">COLLATERAL BACKED</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TRADE FINANCE</span>$260M · TRADE SETTLED</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TOTAL RWA AUM</span><span class="up">$3.2B</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">CUSTODY STATUS</span><span class="up">ALL VERIFIED</span></span>
+    <!-- dupe -->
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">BONDS</span>$1.2B AUM · <span class="up">4.8% AVG YTM</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">GOLD</span>$640M · <span class="up">VAULT VERIFIED</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">TOTAL RWA AUM</span><span class="up">$3.2B</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">CUSTODY STATUS</span><span class="up">ALL VERIFIED</span></span>
+  </div>
+</div>
+
+<!-- PILLARS -->
+<div class="pillars">
+  <div class="pillar-item"><div class="pi-dot" style="background:var(--rwa-light);"></div><div class="pi-text"><span>Asset-backed</span> — Every token</div></div>
+  <div class="pillar-item"><div class="pi-dot" style="background:var(--rwa-gold);"></div><div class="pi-text"><span>Compliance-screened</span> — Before issuance</div></div>
+  <div class="pillar-item"><div class="pi-dot" style="background:var(--rwa-light);"></div><div class="pi-text"><span>Custody-verified</span> — Independent custodian</div></div>
+  <div class="pillar-item"><div class="pi-dot" style="background:var(--rwa-stone);"></div><div class="pi-text"><span>Ledger-recorded</span> — Unified Ledger</div></div>
+  <div class="pillar-item"><div class="pi-dot" style="background:var(--rwa-light);"></div><div class="pi-text"><span>Audit-traceable</span> — Full history</div></div>
+</div>
+
+<!-- ═══ ASSET CLASS GRID ═══ -->
+<section class="section" id="assets">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey rwa">Six Asset Classes</div>
+      <h2 style="color:var(--white);">Tangible Value. Digital Access.<br>Structured Infrastructure.</h2>
+      <p>Each RWA product is independently custodied, compliance-screened, and ledger-mapped before tokenization occurs. Tokenization digitizes settlement, reporting, and transfer — it does not replace ownership structure.</p>
+    </div>
+    <div class="asset-grid">
+
+      <!-- BONDS -->
+      <div class="ac-card">
+        <div class="acc-topbar" style="background:var(--bond);"></div>
+        <div class="acc-header">
+          <div class="acc-num">ASSET CLASS 01</div>
+          <div class="acc-icon-row">
+            <div class="acc-icon" style="background:rgba(91,141,238,0.12);border:1px solid rgba(91,141,238,0.25);">📄</div>
+            <div class="acc-aum"><div class="acc-aum-val" style="color:#8ab0f0;">$1.2B</div><div class="acc-aum-label">AUM</div></div>
+          </div>
+          <div class="acc-name">Tokenized Bonds</div>
+          <div class="acc-sub" style="color:#8ab0f0;">FIXED-INCOME INFRASTRUCTURE</div>
+          <p class="acc-desc">Digital access to government bonds, investment-grade corporate bonds, short-duration treasury instruments, and structured fixed-income products. Coupon payments auto-credited to Smart Wallet.</p>
+        </div>
+        <div class="acc-body">
+          <div class="acc-fields">
+            <div class="acc-f-row"><span class="acc-f-key">Avg. YTM</span><span class="acc-f-val" style="color:#8ab0f0;">4.8%</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Avg. Duration</span><span class="acc-f-val">2.8 years</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Credit Rating</span><span class="acc-f-val" style="color:var(--rwa-light);">AAA – BBB range</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Coupon Schedule</span><span class="acc-f-val">Semi-annual / quarterly</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Custody</span><span class="acc-f-val" style="color:var(--rwa-light);">Verified</span></div>
+          </div>
+          <div class="acc-attrs">
+            <span class="acc-attr">Yield-to-maturity visibility</span>
+            <span class="acc-attr">Coupon tracking</span>
+            <span class="acc-attr">Duration exposure</span>
+            <span class="acc-attr">Credit rating</span>
+            <span class="acc-attr">Auto-coupon credits</span>
+          </div>
+        </div>
+        <button class="acc-cta" style="border-color:rgba(91,141,238,0.3);color:#8ab0f0;background:rgba(91,141,238,0.07);">ACCESS BOND ALLOCATION →</button>
+      </div>
+
+      <!-- GOLD -->
+      <div class="ac-card">
+        <div class="acc-topbar" style="background:var(--gold-c);"></div>
+        <div class="acc-header">
+          <div class="acc-num">ASSET CLASS 02</div>
+          <div class="acc-icon-row">
+            <div class="acc-icon" style="background:rgba(212,168,68,0.12);border:1px solid rgba(212,168,68,0.25);">🥇</div>
+            <div class="acc-aum"><div class="acc-aum-val" style="color:#e8c86a;">$640M</div><div class="acc-aum-label">AUM</div></div>
+          </div>
+          <div class="acc-name">Gold</div>
+          <div class="acc-sub" style="color:#e8c86a;">PHYSICAL ASSET, DIGITALLY REPRESENTED</div>
+          <p class="acc-desc">Tokenized exposure to physical gold holdings. Each token represents a defined quantity (grams or ounces), vault-stored allocation, custodian-verified with insurance coverage.</p>
+        </div>
+        <div class="acc-body">
+          <div class="acc-fields">
+            <div class="acc-f-row"><span class="acc-f-key">Storage</span><span class="acc-f-val" style="color:#e8c86a;">Vaulted · Insured</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Custodian</span><span class="acc-f-val">Independent · Verified</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Price Tracking</span><span class="acc-f-val">Market rate · Live</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Redemption</span><span class="acc-f-val">Jurisdiction-defined</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Collateral Use</span><span class="acc-f-val" style="color:var(--rwa-light);">Eligible</span></div>
+          </div>
+          <div class="acc-attrs">
+            <span class="acc-attr">Vault storage location</span>
+            <span class="acc-attr">Custodian record</span>
+            <span class="acc-attr">Quantity allocation</span>
+            <span class="acc-attr">Internal trading</span>
+            <span class="acc-attr">Vault deployment</span>
+          </div>
+        </div>
+        <button class="acc-cta" style="border-color:rgba(212,168,68,0.3);color:#e8c86a;background:rgba(212,168,68,0.07);">ACCESS GOLD ALLOCATION →</button>
+      </div>
+
+      <!-- REAL ESTATE -->
+      <div class="ac-card">
+        <div class="acc-topbar" style="background:var(--re);"></div>
+        <div class="acc-header">
+          <div class="acc-num">ASSET CLASS 03</div>
+          <div class="acc-icon-row">
+            <div class="acc-icon" style="background:rgba(224,120,80,0.12);border:1px solid rgba(224,120,80,0.25);">🏢</div>
+            <div class="acc-aum"><div class="acc-aum-val" style="color:#f0a880;">$480M</div><div class="acc-aum-label">AUM</div></div>
+          </div>
+          <div class="acc-name">Real Estate</div>
+          <div class="acc-sub" style="color:#f0a880;">FRACTIONALIZED PROPERTY EXPOSURE</div>
+          <p class="acc-desc">Fractionalized access to commercial properties, income-generating assets, industrial real estate, and structured development projects. Rental income distributed proportionally.</p>
+        </div>
+        <div class="acc-body">
+          <div class="acc-fields">
+            <div class="acc-f-row"><span class="acc-f-key">Avg. Rental Yield</span><span class="acc-f-val" style="color:#f0a880;">8.2%</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Valuation Cycle</span><span class="acc-f-val">Documented appraisal</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Income Distribution</span><span class="acc-f-val">Proportional · Monthly</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Property Docs</span><span class="acc-f-val">Ledger-recorded</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Ownership %</span><span class="acc-f-val">Token-defined</span></div>
+          </div>
+          <div class="acc-attrs">
+            <span class="acc-attr">Ownership percentage</span>
+            <span class="acc-attr">Rental yield share</span>
+            <span class="acc-attr">Valuation updates</span>
+            <span class="acc-attr">Cash flow allocation</span>
+            <span class="acc-attr">Property docs</span>
+          </div>
+        </div>
+        <button class="acc-cta" style="border-color:rgba(224,120,80,0.3);color:#f0a880;background:rgba(224,120,80,0.07);">ACCESS REAL ESTATE ALLOCATION →</button>
+      </div>
+
+      <!-- CARBON CREDITS -->
+      <div class="ac-card">
+        <div class="acc-topbar" style="background:var(--carbon);"></div>
+        <div class="acc-header">
+          <div class="acc-num">ASSET CLASS 04</div>
+          <div class="acc-icon-row">
+            <div class="acc-icon" style="background:rgba(76,175,120,0.12);border:1px solid rgba(76,175,120,0.25);">🌿</div>
+            <div class="acc-aum"><div class="acc-aum-val" style="color:#80d8a8;">$180M</div><div class="acc-aum-label">AUM</div></div>
+          </div>
+          <div class="acc-name">Carbon Credits</div>
+          <div class="acc-sub" style="color:#80d8a8;">VERIFIED ENVIRONMENTAL ASSETS</div>
+          <p class="acc-desc">Structured access to verified carbon credits meeting verified issuance standards, registry documentation, project traceability, and environmental certification. Registry-linked and ledger-recorded.</p>
+        </div>
+        <div class="acc-body">
+          <div class="acc-fields">
+            <div class="acc-f-row"><span class="acc-f-key">Credit Origin</span><span class="acc-f-val" style="color:#80d8a8;">Registry-linked</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Registry Ref.</span><span class="acc-f-val">Project-traceable</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Retirement Status</span><span class="acc-f-val">Tracked · Visible</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Verification Auth.</span><span class="acc-f-val">Certified body</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Compliance Use</span><span class="acc-f-val" style="color:#80d8a8;">Eligible</span></div>
+          </div>
+          <div class="acc-attrs">
+            <span class="acc-attr">Sustainability allocation</span>
+            <span class="acc-attr">Compliance retirement</span>
+            <span class="acc-attr">Internal trading</span>
+            <span class="acc-attr">Registry link</span>
+            <span class="acc-attr">Verified standard</span>
+          </div>
+        </div>
+        <button class="acc-cta" style="border-color:rgba(76,175,120,0.3);color:#80d8a8;background:rgba(76,175,120,0.07);">ACCESS CARBON ALLOCATION →</button>
+      </div>
+
+      <!-- PRIVATE CREDIT -->
+      <div class="ac-card">
+        <div class="acc-topbar" style="background:var(--pcredit);"></div>
+        <div class="acc-header">
+          <div class="acc-num">ASSET CLASS 05</div>
+          <div class="acc-icon-row">
+            <div class="acc-icon" style="background:rgba(155,127,232,0.12);border:1px solid rgba(155,127,232,0.25);">⬡</div>
+            <div class="acc-aum"><div class="acc-aum-val" style="color:#c0a8f8;">$440M</div><div class="acc-aum-label">AUM</div></div>
+          </div>
+          <div class="acc-name">Private Credit</div>
+          <div class="acc-sub" style="color:#c0a8f8;">STRUCTURED LENDING EXPOSURE</div>
+          <p class="acc-desc">Tokenized exposure to secured lending facilities, structured corporate loans, asset-backed financing, and project finance. Returns generated through interest payments and structured repayment schedules.</p>
+        </div>
+        <div class="acc-body">
+          <div class="acc-fields">
+            <div class="acc-f-row"><span class="acc-f-key">Avg. Return</span><span class="acc-f-val" style="color:#c0a8f8;">9.4% – 14.2%</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Collateral</span><span class="acc-f-val" style="color:var(--rwa-light);">Asset-backed</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Credit Scoring</span><span class="acc-f-val">Mandatory · Risk Engine</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Maturity Monitor</span><span class="acc-f-val">Continuous</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Exposure Cap</span><span class="acc-f-val">Enforced</span></div>
+          </div>
+          <div class="acc-attrs">
+            <span class="acc-attr">Interest payments</span>
+            <span class="acc-attr">Structured repayment</span>
+            <span class="acc-attr">Collateral mapping</span>
+            <span class="acc-attr">Smart Wallet reporting</span>
+            <span class="acc-attr">Exposure limits</span>
+          </div>
+        </div>
+        <button class="acc-cta" style="border-color:rgba(155,127,232,0.3);color:#c0a8f8;background:rgba(155,127,232,0.07);">ACCESS PRIVATE CREDIT →</button>
+      </div>
+
+      <!-- TRADE FINANCE -->
+      <div class="ac-card">
+        <div class="acc-topbar" style="background:var(--trade);"></div>
+        <div class="acc-header">
+          <div class="acc-num">ASSET CLASS 06</div>
+          <div class="acc-icon-row">
+            <div class="acc-icon" style="background:rgba(232,150,42,0.12);border:1px solid rgba(232,150,42,0.25);">⇄</div>
+            <div class="acc-aum"><div class="acc-aum-val" style="color:#f0b86a;">$260M</div><div class="acc-aum-label">AUM</div></div>
+          </div>
+          <div class="acc-name">Trade Finance</div>
+          <div class="acc-sub" style="color:#f0b86a;">COMMERCIAL CAPITAL CYCLES</div>
+          <p class="acc-desc">Capital deployed into LC-backed trade, invoice discounting, commodity trade financing, and short-term export/import financing. Profit distribution occurs upon trade settlement.</p>
+        </div>
+        <div class="acc-body">
+          <div class="acc-fields">
+            <div class="acc-f-row"><span class="acc-f-key">Maturity Cycle</span><span class="acc-f-val" style="color:#f0b86a;">30–180 days</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Avg. Margin</span><span class="acc-f-val">8.5% – 14%</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Counterparty</span><span class="acc-f-val" style="color:var(--rwa-light);">KYB verified</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">Distribution</span><span class="acc-f-val">On trade settlement</span></div>
+            <div class="acc-f-row"><span class="acc-f-key">KFI Integration</span><span class="acc-f-val" style="color:var(--rwa-light);">LC / BG backed</span></div>
+          </div>
+          <div class="acc-attrs">
+            <span class="acc-attr">Counterparty identity</span>
+            <span class="acc-attr">Transaction value</span>
+            <span class="acc-attr">Margin structure</span>
+            <span class="acc-attr">Settlement confirmation</span>
+            <span class="acc-attr">KFI integration</span>
+          </div>
+        </div>
+        <button class="acc-cta" style="border-color:rgba(232,150,42,0.3);color:#f0b86a;background:rgba(232,150,42,0.07);">ACCESS TRADE FINANCE →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ALLOCATION TABLE ═══ -->
+<section class="section" id="allocation">
+  <div class="container">
+    <div class="alloc-panel">
+      <div class="alp-topbar"></div>
+      <div class="alp-header">
+        <div class="alp-title">Portfolio Allocation Overview</div>
+        <div class="alp-live"><div class="ld"></div>LEDGER SYNC</div>
+      </div>
+      <div class="alloc-bar-wrap">
+        <div class="alloc-bar-label">AUM Distribution — $3.2B Total</div>
+        <div class="alloc-bar">
+          <div class="ab-seg" style="width:37.5%;background:var(--bond);"></div>
+          <div class="ab-seg" style="width:20%;background:var(--gold-c);"></div>
+          <div class="ab-seg" style="width:15%;background:var(--re);"></div>
+          <div class="ab-seg" style="width:5.6%;background:var(--carbon);"></div>
+          <div class="ab-seg" style="width:13.75%;background:var(--pcredit);"></div>
+          <div class="ab-seg" style="width:8.1%;background:var(--trade);"></div>
+        </div>
+        <div class="alloc-legend">
+          <div class="al-item"><div class="al-dot" style="background:var(--bond);"></div>Bonds 37.5%</div>
+          <div class="al-item"><div class="al-dot" style="background:var(--gold-c);"></div>Gold 20%</div>
+          <div class="al-item"><div class="al-dot" style="background:var(--re);"></div>Real Estate 15%</div>
+          <div class="al-item"><div class="al-dot" style="background:var(--carbon);"></div>Carbon 5.6%</div>
+          <div class="al-item"><div class="al-dot" style="background:var(--pcredit);"></div>Private Credit 13.75%</div>
+          <div class="al-item"><div class="al-dot" style="background:var(--trade);"></div>Trade Finance 8.1%</div>
+        </div>
+      </div>
+      <div class="alloc-table">
+        <div class="at-row hdr">
+          <span class="at-cell hdr">ASSET CLASS</span>
+          <span class="at-cell hdr">AUM</span>
+          <span class="at-cell hdr">AVG YIELD</span>
+          <span class="at-cell hdr">CUSTODY</span>
+          <span class="at-cell hdr">STATUS</span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:var(--bond);"></div><span class="at-name">Tokenized Bonds</span></div>
+          <span class="at-cell">$1.20B</span>
+          <span class="at-yield">4.8% YTM</span>
+          <span class="at-cell" style="color:var(--rwa-light);">Verified</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:var(--gold-c);"></div><span class="at-name">Gold</span></div>
+          <span class="at-cell">$640M</span>
+          <span class="at-yield">Market rate</span>
+          <span class="at-cell" style="color:var(--rwa-light);">Vault stored</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:var(--re);"></div><span class="at-name">Real Estate</span></div>
+          <span class="at-cell">$480M</span>
+          <span class="at-yield">8.2% rent</span>
+          <span class="at-cell" style="color:var(--rwa-light);">Verified</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:var(--carbon);"></div><span class="at-name">Carbon Credits</span></div>
+          <span class="at-cell">$180M</span>
+          <span class="at-yield">Registry-linked</span>
+          <span class="at-cell" style="color:var(--rwa-light);">Certified</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:var(--pcredit);"></div><span class="at-name">Private Credit</span></div>
+          <span class="at-cell">$440M</span>
+          <span class="at-yield">9.4–14.2%</span>
+          <span class="at-cell" style="color:var(--rwa-light);">Asset-backed</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+        <div class="at-row">
+          <div class="at-asset"><div class="at-dot" style="background:var(--trade);"></div><span class="at-name">Trade Finance</span></div>
+          <span class="at-cell">$260M</span>
+          <span class="at-yield">8.5–14%</span>
+          <span class="at-cell" style="color:var(--rwa-light);">KYB verified</span>
+          <span><span class="at-status st-active">ACTIVE</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GOVERNANCE & CUSTODY ═══ -->
+<section class="section" id="governance">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey rwa">Governance & Custody</div>
+      <h2 style="color:var(--white);">No Asset Tokenized<br>Without Four Verifications.</h2>
+    </div>
+    <div class="gov-layout">
+      <div class="gov-panel">
+        <div class="gp-topbar" style="background:linear-gradient(90deg,var(--rwa),var(--rwa-stone));"></div>
+        <div class="gp-header"><div class="gp-title">Governance Framework</div></div>
+        <div class="gp-items">
+          <div class="gp-item"><span class="gp-key">Verified Asset Custody</span><span class="gp-val" style="color:var(--rwa-light);">ALL HOLDINGS</span></div>
+          <div class="gp-item"><span class="gp-key">Independent Valuation Review</span><span class="gp-val" style="color:var(--rwa-light);">MANDATORY</span></div>
+          <div class="gp-item"><span class="gp-key">Legal Ownership Structure</span><span class="gp-val" style="color:var(--rwa-light);">DEFINED PRE-ISSUANCE</span></div>
+          <div class="gp-item"><span class="gp-key">Regulatory Compliance</span><span class="gp-val" style="color:var(--rwa-light);">JURISDICTION-LEVEL</span></div>
+          <div class="gp-item"><span class="gp-key">Unified Ledger Recording</span><span class="gp-val" style="color:var(--rwa-light);">ALL RWA POSITIONS</span></div>
+          <div class="gp-item"><span class="gp-key">Risk Engine Monitoring</span><span class="gp-val" style="color:var(--rwa-light);">CONTINUOUS</span></div>
+          <div class="gp-item"><span class="gp-key">Tokenization Without Docs</span><span class="gp-val" style="color:var(--rwa-light);">PROHIBITED</span></div>
+        </div>
+      </div>
+      <div class="gov-panel">
+        <div class="gp-topbar" style="background:linear-gradient(90deg,var(--rwa-gold),var(--rwa));"></div>
+        <div class="gp-header"><div class="gp-title">What Tokenization Provides</div></div>
+        <div class="gp-items">
+          <div class="gp-item"><span class="gp-key">Digital Settlement Layer</span><span class="gp-val" style="color:var(--rwa-light);">✓ PROVIDED</span></div>
+          <div class="gp-item"><span class="gp-key">Digital Reporting Layer</span><span class="gp-val" style="color:var(--rwa-light);">✓ PROVIDED</span></div>
+          <div class="gp-item"><span class="gp-key">Digital Transfer Layer</span><span class="gp-val" style="color:var(--rwa-light);">✓ PROVIDED</span></div>
+          <div class="gp-item"><span class="gp-key">Ownership Structure Replacement</span><span class="gp-val" style="color:var(--text-muted);">✗ NOT REPLACED</span></div>
+          <div class="gp-item"><span class="gp-key">Custody Structure Replacement</span><span class="gp-val" style="color:var(--text-muted);">✗ NOT REPLACED</span></div>
+          <div class="gp-item"><span class="gp-key">Legal Framework Bypass</span><span class="gp-val" style="color:var(--text-muted);">✗ NOT BYPASSED</span></div>
+          <div class="gp-item"><span class="gp-key">Tokenization is a shortcut</span><span class="gp-val" style="color:var(--rwa-light);">FALSE — settlement layer</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="four-gates">
+      <div class="fg-item"><div class="fg-num">GATE 01</div><div class="fg-title">Documentation Verification</div><p class="fg-desc">Every asset is documented — title, ownership structure, valuation, and legal framework — before tokenization begins.</p></div>
+      <div class="fg-item"><div class="fg-num">GATE 02</div><div class="fg-title">Custodian Confirmation</div><p class="fg-desc">An independent custodian confirms physical or legal custody before any token is issued. Custodian record is ledger-linked.</p></div>
+      <div class="fg-item"><div class="fg-num">GATE 03</div><div class="fg-title">Compliance Approval</div><p class="fg-desc">Jurisdiction-level compliance review is completed for every asset class. Regulatory requirements are verified before issuance.</p></div>
+      <div class="fg-item"><div class="fg-num">GATE 04</div><div class="fg-title">Reserve Mapping</div><p class="fg-desc">The asset's value is mapped to the Unified Ledger capital reserves before the token supply is issued. No unmapped issuance.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey rwa">Dashboard Overview</div>
+      <h2 style="color:var(--white);">Holder & Institutional<br>RWA Portfolio Views</h2>
+    </div>
+    <div class="dash-panels">
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--rwa),var(--rwa-stone));"></div>
+        <div class="dp-header"><div class="dp-title">RWA Holder Dashboard</div><div class="dp-tag">QUALIFIED</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Total RWA Allocation</div><div class="dp-m-val" style="color:var(--white);">$480K</div><div class="dp-m-sub" style="color:var(--text-dim);">4 asset classes</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Yield Generated (YTD)</div><div class="dp-m-val" style="color:var(--rwa-light);">$38,400</div><div class="dp-m-sub" style="color:var(--rwa-light);">+8.0% blended</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Maturity (Next 90d)</div><div class="dp-m-val" style="color:var(--rwa-gold);">$84K</div><div class="dp-m-sub" style="color:var(--text-dim);">2 positions</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Risk Score</div><div class="dp-m-val" style="color:var(--rwa-light);">LOW</div><div class="dp-m-sub" style="color:var(--text-dim);">Risk Engine</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Liquidity Status</span><span class="dp-row-val">2 liquid · 2 locked</span></div>
+          <div class="dp-row"><span class="dp-row-key">Valuation History</span><span class="dp-row-val">12-month chart available</span></div>
+          <div class="dp-row"><span class="dp-row-key">Ledger Sync</span><span class="dp-row-val" style="color:var(--rwa-light);">Real-time</span></div>
+        </div>
+        <div class="cat-breakdown">
+          <div class="cat-label">Category Breakdown</div>
+          <div class="cat-bars">
+            <div class="cat-bar-row"><span class="cat-bar-name" style="color:#8ab0f0;">Bonds</span><div class="cat-track"><div class="cat-fill" style="width:38%;background:var(--bond);"></div></div><span class="cat-pct">38%</span></div>
+            <div class="cat-bar-row"><span class="cat-bar-name" style="color:#e8c86a;">Gold</span><div class="cat-track"><div class="cat-fill" style="width:25%;background:var(--gold-c);"></div></div><span class="cat-pct">25%</span></div>
+            <div class="cat-bar-row"><span class="cat-bar-name" style="color:#f0a880;">Real Estate</span><div class="cat-track"><div class="cat-fill" style="width:22%;background:var(--re);"></div></div><span class="cat-pct">22%</span></div>
+            <div class="cat-bar-row"><span class="cat-bar-name" style="color:#c0a8f8;">Priv. Credit</span><div class="cat-track"><div class="cat-fill" style="width:15%;background:var(--pcredit);"></div></div><span class="cat-pct">15%</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--rwa-gold),var(--rwa));"></div>
+        <div class="dp-header"><div class="dp-title">Institutional Dashboard</div><div class="dp-tag" style="color:var(--rwa-light);border-color:var(--rwa-border);background:var(--rwa-dim);">PRIME</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Portfolio RWA Value</div><div class="dp-m-val" style="color:var(--white);">$284M</div><div class="dp-m-sub" style="color:var(--text-dim);">6 classes</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Blended Yield</div><div class="dp-m-val" style="color:var(--rwa-light);">7.8%</div><div class="dp-m-sub" style="color:var(--rwa-light);">YTD realized</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Exposure Distribution</div><div class="dp-m-val" style="color:var(--rwa-gold);">Diversified</div><div class="dp-m-sub" style="color:var(--text-dim);">6 classes</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Asset-Backed Reserve</div><div class="dp-m-val" style="color:var(--rwa-light);">100%</div><div class="dp-m-sub" style="color:var(--text-dim);">All positions</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Diversification Score</span><span class="dp-row-val" style="color:var(--rwa-light);">High — 6 classes</span></div>
+          <div class="dp-row"><span class="dp-row-key">Credit Risk Heatmap</span><span class="dp-row-val">All LOW–MODERATE</span></div>
+          <div class="dp-row"><span class="dp-row-key">Asset-Backed Reports</span><span class="dp-row-val">Quarterly · Full detail</span></div>
+          <div class="dp-row"><span class="dp-row-key">Strategic Reporting</span><span class="dp-row-val">Board-level access</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey rwa" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Real Assets. Digitally Structured. Ledger Governed.</div>
+      <h2>Kapitor RWA Bridges Traditional<br>Asset Classes with Digital Infrastructure.</h2>
+      <p>Tokenization is a settlement layer — not a shortcut. Every holding custody-verified, compliance-approved, and ledger-mapped.</p>
+      <div class="fc-four">
+        <div class="ff-item"><div class="ff-title">Custody Integrity</div><div class="ff-sub">Preserved</div></div>
+        <div class="ff-item"><div class="ff-title">Regulatory Compliance</div><div class="ff-sub">Verified</div></div>
+        <div class="ff-item"><div class="ff-title">Transparent Reporting</div><div class="ff-sub">Ledger-mapped</div></div>
+        <div class="ff-item"><div class="ff-title">Structured Risk</div><div class="ff-sub">Engine-monitored</div></div>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Explore RWA Opportunities</button>
+        <button class="btn-final-out">View Asset Documentation</button>
+        <button class="btn-final-out">Request Institutional Allocation</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="index.html">Smart Wallet</a></li><li><a href="gp.html">Pay</a></li><li><a href="#">Trade</a></li><li><a href="#">Earn</a></li><li><a href="#">Stake</a></li><li><a href="#">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="#">Kaloft (EPT)</a></li><li><a href="#">Katoin</a></li><li><a href="#">EQOUIN</a></li><li><a href="#">KFI</a></li><li><a href="#" style="color:var(--rwa-light);">RWA</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="#">Custody</a></li><li><a href="#">Treasury</a></li><li><a href="#">FX</a></li><li><a href="#">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Infrastructure</h5><ul><li><a href="#">Payment Rails</a></li><li><a href="#">Jurisdictions</a></li><li><a href="compliance.html">Compliance</a></li><li><a href="#">Proof of Reserves</a></li><li><a href="#">Security</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="company.html">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Media</a></li><li><a href="#">Contact</a></li><li><a href="#">Whitepaper</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Risk Disclosure</a><a href="#">RWA Documentation</a><a href="#">AML Policy</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  window.addEventListener("scroll",()=>{document.getElementById("hdr").style.padding=window.scrollY>60?"0.65rem 2.5rem":"1rem 2.5rem";});
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});},{threshold:0.06});
+  document.querySelectorAll(
+    ".ac-card,.acc-f-row,.at-row,.fg-item,.gp-item,.dp-metric,.dp-row,.cat-bar-row,.ff-item,.pillar-item"
+  ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
+
+  (function(){
+    const toggle=document.querySelector(".nav-mobile-toggle");
+    const nav=document.querySelector(".nav-wrap");
+    if(!toggle||!nav)return;
+    toggle.addEventListener("click",()=>{const open=nav.classList.toggle("is-open");toggle.setAttribute("aria-expanded",open?"true":"false");});
+    nav.querySelectorAll(".nav-item-wrap>.nav-trigger").forEach(btn=>{
+      btn.addEventListener("click",e=>{
+        if(window.innerWidth>900)return;
+        e.preventDefault();
+        const expanded=btn.getAttribute("aria-expanded")==="true";
+        btn.setAttribute("aria-expanded",expanded?"false":"true");
+        const dd=btn.nextElementSibling;
+        if(dd)dd.style.display=expanded?"none":"block";
+      });
+    });
+  })();
+</script>
+</body>
+</html>

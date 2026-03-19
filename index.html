@@ -1,0 +1,3507 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Kapitor – Global Financial Operating System</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--bg: #050b0f;
+				--surface: #0a1219;
+				--surface2: #0f1c27;
+				--border: rgba(255, 255, 255, 0.06);
+				--border-md: rgba(255, 255, 255, 0.1);
+				--blue: #4a7fcb;
+				--blue-light: #6b9de0;
+				--blue-dim: rgba(74, 127, 203, 0.12);
+				--blue-glow: rgba(74, 127, 203, 0.08);
+				--green: #3db87a;
+				--green-dim: rgba(61, 184, 122, 0.12);
+				--amber: #f0a030;
+				--amber-dim: rgba(240, 160, 48, 0.12);
+				--amber-light: #f5b84a;
+				--text: #e2e8f0;
+				--text-muted: #7a8a9a;
+				--text-dim: #3a4a5a;
+				--white: #ffffff;
+			}
+
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+			html {
+				scroll-behavior: smooth;
+			}
+
+			body {
+				background: var(--bg);
+				color: var(--text);
+				font-family: "Inter", sans-serif;
+				font-weight: 300;
+				line-height: 1.6;
+				overflow-x: hidden;
+			}
+
+			/* grain overlay */
+			body::after {
+				content: "";
+				position: fixed;
+				inset: 0;
+				background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+				pointer-events: none;
+				z-index: 9999;
+			}
+
+			/* ── TYPOGRAPHY ── */
+			h1,
+			h2,
+			h3 {
+				font-family: "Syne", sans-serif;
+				font-weight: 700;
+				letter-spacing: -0.025em;
+			}
+			h1 {
+				font-size: clamp(2.6rem, 5.5vw, 5rem);
+				line-height: 1.04;
+			}
+			h2 {
+				font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+				line-height: 1.12;
+			}
+			h3 {
+				font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+				line-height: 1.2;
+			}
+			p {
+				color: var(--text-muted);
+				font-size: 0.9rem;
+				line-height: 1.8;
+			}
+			.mono {
+				font-family: "JetBrains Mono", monospace;
+			}
+			.label-tag {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.62rem;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: var(--blue);
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				margin-bottom: 1.25rem;
+			}
+			.label-tag::before {
+				content: "";
+				width: 18px;
+				height: 1px;
+				background: var(--blue);
+			}
+
+			/* ── LAYOUT ── */
+			.container {
+				max-width: 1280px;
+				margin: 0 auto;
+				padding: 0 2rem;
+			}
+			.section {
+				padding: 7rem 0;
+				position: relative;
+			}
+			.section + .section {
+				border-top: 1px solid var(--border);
+			}
+
+			/* ── HEADER ── */
+			header {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				z-index: 500;
+				padding: 1rem 2rem;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				background: rgba(5, 11, 15, 0.9);
+				backdrop-filter: blur(24px);
+				-webkit-backdrop-filter: blur(24px);
+				border-bottom: 1px solid var(--border);
+				transition: padding 0.3s;
+			}
+			.logo {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				text-decoration: none;
+			}
+			.logo img {
+				width: 28px;
+				height: 28px;
+				object-fit: contain;
+			}
+			.logo-text {
+				font-family: "Syne", sans-serif;
+				font-size: 1.3rem;
+				font-weight: 700;
+				color: var(--white);
+				letter-spacing: 0.02em;
+			}
+			nav {
+				display: flex;
+				align-items: center;
+				gap: 0.15rem;
+			}
+			nav a {
+				color: var(--text-muted);
+				text-decoration: none;
+				font-size: 0.82rem;
+				padding: 0.45rem 0.8rem;
+				border-radius: 4px;
+				transition: color 0.2s;
+				display: flex;
+				align-items: center;
+				gap: 3px;
+				white-space: nowrap;
+				font-weight: 400;
+			}
+			nav a:hover {
+				color: var(--text);
+			}
+			.chevron {
+				font-size: 0.55rem;
+				opacity: 0.4;
+			}
+			.header-right {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+			.btn-ghost {
+				background: transparent;
+				border: 1px solid var(--border-md);
+				color: var(--text-muted);
+				padding: 0.48rem 1.1rem;
+				border-radius: 5px;
+				font-size: 0.8rem;
+				cursor: pointer;
+				font-family: "Inter", sans-serif;
+				transition: all 0.2s;
+				font-weight: 400;
+			}
+			.btn-ghost:hover {
+				border-color: var(--blue);
+				color: var(--blue-light);
+			}
+			.btn-primary {
+				background: var(--blue);
+				color: #fff;
+				border: none;
+				padding: 0.52rem 1.3rem;
+				border-radius: 5px;
+				font-size: 0.8rem;
+				font-weight: 500;
+				cursor: pointer;
+				font-family: "Inter", sans-serif;
+				transition: all 0.2s;
+				letter-spacing: 0.02em;
+			}
+			.btn-primary:hover {
+				background: var(--blue-light);
+			}
+			select.region {
+				background: transparent;
+				border: 1px solid var(--border);
+				color: var(--text-muted);
+				padding: 0.4rem 0.7rem;
+				border-radius: 4px;
+				font-size: 0.75rem;
+				font-family: "Inter", sans-serif;
+				cursor: pointer;
+			}
+
+			/* ── NAV DROPDOWNS (minimal) ── */
+			.nav-wrap {
+				display: flex;
+				align-items: center;
+				gap: 0.15rem;
+			}
+			.nav-item-wrap {
+				position: relative;
+			}
+			.nav-item-wrap .nav-trigger {
+				display: flex;
+				align-items: center;
+				gap: 3px;
+				color: var(--text-muted);
+				text-decoration: none;
+				font-size: 0.82rem;
+				padding: 0.45rem 0.8rem;
+				border-radius: 4px;
+				transition: color 0.2s;
+				white-space: nowrap;
+				font-weight: 400;
+				background: none;
+				border: none;
+				cursor: pointer;
+				font-family: inherit;
+			}
+			.nav-item-wrap .nav-trigger:hover,
+			.nav-item-wrap.open .nav-trigger {
+				color: var(--text);
+			}
+			.nav-dropdown {
+				position: absolute;
+				top: 100%;
+				left: 0;
+				min-width: 240px;
+				margin-top: 2px;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+				opacity: 0;
+				visibility: hidden;
+				transform: translateY(-4px);
+				transition: opacity 0.2s, visibility 0.2s, transform 0.2s;
+				z-index: 600;
+				padding: 0.5rem 0;
+				max-height: 80vh;
+				overflow-y: auto;
+			}
+			.nav-item-wrap:hover .nav-dropdown,
+			.nav-item-wrap.open .nav-dropdown {
+				opacity: 1;
+				visibility: visible;
+				transform: translateY(0);
+			}
+			.nav-dropdown a,
+			.nav-dropdown-inner a {
+				display: block;
+				color: var(--text-muted);
+				text-decoration: none;
+				font-size: 0.8rem;
+				padding: 0.4rem 1rem;
+				transition: color 0.2s, background 0.15s;
+			}
+			.nav-dropdown > a:hover,
+			.nav-dropdown-inner a:hover {
+				color: var(--text);
+				background: var(--surface2);
+			}
+			.nav-dropdown .nav-dropdown-head {
+				font-weight: 500;
+				color: var(--text);
+				padding: 0.5rem 1rem 0.25rem;
+				font-size: 0.78rem;
+			}
+			.nav-dropdown-inner {
+				padding-left: 0.5rem;
+				border-left: 1px solid var(--border);
+				margin: 0 0.5rem 0.25rem 1rem;
+			}
+			.nav-dropdown-inner a {
+				padding: 0.3rem 0.75rem;
+				font-size: 0.76rem;
+			}
+
+			/* ── PLATFORM MEGA MENU (index only) ── */
+			.nav-mega {
+				position: absolute;
+				top: 100%;
+				left: 0;
+				width: min(860px, calc(100vw - 2rem));
+				margin-top: 6px;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				box-shadow: 0 18px 65px rgba(0, 0, 0, 0.42);
+				opacity: 0;
+				visibility: hidden;
+				transform: translateY(-6px);
+				transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+				z-index: 650;
+				overflow: hidden;
+			}
+			.nav-item-wrap:hover .nav-mega,
+			.nav-item-wrap.open .nav-mega {
+				opacity: 1;
+				visibility: visible;
+				transform: translateY(0);
+			}
+			.mega-grid {
+				display: grid;
+				grid-template-columns: 30% 70%;
+				min-height: 340px;
+			}
+			.mega-left {
+				background: var(--surface2);
+				border-right: 1px solid var(--border);
+				padding: 0.65rem;
+				display: flex;
+				flex-direction: column;
+				gap: 0.15rem;
+			}
+			.mega-sec {
+				width: 100%;
+				text-align: left;
+				background: transparent;
+				border: 1px solid transparent;
+				color: var(--text-muted);
+				padding: 0.6rem 0.75rem;
+				border-radius: 8px;
+				cursor: pointer;
+				font-size: 0.82rem;
+				font-weight: 500;
+				transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+			}
+			.mega-sec:hover {
+				color: var(--text);
+				background: rgba(255, 255, 255, 0.02);
+				border-color: var(--border);
+			}
+			.mega-sec.is-active {
+				color: var(--text);
+				background: rgba(74, 127, 203, 0.10);
+				border-color: rgba(74, 127, 203, 0.22);
+			}
+			.mega-right {
+				padding: 0.85rem 0.95rem;
+			}
+			.mega-panel {
+				display: none;
+				opacity: 0;
+				transform: translateY(3px);
+				transition: opacity 0.18s ease, transform 0.18s ease;
+			}
+			.mega-panel.is-active {
+				display: block;
+				opacity: 1;
+				transform: translateY(0);
+			}
+			.mega-title {
+				display: block;
+				color: var(--text);
+				font-weight: 600;
+				font-size: 0.85rem;
+				margin: 0.1rem 0 0.55rem;
+				text-decoration: none;
+			}
+			.mega-items {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 0.15rem;
+			}
+			.mega-item {
+				display: block;
+				color: var(--text-muted);
+				text-decoration: none;
+				font-size: 0.8rem;
+				padding: 0.45rem 0.6rem;
+				border-radius: 8px;
+				transition: color 0.18s ease, background 0.15s ease, border-color 0.15s ease;
+				border: 1px solid transparent;
+			}
+			.mega-item:hover {
+				color: var(--text);
+				background: var(--surface2);
+				border-color: var(--border);
+			}
+			/* RWA mega: single-column list */
+			.nav-rwa-mega .mega-grid {
+				grid-template-columns: 1fr;
+				min-height: auto;
+			}
+			.nav-rwa-mega .mega-left {
+				border-right: none;
+				background: var(--surface2);
+			}
+			.nav-mobile-toggle {
+				display: none;
+				align-items: center;
+				justify-content: center;
+				width: 40px;
+				height: 40px;
+				background: transparent;
+				border: 1px solid var(--border-md);
+				border-radius: 4px;
+				color: var(--text-muted);
+				cursor: pointer;
+				font-size: 1.2rem;
+				padding: 0;
+			}
+			.nav-mobile-toggle:hover {
+				color: var(--text);
+			}
+			.nav-link {
+				color: var(--text-muted);
+				text-decoration: none;
+				font-size: 0.82rem;
+				padding: 0.45rem 0.8rem;
+				border-radius: 4px;
+				transition: color 0.2s;
+				display: flex;
+				align-items: center;
+				white-space: nowrap;
+				font-weight: 400;
+			}
+			.nav-link:hover {
+				color: var(--text);
+			}
+
+			/* ── HERO ── */
+			.hero {
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				padding-top: 80px;
+				position: relative;
+				overflow: hidden;
+			}
+			.hero-bg {
+				position: absolute;
+				inset: 0;
+				background:
+					radial-gradient(
+						ellipse 70% 60% at 55% 35%,
+						rgba(74, 127, 203, 0.08) 0%,
+						transparent 55%
+					),
+					radial-gradient(
+						ellipse 50% 50% at 20% 70%,
+						rgba(61, 184, 122, 0.05) 0%,
+						transparent 50%
+					),
+					radial-gradient(
+						ellipse 40% 40% at 80% 75%,
+						rgba(240, 160, 48, 0.04) 0%,
+						transparent 45%
+					);
+			}
+			.hero-grid {
+				position: absolute;
+				inset: 0;
+				background-image:
+					linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+				background-size: 64px 64px;
+				mask-image: radial-gradient(
+					ellipse 75% 75% at 50% 50%,
+					black 20%,
+					transparent 80%
+				);
+			}
+
+			/* floating accent lines */
+			.hero-line {
+				position: absolute;
+				pointer-events: none;
+			}
+			.hero-line-1 {
+				top: 20%;
+				right: 8%;
+				width: 180px;
+				height: 1px;
+				background: linear-gradient(
+					90deg,
+					transparent,
+					rgba(74, 127, 203, 0.3)
+				);
+			}
+			.hero-line-2 {
+				top: 25%;
+				right: 8%;
+				width: 120px;
+				height: 1px;
+				background: linear-gradient(
+					90deg,
+					transparent,
+					rgba(61, 184, 122, 0.2)
+				);
+				transform: translateY(12px);
+			}
+
+			.hero-content {
+				position: relative;
+				z-index: 2;
+				max-width: 820px;
+			}
+			.hero-eyebrow {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				margin-bottom: 2rem;
+				padding: 0.38rem 1rem;
+				border: 1px solid rgba(74, 127, 203, 0.25);
+				border-radius: 3px;
+				background: rgba(74, 127, 203, 0.07);
+			}
+			.live-dot {
+				width: 5px;
+				height: 5px;
+				background: var(--green);
+				border-radius: 50%;
+				animation: blink 2s infinite;
+			}
+			@keyframes blink {
+				0%,
+				100% {
+					opacity: 1;
+				}
+				50% {
+					opacity: 0.25;
+				}
+			}
+
+			.hero h1 {
+				margin-bottom: 1.75rem;
+				color: var(--white);
+			}
+			.hero h1 .accent-blue {
+				color: var(--blue-light);
+			}
+			.hero h1 .accent-green {
+				color: var(--green);
+			}
+			.hero h1 .accent-amber {
+				color: var(--amber);
+			}
+			.hero-sub {
+				font-size: 1rem;
+				max-width: 580px;
+				margin-bottom: 2.75rem;
+				color: rgba(226, 232, 240, 0.55);
+				line-height: 1.75;
+				font-weight: 300;
+			}
+			.hero-cta {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				flex-wrap: wrap;
+			}
+			.btn-hero-primary {
+				background: var(--blue);
+				color: #fff;
+				border: none;
+				padding: 0.85rem 2rem;
+				border-radius: 5px;
+				font-size: 0.88rem;
+				font-weight: 500;
+				cursor: pointer;
+				font-family: "Inter", sans-serif;
+				letter-spacing: 0.03em;
+				transition: all 0.25s;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.btn-hero-primary:hover {
+				background: var(--blue-light);
+				transform: translateY(-1px);
+				box-shadow: 0 8px 32px rgba(74, 127, 203, 0.25);
+			}
+			.btn-hero-ghost {
+				background: transparent;
+				color: var(--text-muted);
+				border: 1px solid var(--border-md);
+				padding: 0.85rem 2rem;
+				border-radius: 5px;
+				font-size: 0.88rem;
+				cursor: pointer;
+				font-family: "Inter", sans-serif;
+				transition: all 0.25s;
+			}
+			.btn-hero-ghost:hover {
+				border-color: rgba(74, 127, 203, 0.4);
+				color: var(--blue-light);
+			}
+
+			/* LIVE METRICS STRIP */
+			.metrics-strip {
+				margin-top: 4.5rem;
+				border-top: 1px solid var(--border);
+				padding-top: 2.5rem;
+				display: grid;
+				grid-template-columns: repeat(5, 1fr);
+				gap: 0;
+			}
+			.metric-item {
+				padding: 0 2rem 0 0;
+				border-right: 1px solid var(--border);
+			}
+			.metric-item:last-child {
+				border-right: none;
+				padding-right: 0;
+				padding-left: 2rem;
+			}
+			.metric-item:not(:first-child):not(:last-child) {
+				padding: 0 2rem;
+			}
+			.metric-label {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--text-dim);
+				margin-bottom: 0.5rem;
+			}
+			.metric-value {
+				font-family: "Syne", sans-serif;
+				font-size: 1.5rem;
+				font-weight: 700;
+				color: var(--white);
+				line-height: 1;
+				margin-bottom: 0.3rem;
+			}
+			.metric-value.blue {
+				color: var(--blue-light);
+			}
+			.metric-value.green {
+				color: var(--green);
+			}
+			.metric-value.amber {
+				color: var(--amber);
+			}
+			.metric-sub {
+				font-size: 0.68rem;
+				color: var(--text-dim);
+				font-family: "JetBrains Mono", monospace;
+				display: flex;
+				align-items: center;
+				gap: 5px;
+			}
+			.metric-sub .up {
+				color: var(--green);
+			}
+
+			/* ── TICKER ── */
+			.ticker {
+				border-top: 1px solid var(--border);
+				border-bottom: 1px solid var(--border);
+				padding: 0.65rem 0;
+				overflow: hidden;
+				background: var(--surface);
+			}
+			.ticker-track {
+				display: flex;
+				gap: 4rem;
+				animation: scroll 45s linear infinite;
+				white-space: nowrap;
+			}
+			@keyframes scroll {
+				from {
+					transform: translateX(0);
+				}
+				to {
+					transform: translateX(-50%);
+				}
+			}
+			.tick {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.6rem;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.68rem;
+				color: var(--text-dim);
+			}
+			.tick .sym {
+				color: var(--text-muted);
+			}
+			.tick .up {
+				color: var(--green);
+			}
+			.tick .dn {
+				color: #e06060;
+			}
+			.tick-sep {
+				color: var(--text-dim);
+				opacity: 0.3;
+			}
+
+			/* ── WALLET SECTION ── */
+			.wallet-layout {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 5rem;
+				align-items: center;
+			}
+			.wallet-visual {
+				background: var(--surface);
+				border: 1px solid var(--border-md);
+				border-radius: 12px;
+				padding: 2rem;
+				position: relative;
+				overflow: hidden;
+			}
+			.wallet-visual::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 2px;
+				background: linear-gradient(
+					90deg,
+					var(--blue),
+					var(--green),
+					var(--amber)
+				);
+			}
+			.wallet-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 1.5rem;
+			}
+			.wallet-badge {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				letter-spacing: 0.12em;
+				padding: 0.28rem 0.65rem;
+				border-radius: 3px;
+				background: var(--blue-dim);
+				color: var(--blue-light);
+				border: 1px solid rgba(74, 127, 203, 0.2);
+			}
+			.wallet-total {
+				font-family: "Syne", sans-serif;
+				font-size: 2rem;
+				font-weight: 700;
+				color: var(--white);
+				margin-bottom: 0.25rem;
+			}
+			.wallet-sub {
+				font-size: 0.72rem;
+				color: var(--text-dim);
+				font-family: "JetBrains Mono", monospace;
+			}
+			.wallet-assets {
+				margin-top: 1.5rem;
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+			}
+			.wallet-asset {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0.7rem 0.9rem;
+				background: rgba(255, 255, 255, 0.025);
+				border-radius: 6px;
+				border: 1px solid var(--border);
+				transition: border-color 0.2s;
+			}
+			.wallet-asset:hover {
+				border-color: var(--border-md);
+			}
+			.wa-left {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+			.wa-dot {
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				flex-shrink: 0;
+			}
+			.wa-dot.blue {
+				background: var(--blue);
+			}
+			.wa-dot.green {
+				background: var(--green);
+			}
+			.wa-dot.amber {
+				background: var(--amber);
+			}
+			.wa-dot.purple {
+				background: #9b72db;
+			}
+			.wa-dot.cyan {
+				background: #4ac8d4;
+			}
+			.wa-dot.rose {
+				background: #e06080;
+			}
+			.wa-dot.slate {
+				background: #8a9ab0;
+			}
+			.wa-dot.gold {
+				background: #c8a840;
+			}
+			.wa-name {
+				font-size: 0.8rem;
+				color: var(--text);
+				font-weight: 400;
+			}
+			.wa-type {
+				font-size: 0.65rem;
+				color: var(--text-dim);
+				font-family: "JetBrains Mono", monospace;
+			}
+			.wa-right {
+				text-align: right;
+			}
+			.wa-value {
+				font-size: 0.82rem;
+				color: var(--text);
+				font-family: "JetBrains Mono", monospace;
+			}
+			.wa-change {
+				font-size: 0.62rem;
+				font-family: "JetBrains Mono", monospace;
+			}
+			.wa-change.up {
+				color: var(--green);
+			}
+			.wa-change.amber {
+				color: var(--amber);
+			}
+			.wallet-caps {
+				margin-top: 1.5rem;
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 0.5rem;
+			}
+			.cap-item {
+				padding: 0.75rem 0.9rem;
+				background: rgba(255, 255, 255, 0.02);
+				border: 1px solid var(--border);
+				border-radius: 6px;
+			}
+			.cap-label {
+				font-size: 0.6rem;
+				font-family: "JetBrains Mono", monospace;
+				color: var(--text-dim);
+				margin-bottom: 0.3rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+			}
+			.cap-val {
+				font-size: 0.88rem;
+				font-family: "Syne", sans-serif;
+				font-weight: 600;
+				color: var(--text);
+			}
+
+			.wallet-text h2 {
+				margin-bottom: 1rem;
+			}
+			.wallet-text p {
+				margin-bottom: 1.5rem;
+			}
+			.wallet-layers {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				margin: 1.5rem 0;
+			}
+			.layer-chip {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				padding: 0.38rem 0.75rem;
+				border: 1px solid var(--border-md);
+				border-radius: 4px;
+				font-size: 0.75rem;
+				color: var(--text-muted);
+				background: var(--surface);
+				font-weight: 400;
+			}
+			.layer-chip .chip-dot {
+				width: 5px;
+				height: 5px;
+				border-radius: 50%;
+			}
+			.wallet-checks {
+				margin-top: 1.5rem;
+				display: flex;
+				flex-direction: column;
+				gap: 0.6rem;
+			}
+			.check-item {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				font-size: 0.82rem;
+				color: var(--text-muted);
+			}
+			.check-item::before {
+				content: "✓";
+				color: var(--green);
+				font-size: 0.75rem;
+				font-weight: 600;
+			}
+
+			/* ── GIPS SECTION ── */
+			.gips-intro {
+				display: grid;
+				grid-template-columns: 1fr 1.6fr;
+				gap: 5rem;
+				align-items: start;
+			}
+			.rails-map {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 1px;
+				background: var(--border);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				overflow: hidden;
+			}
+			.rail-card {
+				background: var(--surface);
+				padding: 1.5rem;
+				transition: background 0.2s;
+			}
+			.rail-card:hover {
+				background: var(--surface2);
+			}
+			.rail-flag {
+				font-size: 1.2rem;
+				margin-bottom: 0.5rem;
+			}
+			.rail-country {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.62rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--blue-light);
+				margin-bottom: 0.6rem;
+			}
+			.rail-methods {
+				font-size: 0.75rem;
+				color: var(--text-muted);
+				line-height: 1.9;
+			}
+			.gips-caps-grid {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 0.75rem;
+				margin-top: 2rem;
+			}
+			.gips-cap {
+				padding: 1rem 1.1rem;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				border-left: 2px solid var(--blue);
+			}
+			.gips-cap-title {
+				font-size: 0.78rem;
+				color: var(--text);
+				font-weight: 500;
+				margin-bottom: 0.25rem;
+			}
+			.gips-cap-desc {
+				font-size: 0.72rem;
+				color: var(--text-dim);
+			}
+			.gips-tagline {
+				margin-top: 2rem;
+				padding: 1rem 1.5rem;
+				background: var(--blue-dim);
+				border: 1px solid rgba(74, 127, 203, 0.2);
+				border-radius: 6px;
+				font-size: 0.8rem;
+				color: var(--blue-light);
+				font-family: "JetBrains Mono", monospace;
+			}
+
+			/* ── YIELD SECTION ── */
+			.yield-grid {
+				display: grid;
+				grid-template-columns: 1.4fr 1fr;
+				gap: 5rem;
+				align-items: center;
+			}
+			.yield-strategies {
+				display: flex;
+				flex-direction: column;
+				gap: 1px;
+				background: var(--border);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				overflow: hidden;
+			}
+			.yield-row {
+				background: var(--surface);
+				padding: 1.5rem 1.75rem;
+				display: grid;
+				grid-template-columns: 1fr auto auto;
+				gap: 2rem;
+				align-items: center;
+				transition: background 0.2s;
+			}
+			.yield-row:hover {
+				background: var(--surface2);
+			}
+			.yr-tier {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--text-dim);
+				margin-bottom: 0.3rem;
+			}
+			.yr-name {
+				font-family: "Syne", sans-serif;
+				font-size: 1rem;
+				font-weight: 600;
+				color: var(--white);
+			}
+			.yr-apy {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 1.4rem;
+				font-weight: 500;
+			}
+			.yr-apy.cons {
+				color: var(--blue-light);
+			}
+			.yr-apy.bal {
+				color: var(--green);
+			}
+			.yr-apy.grow {
+				color: var(--amber);
+			}
+			.yr-label {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.55rem;
+				color: var(--text-dim);
+				text-align: right;
+				margin-top: 2px;
+			}
+			.yr-pill {
+				padding: 0.28rem 0.65rem;
+				border-radius: 3px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				letter-spacing: 0.08em;
+			}
+			.yr-pill.low {
+				background: var(--blue-dim);
+				color: var(--blue-light);
+				border: 1px solid rgba(74, 127, 203, 0.2);
+			}
+			.yr-pill.med {
+				background: var(--green-dim);
+				color: var(--green);
+				border: 1px solid rgba(61, 184, 122, 0.2);
+			}
+			.yr-pill.high {
+				background: var(--amber-dim);
+				color: var(--amber);
+				border: 1px solid rgba(240, 160, 48, 0.2);
+			}
+			.yield-sources {
+				display: grid;
+				grid-template-columns: repeat(1, 1fr);
+				gap: 0.6rem;
+				margin-top: 1.75rem;
+			}
+			.ys-item {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				padding: 0.75rem 1rem;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 5px;
+				font-size: 0.78rem;
+				color: var(--text-muted);
+			}
+			.ys-item .ys-dot {
+				width: 6px;
+				height: 6px;
+				border-radius: 50%;
+				background: var(--amber);
+				flex-shrink: 0;
+			}
+			.ledger-note {
+				margin-top: 2rem;
+				padding: 1rem 1.25rem;
+				border: 1px solid rgba(61, 184, 122, 0.2);
+				background: var(--green-dim);
+				border-radius: 5px;
+				font-size: 0.78rem;
+				color: var(--green);
+				font-family: "JetBrains Mono", monospace;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+
+			/* ── TOKEN LAYER ── */
+			.token-grid {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 1px;
+				background: var(--border);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				overflow: hidden;
+				margin-top: 3.5rem;
+			}
+			.token-card {
+				background: var(--surface);
+				padding: 2.5rem 2rem;
+				position: relative;
+				overflow: hidden;
+				transition: background 0.2s;
+			}
+			.token-card:hover {
+				background: var(--surface2);
+			}
+			.token-card::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 2px;
+			}
+			.token-card.blue::before {
+				background: var(--blue);
+			}
+			.token-card.green::before {
+				background: var(--green);
+			}
+			.token-card.amber::before {
+				background: var(--amber);
+			}
+			.token-symbol {
+				font-family: "Syne", sans-serif;
+				font-size: 1.8rem;
+				font-weight: 800;
+				line-height: 1;
+				margin-bottom: 0.4rem;
+			}
+			.token-symbol.blue {
+				color: var(--blue-light);
+			}
+			.token-symbol.green {
+				color: var(--green);
+			}
+			.token-symbol.amber {
+				color: var(--amber);
+			}
+			.token-name {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--text-dim);
+				margin-bottom: 1.25rem;
+			}
+			.token-card h3 {
+				font-size: 1rem;
+				margin-bottom: 0.75rem;
+				font-family: "Inter", sans-serif;
+				font-weight: 500;
+				color: var(--text);
+			}
+			.token-card p {
+				font-size: 0.8rem;
+				margin-bottom: 1.5rem;
+			}
+			.token-metrics {
+				display: flex;
+				flex-direction: column;
+				gap: 0.4rem;
+			}
+			.tm-row {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 0.4rem 0;
+				border-top: 1px solid var(--border);
+			}
+			.tm-key {
+				font-size: 0.65rem;
+				font-family: "JetBrains Mono", monospace;
+				color: var(--text-dim);
+			}
+			.tm-val {
+				font-size: 0.72rem;
+				font-family: "JetBrains Mono", monospace;
+				color: var(--text-muted);
+			}
+			.token-tag {
+				font-size: 0.62rem;
+				font-family: "JetBrains Mono", monospace;
+				letter-spacing: 0.1em;
+				padding: 0.25rem 0.6rem;
+				border-radius: 3px;
+				margin-top: 0.75rem;
+				display: inline-block;
+			}
+			.not-meme {
+				margin-top: 3rem;
+				padding: 1.25rem 2rem;
+				border: 1px solid var(--border-md);
+				border-radius: 6px;
+				background: var(--surface);
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				font-size: 0.82rem;
+				color: var(--text-muted);
+			}
+			.not-meme strong {
+				color: var(--text);
+				font-weight: 500;
+			}
+
+			/* ── INSTITUTIONAL ── */
+			.inst-layout {
+				display: grid;
+				grid-template-columns: 1fr 1.2fr;
+				gap: 5rem;
+				align-items: start;
+			}
+			.inst-services {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 1px;
+				background: var(--border);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				overflow: hidden;
+			}
+			.inst-item {
+				background: var(--surface);
+				padding: 1.75rem;
+				transition: background 0.2s;
+			}
+			.inst-item:hover {
+				background: var(--surface2);
+			}
+			.inst-item .inst-icon {
+				font-size: 1.1rem;
+				margin-bottom: 0.75rem;
+			}
+			.inst-item h4 {
+				font-size: 0.88rem;
+				font-family: "Inter", sans-serif;
+				font-weight: 500;
+				color: var(--text);
+				margin-bottom: 0.4rem;
+			}
+			.inst-item p {
+				font-size: 0.76rem;
+			}
+			.inst-chain {
+				margin-top: 2rem;
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+			}
+			.chain-item {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 0.75rem 1rem;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 5px;
+				font-size: 0.78rem;
+				color: var(--text-muted);
+			}
+			.chain-item .ch-check {
+				color: var(--green);
+				font-size: 0.75rem;
+			}
+			.inst-prime-badge {
+				padding: 2rem;
+				border: 1px solid rgba(74, 127, 203, 0.2);
+				border-radius: 8px;
+				background: linear-gradient(
+					135deg,
+					var(--surface2) 0%,
+					rgba(74, 127, 203, 0.05) 100%
+				);
+				margin-bottom: 2rem;
+				position: relative;
+			}
+			.inst-prime-label {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				letter-spacing: 0.15em;
+				text-transform: uppercase;
+				color: var(--blue);
+				margin-bottom: 0.75rem;
+			}
+			.inst-prime-badge h3 {
+				font-size: 1.3rem;
+				color: var(--white);
+				margin-bottom: 0.5rem;
+			}
+			.inst-prime-badge p {
+				font-size: 0.82rem;
+			}
+
+			/* ── COMPLIANCE ── */
+			.compliance-grid {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 1px;
+				background: var(--border);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				overflow: hidden;
+			}
+			.comp-item {
+				background: var(--surface);
+				padding: 2rem 1.75rem;
+				transition: background 0.2s;
+			}
+			.comp-item:hover {
+				background: var(--surface2);
+			}
+			.comp-item .comp-num {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				letter-spacing: 0.12em;
+				color: var(--text-dim);
+				margin-bottom: 0.75rem;
+			}
+			.comp-item h3 {
+				font-size: 0.95rem;
+				font-family: "Inter", sans-serif;
+				font-weight: 600;
+				color: var(--text);
+				margin-bottom: 0.5rem;
+			}
+			.comp-item p {
+				font-size: 0.78rem;
+			}
+			.comp-tier-note {
+				margin-top: 3rem;
+				padding: 1.25rem 2rem;
+				border: 1px solid rgba(74, 127, 203, 0.15);
+				border-radius: 6px;
+				background: var(--blue-dim);
+				font-size: 0.82rem;
+				color: var(--blue-light);
+				font-family: "JetBrains Mono", monospace;
+			}
+
+			/* ── PROOF OF RESERVES ── */
+			.por-layout {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 4rem;
+				align-items: center;
+			}
+			.por-dashboard {
+				background: var(--surface);
+				border: 1px solid var(--border-md);
+				border-radius: 10px;
+				padding: 2rem;
+				position: relative;
+				overflow: hidden;
+			}
+			.por-dashboard::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 2px;
+				background: linear-gradient(90deg, var(--green), var(--blue));
+			}
+			.por-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 1.75rem;
+			}
+			.por-status {
+				display: flex;
+				align-items: center;
+				gap: 7px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.65rem;
+				letter-spacing: 0.1em;
+				color: var(--green);
+				background: var(--green-dim);
+				border: 1px solid rgba(61, 184, 122, 0.2);
+				padding: 0.3rem 0.75rem;
+				border-radius: 3px;
+			}
+			.por-metrics {
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem;
+			}
+			.por-row {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 0.9rem 1rem;
+				background: rgba(255, 255, 255, 0.025);
+				border-radius: 6px;
+				border: 1px solid var(--border);
+			}
+			.por-key {
+				font-size: 0.75rem;
+				color: var(--text-muted);
+			}
+			.por-val {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.82rem;
+				color: var(--text);
+			}
+			.por-val.green {
+				color: var(--green);
+			}
+			.por-val.blue {
+				color: var(--blue-light);
+			}
+			.por-ratio {
+				margin-top: 1.5rem;
+				padding: 1rem;
+				background: rgba(61, 184, 122, 0.06);
+				border: 1px solid rgba(61, 184, 122, 0.15);
+				border-radius: 6px;
+				text-align: center;
+			}
+			.por-ratio-label {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				letter-spacing: 0.12em;
+				color: var(--text-dim);
+				margin-bottom: 0.5rem;
+				text-transform: uppercase;
+			}
+			.por-ratio-val {
+				font-family: "Syne", sans-serif;
+				font-size: 2rem;
+				font-weight: 700;
+				color: var(--green);
+			}
+			.por-features {
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem;
+				margin-top: 2rem;
+			}
+			.por-feat {
+				display: flex;
+				align-items: flex-start;
+				gap: 1rem;
+				padding: 1rem 1.25rem;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 6px;
+			}
+			.por-feat .pf-icon {
+				color: var(--green);
+				font-size: 0.85rem;
+				flex-shrink: 0;
+				margin-top: 2px;
+			}
+			.por-feat h4 {
+				font-size: 0.82rem;
+				font-family: "Inter", sans-serif;
+				font-weight: 500;
+				color: var(--text);
+				margin-bottom: 0.2rem;
+			}
+			.por-feat p {
+				font-size: 0.75rem;
+			}
+			.no-opacity {
+				margin-top: 2.5rem;
+				padding: 1rem 1.5rem;
+				border: 1px solid rgba(61, 184, 122, 0.2);
+				border-radius: 5px;
+				background: var(--green-dim);
+				font-size: 0.78rem;
+				color: var(--green);
+				font-family: "JetBrains Mono", monospace;
+			}
+
+			/* ── FINAL CTA ── */
+			.final-cta {
+				text-align: center;
+				padding: 8rem 0;
+				position: relative;
+				overflow: hidden;
+			}
+			.final-cta::before {
+				content: "";
+				position: absolute;
+				inset: 0;
+				background: radial-gradient(
+					ellipse 80% 60% at 50% 50%,
+					rgba(74, 127, 203, 0.08) 0%,
+					transparent 60%
+				);
+			}
+			.final-cta-content {
+				position: relative;
+				z-index: 2;
+			}
+			.final-cta h2 {
+				margin-bottom: 0.75rem;
+				max-width: 600px;
+				margin-left: auto;
+				margin-right: auto;
+				color: var(--white);
+			}
+			.final-cta .sub-services {
+				display: flex;
+				justify-content: center;
+				flex-wrap: wrap;
+				gap: 1rem;
+				margin: 1.5rem 0 3rem;
+			}
+			.sub-serv {
+				font-size: 0.78rem;
+				color: var(--text-dim);
+				font-family: "JetBrains Mono", monospace;
+			}
+			.sub-serv::after {
+				content: "·";
+				margin-left: 1rem;
+			}
+			.sub-serv:last-child::after {
+				content: "";
+			}
+			.final-btns {
+				display: flex;
+				justify-content: center;
+				gap: 1rem;
+				flex-wrap: wrap;
+			}
+			.btn-final-primary {
+				background: var(--blue);
+				color: #fff;
+				border: none;
+				padding: 0.9rem 2.2rem;
+				border-radius: 5px;
+				font-size: 0.88rem;
+				font-weight: 500;
+				cursor: pointer;
+				font-family: "Inter", sans-serif;
+				transition: all 0.25s;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.btn-final-primary:hover {
+				background: var(--blue-light);
+				box-shadow: 0 8px 32px rgba(74, 127, 203, 0.3);
+			}
+			.btn-final-ghost {
+				background: transparent;
+				color: var(--text-muted);
+				border: 1px solid var(--border-md);
+				padding: 0.9rem 2.2rem;
+				border-radius: 5px;
+				font-size: 0.88rem;
+				cursor: pointer;
+				font-family: "Inter", sans-serif;
+				transition: all 0.25s;
+			}
+			.btn-final-ghost:hover {
+				border-color: rgba(74, 127, 203, 0.4);
+				color: var(--blue-light);
+			}
+
+			/* ── FOOTER ── */
+			footer {
+				background: var(--surface);
+				border-top: 1px solid var(--border);
+				padding: 5rem 0 0;
+			}
+			.footer-grid {
+				display: grid;
+				grid-template-columns: 1.8fr repeat(5, 1fr);
+				gap: 3rem;
+				margin-bottom: 4rem;
+			}
+			.footer-brand p {
+				font-size: 0.78rem;
+				line-height: 1.75;
+				max-width: 220px;
+				color: var(--text-dim);
+				margin-top: 1rem;
+			}
+			.footer-logo-wrap {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+			.footer-logo-wrap img {
+				width: 28px;
+				height: 28px;
+				object-fit: contain;
+			}
+			.footer-logo-wrap span {
+				font-family: "Syne", sans-serif;
+				font-size: 1.2rem;
+				font-weight: 700;
+				color: var(--white);
+			}
+			.footer-col h5 {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				letter-spacing: 0.15em;
+				text-transform: uppercase;
+				color: var(--text-dim);
+				margin-bottom: 1.25rem;
+				padding-bottom: 0.75rem;
+				border-bottom: 1px solid var(--border);
+			}
+			.footer-col ul {
+				list-style: none;
+			}
+			.footer-col ul li {
+				margin-bottom: 0.5rem;
+			}
+			.footer-col ul li a {
+				font-size: 0.8rem;
+				color: var(--text-muted);
+				text-decoration: none;
+				transition: color 0.2s;
+				font-weight: 300;
+			}
+			.footer-col ul li a:hover {
+				color: var(--blue-light);
+			}
+			.footer-bottom {
+				border-top: 1px solid var(--border);
+				padding: 1.5rem 0;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				flex-wrap: wrap;
+				gap: 1rem;
+			}
+			.footer-legal {
+				display: flex;
+				gap: 2rem;
+				flex-wrap: wrap;
+			}
+			.footer-legal a {
+				font-size: 0.68rem;
+				font-family: "JetBrains Mono", monospace;
+				color: var(--text-dim);
+				text-decoration: none;
+				letter-spacing: 0.04em;
+				transition: color 0.2s;
+			}
+			.footer-legal a:hover {
+				color: var(--text-muted);
+			}
+			.footer-copy {
+				font-size: 0.68rem;
+				font-family: "JetBrains Mono", monospace;
+				color: var(--text-dim);
+				letter-spacing: 0.04em;
+			}
+
+			/* ── SECTION HEADING UTIL ── */
+			.section-head {
+				max-width: 600px;
+				margin-bottom: 4rem;
+			}
+			.section-head h2 {
+				margin-bottom: 0.85rem;
+				color: var(--white);
+			}
+
+			/* ── RESPONSIVE ── */
+			@media (max-width: 1100px) {
+				.footer-grid {
+					grid-template-columns: repeat(3, 1fr);
+				}
+				.footer-brand {
+					grid-column: 1 / -1;
+				}
+				.metrics-strip {
+					grid-template-columns: repeat(3, 1fr);
+				}
+				.metric-item:nth-child(3) {
+					border-right: none;
+				}
+			}
+			@media (max-width: 900px) {
+				.nav-item-wrap:hover .nav-dropdown {
+					opacity: 0;
+					visibility: hidden;
+				}
+				.nav-item-wrap:hover .nav-mega {
+					opacity: 0;
+					visibility: hidden;
+				}
+				.nav-item-wrap.open .nav-dropdown {
+					opacity: 1;
+					visibility: visible;
+					transform: translateY(0);
+					position: relative;
+					box-shadow: none;
+					border: none;
+					border-top: 1px solid var(--border);
+					border-radius: 0;
+					margin-top: 0;
+				}
+				.nav-item-wrap.open .nav-mega {
+					opacity: 1;
+					visibility: visible;
+					transform: translateY(0);
+					position: relative;
+					left: auto;
+					width: auto;
+					box-shadow: none;
+					border: none;
+					border-top: 1px solid var(--border);
+					border-radius: 0;
+					margin-top: 0;
+				}
+				.mega-grid {
+					grid-template-columns: 1fr;
+					min-height: 0;
+				}
+				.mega-left {
+					border-right: none;
+					border-bottom: 1px solid var(--border);
+					padding: 0.5rem;
+					background: transparent;
+				}
+				.mega-sec {
+					padding: 0.65rem 0.8rem;
+					border-radius: 8px;
+				}
+				.mega-right {
+					padding: 0.65rem 0.65rem 0.85rem;
+				}
+				nav {
+					display: none;
+					flex-direction: column;
+					position: absolute;
+					top: 100%;
+					left: 0;
+					right: 0;
+					background: var(--surface);
+					border-bottom: 1px solid var(--border);
+					padding: 0.5rem 0;
+					max-height: 80vh;
+					overflow-y: auto;
+				}
+				header.header-mobile-open nav {
+					display: flex;
+				}
+				.nav-wrap {
+					flex-direction: column;
+					align-items: stretch;
+					gap: 0;
+				}
+				.nav-item-wrap {
+					border-bottom: 1px solid var(--border);
+				}
+				.nav-item-wrap .nav-trigger {
+					width: 100%;
+					justify-content: space-between;
+					padding: 0.6rem 1rem;
+				}
+				nav .nav-link {
+					display: block;
+					padding: 0.6rem 1rem;
+				}
+				.nav-mobile-toggle {
+					display: flex;
+				}
+				.wallet-layout,
+				.yield-grid,
+				.gips-intro,
+				.inst-layout,
+				.por-layout,
+				.inst-services {
+					grid-template-columns: 1fr;
+				}
+				.token-grid,
+				.compliance-grid {
+					grid-template-columns: repeat(2, 1fr);
+				}
+				.rails-map {
+					grid-template-columns: repeat(2, 1fr);
+				}
+				.metrics-strip {
+					grid-template-columns: repeat(2, 1fr);
+				}
+			}
+			@media (max-width: 640px) {
+				.token-grid,
+				.compliance-grid,
+				.rails-map {
+					grid-template-columns: 1fr;
+				}
+				.footer-grid {
+					grid-template-columns: repeat(2, 1fr);
+				}
+				h1 {
+					font-size: 2.2rem;
+				}
+			}
+		</style>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<!-- HEADER -->
+		<header id="main-header">
+			<a href="index.html" class="logo">
+				<img
+					src="assets/kapitor.svg"
+					alt="Kapitor Logo"
+				/>
+				<span class="logo-text">Kapitor</span>
+			</a>
+			<button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+			<nav class="nav-wrap" aria-label="Main navigation">
+				<div class="nav-item-wrap nav-platform-mega">
+					<button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+					<div class="nav-mega" role="menu" aria-label="Platform menu">
+						<div class="mega-grid">
+							<div class="mega-left" role="tablist" aria-label="Platform sections">
+								<button type="button" class="mega-sec is-active" data-mega="wallet" role="tab" aria-selected="true">Kapitor Smart Wallet</button>
+								<button type="button" class="mega-sec" data-mega="pay" role="tab" aria-selected="false">Kapitor Pay</button>
+								<button type="button" class="mega-sec" data-mega="trade" role="tab" aria-selected="false">Kapitor Trade</button>
+								<button type="button" class="mega-sec" data-mega="earn" role="tab" aria-selected="false">Kapitor Earn</button>
+								<button type="button" class="mega-sec" data-mega="stake" role="tab" aria-selected="false">Kapitor Stake</button>
+								<button type="button" class="mega-sec" data-mega="vaults" role="tab" aria-selected="false">Kapitor Vaults</button>
+							</div>
+							<div class="mega-right">
+								<div class="mega-panel is-active" data-mega-panel="wallet" role="tabpanel">
+									<a class="mega-title" href="kapitor-smart-wallet.html">Kapitor Smart Wallet</a>
+									<div class="mega-items">
+										<a class="mega-item" href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+										<a class="mega-item" href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+										<a class="mega-item" href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+										<a class="mega-item" href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+										<a class="mega-item" href="kapitor-smart-wallet.html">Security Framework</a>
+									</div>
+								</div>
+								<div class="mega-panel" data-mega-panel="pay" role="tabpanel">
+									<a class="mega-title" href="kapitor-pay.html">Kapitor Pay</a>
+									<div class="mega-items">
+										<a class="mega-item" href="kapitor-pay.html">Global Transfers</a>
+										<a class="mega-item" href="kapitor-pay.html">QR &amp; P2P</a>
+										<a class="mega-item" href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+										<a class="mega-item" href="kapitor-pay.html">Salary &amp; Payroll</a>
+										<a class="mega-item" href="kapitor-pay.html">International Settlement</a>
+										<a class="mega-item" href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+									</div>
+								</div>
+								<div class="mega-panel" data-mega-panel="trade" role="tabpanel">
+									<a class="mega-title" href="kapitor-trade.html">Kapitor Trade</a>
+									<div class="mega-items">
+										<a class="mega-item" href="kapitor-trade.html">Spot Markets</a>
+										<a class="mega-item" href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+										<a class="mega-item" href="kapitor-trade.html">Derivatives</a>
+										<a class="mega-item" href="kapitor-trade.html">OTC Desk</a>
+										<a class="mega-item" href="kapitor-trade.html">Risk Engine</a>
+									</div>
+								</div>
+								<div class="mega-panel" data-mega-panel="earn" role="tabpanel">
+									<a class="mega-title" href="kapitor-earn.html">Kapitor Earn</a>
+									<div class="mega-items">
+										<a class="mega-item" href="kapitor-earn.html">Conservative Strategy</a>
+										<a class="mega-item" href="kapitor-earn.html">Balanced Strategy</a>
+										<a class="mega-item" href="kapitor-earn.html">Growth Strategy</a>
+										<a class="mega-item" href="kapitor-earn.html">Yield Sources</a>
+										<a class="mega-item" href="kapitor-earn.html">Performance Reporting</a>
+									</div>
+								</div>
+								<div class="mega-panel" data-mega-panel="stake" role="tabpanel">
+									<a class="mega-title" href="kapitor-stake.html">Kapitor Stake</a>
+									<div class="mega-items">
+										<a class="mega-item" href="kapitor-stake.html">ETH Liquid Staking</a>
+										<a class="mega-item" href="kapitor-stake.html">SOL Staking</a>
+										<a class="mega-item" href="kapitor-stake.html">DOT Staking</a>
+										<a class="mega-item" href="kapitor-stake.html">ATOM Staking</a>
+										<a class="mega-item" href="kapitor-stake.html">Layered Yield Model</a>
+									</div>
+								</div>
+								<div class="mega-panel" data-mega-panel="vaults" role="tabpanel">
+									<a class="mega-title" href="kapitor-vaults.html">Kapitor Vaults</a>
+									<div class="mega-items">
+										<a class="mega-item" href="kapitor-vaults.html">Stable Income Vault</a>
+										<a class="mega-item" href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+										<a class="mega-item" href="kapitor-vaults.html">Bond-Backed Vault</a>
+										<a class="mega-item" href="kapitor-vaults.html">Trade Finance Vault</a>
+										<a class="mega-item" href="kapitor-vaults.html">Capital Protected Vault</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="nav-item-wrap nav-digital-mega">
+					<button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Asset Layer <span class="chevron">▾</span></button>
+					<div class="nav-mega" role="menu" aria-label="Digital Asset Layer menu">
+						<div class="mega-grid">
+							<div class="mega-left" role="tablist" aria-label="Digital asset sections">
+								<button type="button" class="mega-sec is-active" data-mega="kaloft" role="tab" aria-selected="true">Kaloft (EPT)</button>
+								<button type="button" class="mega-sec" data-mega="katoin" role="tab" aria-selected="false">Katoin (Commodity Engine)</button>
+								<button type="button" class="mega-sec" data-mega="eqouin" role="tab" aria-selected="false">EQOUIN (Equity Exposure)</button>
+								<button type="button" class="mega-sec" data-mega="kfi" role="tab" aria-selected="false">KFI – Kapitor Financial Instruments</button>
+							</div>
+							<div class="mega-right">
+								<div class="mega-panel is-active" data-mega-panel="kaloft" role="tabpanel">
+									<a class="mega-title" href="kaloft-ept.html">Kaloft (EPT)</a>
+									<div class="mega-items">
+										<a class="mega-item" href="kaloft-ept.html">Economic Participation Model</a>
+										<a class="mega-item" href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+										<a class="mega-item" href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+										<a class="mega-item" href="kaloft-ept.html">NAV Tracking</a>
+										<a class="mega-item" href="kaloft-ept.html">Redemption Framework</a>
+									</div>
+								</div>
+								<div class="mega-panel" data-mega-panel="katoin" role="tabpanel">
+									<a class="mega-title" href="katoin.html">Katoin (Commodity Engine)</a>
+									<div class="mega-items">
+										<a class="mega-item" href="katoin.html">Commodity Tokenization</a>
+										<a class="mega-item" href="katoin.html">Trade Levels</a>
+										<a class="mega-item" href="katoin.html">Profit Distribution Logic</a>
+										<a class="mega-item" href="katoin.html">Global Commodity Flow</a>
+									</div>
+								</div>
+								<div class="mega-panel" data-mega-panel="eqouin" role="tabpanel">
+									<a class="mega-title" href="digitalassets.html">EQOUIN (Equity Exposure)</a>
+									<div class="mega-items">
+										<a class="mega-item" href="digitalassets.html">Valuation Mechanism</a>
+										<a class="mega-item" href="digitalassets.html">Dividend Distribution</a>
+										<a class="mega-item" href="digitalassets.html">Capital Appreciation Model</a>
+										<a class="mega-item" href="digitalassets.html">Internal Trading Market</a>
+									</div>
+								</div>
+								<div class="mega-panel" data-mega-panel="kfi" role="tabpanel">
+									<a class="mega-title" href="kfi.html">KFI – Kapitor Financial Instruments</a>
+									<div class="mega-items">
+										<a class="mega-item" href="kfi.html">Bank Guarantees (BG)</a>
+										<a class="mega-item" href="kfi.html">SBLC</a>
+										<a class="mega-item" href="kfi.html">Letter of Credit (LC)</a>
+										<a class="mega-item" href="kfi.html">Performance Guarantees</a>
+										<a class="mega-item" href="kfi.html">Digital Issuance</a>
+										<a class="mega-item" href="kfi.html">Blockchain Record</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="nav-item-wrap nav-rwa-mega">
+					<button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">RWA <span class="chevron">▾</span></button>
+					<div class="nav-mega" role="menu" aria-label="RWA menu">
+						<div class="mega-grid">
+							<div class="mega-left" role="tablist" aria-label="RWA categories">
+								<button type="button" class="mega-sec is-active" data-mega="tokenized-bonds" data-href="/rwa/tokenized-bonds" role="tab" aria-selected="true">Tokenized Bonds</button>
+								<button type="button" class="mega-sec" data-mega="gold" data-href="/rwa/gold" role="tab" aria-selected="false">Gold</button>
+								<button type="button" class="mega-sec" data-mega="real-estate" data-href="/rwa/real-estate" role="tab" aria-selected="false">Real Estate</button>
+								<button type="button" class="mega-sec" data-mega="carbon-credits" data-href="/rwa/carbon-credits" role="tab" aria-selected="false">Carbon Credits</button>
+								<button type="button" class="mega-sec" data-mega="private-credit" data-href="/rwa/private-credit" role="tab" aria-selected="false">Private Credit</button>
+								<button type="button" class="mega-sec" data-mega="trade-finance-assets" data-href="/rwa/trade-finance-assets" role="tab" aria-selected="false">Trade Finance Assets</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="nav-item-wrap nav-prime-mega">
+					<button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Prime <span class="chevron">▾</span></button>
+					<div class="nav-mega" role="menu" aria-label="Prime menu">
+						<div class="mega-grid">
+							<div class="mega-left" role="tablist" aria-label="Prime services">
+								<button type="button" class="mega-sec is-active" data-mega="custody" data-href="/prime/custody" role="tab" aria-selected="true">Custody</button>
+								<button type="button" class="mega-sec" data-mega="fx" data-href="/prime/fx-infrastructure" role="tab" aria-selected="false">FX Infrastructure</button>
+								<button type="button" class="mega-sec" data-mega="lending" data-href="/prime/institutional-lending" role="tab" aria-selected="false">Institutional Lending</button>
+								<button type="button" class="mega-sec" data-mega="treasury" data-href="/prime/treasury-solutions" role="tab" aria-selected="false">Treasury Solutions</button>
+								<button type="button" class="mega-sec" data-mega="compliance" data-href="/prime/compliance-reporting" role="tab" aria-selected="false">Compliance Reporting</button>
+								<button type="button" class="mega-sec" data-mega="api" data-href="/prime/api-access" role="tab" aria-selected="false">API Access</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<a href="gp.html" class="nav-link">Global Payments</a>
+				<a href="compliance.html" class="nav-link">Compliance</a>
+				<a href="api.html" class="nav-link">Developers</a>
+				<a href="company.html" class="nav-link">Company</a>
+			</nav>
+			<div class="header-right">
+				<select class="region">
+					<option>🌐 Global</option>
+					<option>🇮🇳 India</option>
+					<option>🇺🇸 USA</option>
+					<option>🇪🇺 Europe</option>
+				</select>
+				<button class="btn-ghost">Login</button>
+				<button class="btn-primary">Open Smart Wallet</button>
+			</div>
+		</header>
+
+		<!-- ═══ HERO ═══ -->
+		<section class="hero">
+			<div class="hero-bg"></div>
+			<div class="hero-grid"></div>
+			<div class="hero-line hero-line-1"></div>
+			<div class="hero-line hero-line-2"></div>
+			<div class="container" style="position: relative; z-index: 2">
+				<div class="hero-content">
+					<div class="hero-eyebrow">
+						<div class="live-dot"></div>
+						<span
+							class="mono"
+							style="
+								font-size: 0.62rem;
+								letter-spacing: 0.12em;
+								color: var(--blue-light);
+							"
+							>PLATFORM LIVE · ALL SYSTEMS OPERATIONAL</span
+						>
+					</div>
+					<h1>
+						One Ledger.<br /><span class="accent-blue">One Wallet.</span
+						><br />Global Financial <span class="accent-green">Control.</span>
+					</h1>
+					<p class="hero-sub">
+						Kapitor integrates fiat banking, crypto markets, tokenized assets,
+						yield infrastructure, and institutional financial instruments into a
+						single governed financial operating system.
+					</p>
+					<div class="hero-cta">
+						<button class="btn-hero-primary">
+							<svg
+								width="14"
+								height="14"
+								viewBox="0 0 14 14"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<circle
+									cx="7"
+									cy="7"
+									r="6"
+									stroke="white"
+									stroke-width="1.5"
+									fill="none"
+									opacity="0.6"
+								/>
+								<circle cx="7" cy="7" r="2.5" fill="white" />
+							</svg>
+							Open Smart Wallet
+						</button>
+						<button class="btn-hero-ghost">View Platform Architecture →</button>
+					</div>
+
+					<!-- LIVE METRICS BAR -->
+					<div class="metrics-strip">
+						<div class="metric-item">
+							<div class="metric-label">Total Assets Secured</div>
+							<div class="metric-value blue">.48B</div>
+							<div class="metric-sub">
+								<span class="up">▲ 3.2%</span> vs last month
+							</div>
+						</div>
+						<div class="metric-item">
+							<div class="metric-label">Daily Settlement Volume</div>
+							<div class="metric-value green">40M</div>
+							<div class="metric-sub">
+								<span class="up">▲ 1.8%</span> 24h avg
+							</div>
+						</div>
+						<div class="metric-item">
+							<div class="metric-label">Active Jurisdictions</div>
+							<div class="metric-value">186</div>
+							<div class="metric-sub">Countries supported</div>
+						</div>
+						<div class="metric-item">
+							<div class="metric-label">Payment Rails Active</div>
+							<div class="metric-value amber">42</div>
+							<div class="metric-sub">Global + regional</div>
+						</div>
+						<div class="metric-item">
+							<div class="metric-label">Kaloft NAV (Real-Time)</div>
+							<div class="metric-value blue">05.20</div>
+							<div class="metric-sub"><span class="up">▲ 0.8%</span> today</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- TICKER -->
+		<div class="ticker">
+			<div class="ticker-track">
+				<span class="tick"
+					><span class="sym">KFI</span><span class="up">.84 ▲2.3%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">KALOFT NAV</span>05.20
+					<span class="up">▲0.8%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">EQOUIN</span
+					><span class="up">2.40 ▲1.1%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">KATOIN</span
+					><span class="up">.62 ▲4.2%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">BTC</span><span class="up">8,420 ▲1.4%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">ETH</span><span class="up">,210 ▲0.9%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"><span class="sym">USDT</span>.000</span>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">GOLD RWA</span
+					><span class="up">,018/oz ▲0.3%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"><span class="sym">USD/INR</span>83.42</span>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">EUR/USD</span
+					><span class="dn">1.0821 ▼0.1%</span></span
+				>
+				<!-- duplicate -->
+				<span class="tick"
+					><span class="sym">KFI</span><span class="up">.84 ▲2.3%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">KALOFT NAV</span>05.20
+					<span class="up">▲0.8%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">EQOUIN</span
+					><span class="up">2.40 ▲1.1%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">KATOIN</span
+					><span class="up">.62 ▲4.2%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">BTC</span><span class="up">8,420 ▲1.4%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">ETH</span><span class="up">,210 ▲0.9%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"><span class="sym">USDT</span>.000</span>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">GOLD RWA</span
+					><span class="up">,018/oz ▲0.3%</span></span
+				>
+				<span class="tick-sep">|</span>
+				<span class="tick"><span class="sym">USD/INR</span>83.42</span>
+				<span class="tick-sep">|</span>
+				<span class="tick"
+					><span class="sym">EUR/USD</span
+					><span class="dn">1.0821 ▼0.1%</span></span
+				>
+			</div>
+		</div>
+
+		<!-- ═══ UNIFIED SMART WALLET ═══ -->
+		<section class="section" id="wallet">
+			<div class="container">
+				<div class="wallet-layout">
+					<!-- WALLET VISUAL -->
+					<div class="wallet-visual">
+						<div class="wallet-header">
+							<div>
+								<div
+									style="
+										font-family: &quot;JetBrains Mono&quot;, monospace;
+										font-size: 0.6rem;
+										letter-spacing: 0.12em;
+										text-transform: uppercase;
+										color: var(--text-dim);
+										margin-bottom: 4px;
+									"
+								>
+									UNIFIED SMART WALLET
+								</div>
+								<div class="wallet-total">84,920.48</div>
+								<div class="wallet-sub">
+									Total Portfolio Value · Updated 2s ago
+								</div>
+							</div>
+							<div class="wallet-badge">UNIFIED LEDGER</div>
+						</div>
+						<div class="wallet-assets">
+							<div class="wallet-asset">
+								<div class="wa-left">
+									<div class="wa-dot blue"></div>
+									<div>
+										<div class="wa-name">Multi-Currency Fiat</div>
+										<div class="wa-type">USD · EUR · GBP · INR</div>
+									</div>
+								</div>
+								<div class="wa-right">
+									<div class="wa-value">42,800.00</div>
+									<div class="wa-change up">+0.0%</div>
+								</div>
+							</div>
+							<div class="wallet-asset">
+								<div class="wa-left">
+									<div class="wa-dot cyan"></div>
+									<div>
+										<div class="wa-name">Crypto & Stablecoins</div>
+										<div class="wa-type">BTC · ETH · USDT · USDC</div>
+									</div>
+								</div>
+								<div class="wa-right">
+									<div class="wa-value">8,240.15</div>
+									<div class="wa-change up">+2.1%</div>
+								</div>
+							</div>
+							<div class="wallet-asset">
+								<div class="wa-left">
+									<div class="wa-dot blue"></div>
+									<div>
+										<div class="wa-name">Kaloft (EPT)</div>
+										<div class="wa-type">NAV-Based · 3Y Pool</div>
+									</div>
+								</div>
+								<div class="wa-right">
+									<div class="wa-value">5,100.00</div>
+									<div class="wa-change amber">NAV 05.20</div>
+								</div>
+							</div>
+							<div class="wallet-asset">
+								<div class="wa-left">
+									<div class="wa-dot green"></div>
+									<div>
+										<div class="wa-name">Katoin</div>
+										<div class="wa-type">Commodity Engine</div>
+									</div>
+								</div>
+								<div class="wa-right">
+									<div class="wa-value">,060.00</div>
+									<div class="wa-change up">+4.2%</div>
+								</div>
+							</div>
+							<div class="wallet-asset">
+								<div class="wa-left">
+									<div class="wa-dot amber"></div>
+									<div>
+										<div class="wa-name">EQOUIN</div>
+										<div class="wa-type">Equity Exposure</div>
+									</div>
+								</div>
+								<div class="wa-right">
+									<div class="wa-value">2,400.00</div>
+									<div class="wa-change up">+1.1%</div>
+								</div>
+							</div>
+							<div class="wallet-asset">
+								<div class="wa-left">
+									<div class="wa-dot purple"></div>
+									<div>
+										<div class="wa-name">KFI Instruments</div>
+										<div class="wa-type">BG · SBLC · LC</div>
+									</div>
+								</div>
+								<div class="wa-right">
+									<div class="wa-value">0,000.00</div>
+									<div class="wa-change up">Active</div>
+								</div>
+							</div>
+							<div class="wallet-asset">
+								<div class="wa-left">
+									<div class="wa-dot rose"></div>
+									<div>
+										<div class="wa-name">Vault & Yield Positions</div>
+										<div class="wa-type">Stable · BTC Yield · Bond</div>
+									</div>
+								</div>
+								<div class="wa-right">
+									<div class="wa-value">8,420.33</div>
+									<div class="wa-change up">+9.8% APY</div>
+								</div>
+							</div>
+							<div class="wallet-asset">
+								<div class="wa-left">
+									<div class="wa-dot gold"></div>
+									<div>
+										<div class="wa-name">Staked Assets</div>
+										<div class="wa-type">kETH · kSOL · kDOT</div>
+									</div>
+								</div>
+								<div class="wa-right">
+									<div class="wa-value">,900.00</div>
+									<div class="wa-change up">+6.9% APR</div>
+								</div>
+							</div>
+						</div>
+						<div class="wallet-caps">
+							<div class="cap-item">
+								<div class="cap-label">Available</div>
+								<div class="cap-val" style="color: var(--green)">11,040.48</div>
+							</div>
+							<div class="cap-item">
+								<div class="cap-label">Locked Capital</div>
+								<div class="cap-val" style="color: var(--amber)">3,880.00</div>
+							</div>
+							<div class="cap-item">
+								<div class="cap-label">Yield Accrued</div>
+								<div class="cap-val" style="color: var(--blue-light)">
+									,840.22
+								</div>
+							</div>
+							<div class="cap-item">
+								<div class="cap-label">Ledger Status</div>
+								<div
+									class="cap-val"
+									style="
+										font-size: 0.75rem;
+										color: var(--green);
+										font-family: &quot;JetBrains Mono&quot;, monospace;
+									"
+								>
+									RECONCILED
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- TEXT -->
+					<div class="wallet-text">
+						<div class="label-tag">Unified Smart Wallet</div>
+						<h2 style="color: var(--white)">
+							One Wallet.<br />All Financial Layers.
+						</h2>
+						<p style="margin-top: 0.85rem">
+							The Kapitor Smart Wallet connects directly to the Unified Ledger
+							and holds every class of financial asset in a single governed
+							account — no bridging, no shadow balances, no reconciliation
+							errors.
+						</p>
+						<div class="wallet-layers">
+							<span class="layer-chip"
+								><span class="chip-dot" style="background: var(--blue)"></span
+								>Multi-Currency Fiat</span
+							>
+							<span class="layer-chip"
+								><span class="chip-dot" style="background: #4ac8d4"></span
+								>Crypto & Stablecoins</span
+							>
+							<span class="layer-chip"
+								><span class="chip-dot" style="background: var(--blue)"></span
+								>Kaloft EPT</span
+							>
+							<span class="layer-chip"
+								><span class="chip-dot" style="background: var(--green)"></span
+								>Katoin</span
+							>
+							<span class="layer-chip"
+								><span class="chip-dot" style="background: var(--amber)"></span
+								>EQOUIN</span
+							>
+							<span class="layer-chip"
+								><span class="chip-dot" style="background: #9b72db"></span>KFI
+								Instruments</span
+							>
+							<span class="layer-chip"
+								><span class="chip-dot" style="background: #e06080"></span>Vault
+								& Yield</span
+							>
+							<span class="layer-chip"
+								><span class="chip-dot" style="background: #c8a840"></span
+								>Staked Assets</span
+							>
+						</div>
+						<div class="wallet-checks">
+							<div class="check-item">
+								Instant Internal Conversions across all asset classes
+							</div>
+							<div class="check-item">
+								Real-Time Balance Reconciliation against the Unified Ledger
+							</div>
+							<div class="check-item">
+								Locked & Withdrawable Capital Visibility at all times
+							</div>
+							<div class="check-item">
+								Institutional-Grade Custody Framework underlying every position
+							</div>
+						</div>
+						<p
+							style="
+								margin-top: 2rem;
+								padding: 1rem 1.25rem;
+								background: var(--surface);
+								border: 1px solid var(--border-md);
+								border-radius: 5px;
+								font-size: 0.78rem;
+								font-family: &quot;JetBrains Mono&quot;, monospace;
+								color: var(--text-muted);
+							"
+						>
+							Everything updates against one ledger. No shadow balances.
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══ GIPS ═══ -->
+		<section class="section" id="gips">
+			<div class="container">
+				<div class="gips-intro" style="padding: 30px;">
+					<div>
+						<div class="label-tag" style="color: var(--green)">
+							Global Infrastructure Payment System
+						</div>
+						<h2 style="color: var(--white)">
+							Built on Global Payment Infrastructure
+						</h2>
+						<p style="margin-top: 0.85rem; margin-bottom: 2rem">
+							Kapitor connects to regional and global rails across every major
+							financial corridor — routing each transaction through the optimal
+							settlement path to minimise cost and latency.
+						</p>
+						<div class="gips-caps-grid">
+							<div class="gips-cap">
+								<div class="gips-cap-title">Local Currency Deposit</div>
+								<div class="gips-cap-desc">
+									Accept deposits in 40+ local currencies via native rails
+								</div>
+							</div>
+							<div class="gips-cap">
+								<div class="gips-cap-title">Instant Internal Conversion</div>
+								<div class="gips-cap-desc">
+									Cross-asset conversion without leaving the platform
+								</div>
+							</div>
+							<div class="gips-cap">
+								<div class="gips-cap-title">Cross-Border Settlement</div>
+								<div class="gips-cap-desc">
+									T+0 to T+1 settlement across 186 jurisdictions
+								</div>
+							</div>
+							<div class="gips-cap">
+								<div class="gips-cap-title">Global Bill Payments (GBPS)</div>
+								<div class="gips-cap-desc">
+									Pay utility, tax, and trade bills in any jurisdiction
+								</div>
+							</div>
+						</div>
+						<div class="gips-tagline">
+							Kapitor functions as a settlement layer — not just a wallet.
+						</div>
+					</div>
+					<div>
+						<div class="rails-map">
+							<div class="rail-card">
+								<div class="rail-flag">🇮🇳</div>
+								<div class="rail-country">India</div>
+								<div class="rail-methods">
+									UPI<br />IMPS<br />NEFT / RTGS<br />RuPay
+								</div>
+							</div>
+							<div class="rail-card">
+								<div class="rail-flag">🇺🇸</div>
+								<div class="rail-country">United States</div>
+								<div class="rail-methods">
+									ACH<br />FedNow<br />Fedwire / Wire<br />CHIPS
+								</div>
+							</div>
+							<div class="rail-card">
+								<div class="rail-flag">🇪🇺</div>
+								<div class="rail-country">Europe</div>
+								<div class="rail-methods">
+									SEPA Credit<br />SEPA Instant<br />SEPA Direct Debit<br />TARGET2
+								</div>
+							</div>
+							<div class="rail-card">
+								<div class="rail-flag">🇬🇧</div>
+								<div class="rail-country">United Kingdom</div>
+								<div class="rail-methods">
+									Faster Payments<br />BACS<br />CHAPS<br />Open Banking
+								</div>
+							</div>
+							<div class="rail-card">
+								<div class="rail-flag">🇧🇷</div>
+								<div class="rail-country">Brazil</div>
+								<div class="rail-methods">PIX<br />TED<br />DOC</div>
+							</div>
+							<div class="rail-card">
+								<div class="rail-flag">🌍</div>
+								<div class="rail-country">Africa</div>
+								<div class="rail-methods">
+									Mobile Money<br />M-Pesa<br />PAPSS
+								</div>
+							</div>
+							<div class="rail-card">
+								<div class="rail-flag">🌐</div>
+								<div class="rail-country">SWIFT</div>
+								<div class="rail-methods">
+									SWIFT MT<br />SWIFT GPI<br />ISO 20022
+								</div>
+							</div>
+							<div class="rail-card">
+								<div class="rail-flag">💳</div>
+								<div class="rail-country">Card Networks</div>
+								<div class="rail-methods">
+									Visa<br />Mastercard<br />Virtual Cards
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══ YIELD INFRASTRUCTURE ═══ -->
+		<section class="section" id="earn">
+			<div class="container">
+				<div class="yield-grid">
+					<div>
+						<div class="label-tag" style="color: var(--amber)">
+							Investment & Yield Infrastructure
+						</div>
+						<h2 style="color: var(--white)">
+							Structured Yield,<br />Not Speculation
+						</h2>
+						<p style="margin-top: 0.85rem; margin-bottom: 2rem">
+							Kapitor Earn deploys capital across proven yield sources through
+							algorithmically managed strategies — with full ledger tracking and
+							daily performance reporting.
+						</p>
+						<div class="yield-strategies">
+							<div class="yield-row">
+								<div>
+									<div class="yr-tier">Tier 01</div>
+									<div class="yr-name">Conservative</div>
+								</div>
+								<div>
+									<div class="yr-apy cons">5.2%</div>
+									<div class="yr-label">EST. APY</div>
+								</div>
+								<div class="yr-pill low">LOW RISK</div>
+							</div>
+							<div class="yield-row">
+								<div>
+									<div class="yr-tier">Tier 02</div>
+									<div class="yr-name">Balanced</div>
+								</div>
+								<div>
+									<div class="yr-apy bal">9.8%</div>
+									<div class="yr-label">EST. APY</div>
+								</div>
+								<div class="yr-pill med">MEDIUM</div>
+							</div>
+							<div class="yield-row">
+								<div>
+									<div class="yr-tier">Tier 03</div>
+									<div class="yr-name">Growth</div>
+								</div>
+								<div>
+									<div class="yr-apy grow">18.5%</div>
+									<div class="yr-label">EST. APY</div>
+								</div>
+								<div class="yr-pill high">GROWTH</div>
+							</div>
+						</div>
+						<div class="ledger-note">
+							✓ Performance is ledger-tracked. No opaque returns.
+						</div>
+					</div>
+					<div>
+						<div
+							style="
+								margin-bottom: 1.5rem;
+								font-family: &quot;JetBrains Mono&quot;, monospace;
+								font-size: 0.6rem;
+								letter-spacing: 0.12em;
+								text-transform: uppercase;
+								color: var(--text-dim);
+							"
+						>
+							Capital deployed across
+						</div>
+						<div class="yield-sources">
+							<div class="ys-item">
+								<div class="ys-dot" style="background: var(--blue)"></div>
+								Lending Markets
+							</div>
+							<div class="ys-item">
+								<div class="ys-dot" style="background: var(--green)"></div>
+								DeFi Protocols
+							</div>
+							<div class="ys-item">
+								<div class="ys-dot" style="background: var(--amber)"></div>
+								Treasury Instruments
+							</div>
+							<div class="ys-item">
+								<div class="ys-dot" style="background: #9b72db"></div>
+								Arbitrage Systems
+							</div>
+							<div class="ys-item">
+								<div class="ys-dot" style="background: #4ac8d4"></div>
+								Structured Strategies
+							</div>
+						</div>
+						<div style="margin-top: 2rem">
+							<div
+								style="
+									font-family: &quot;JetBrains Mono&quot;, monospace;
+									font-size: 0.6rem;
+									letter-spacing: 0.12em;
+									text-transform: uppercase;
+									color: var(--text-dim);
+									margin-bottom: 1rem;
+								"
+							>
+								Every yield position reflects
+							</div>
+							<div
+								style="
+									display: grid;
+									grid-template-columns: 1fr 1fr;
+									gap: 0.75rem;
+								"
+							>
+								<div
+									style="
+										padding: 1rem;
+										background: var(--surface);
+										border: 1px solid var(--border);
+										border-radius: 5px;
+									"
+								>
+									<div
+										style="
+											font-family: &quot;JetBrains Mono&quot;, monospace;
+											font-size: 0.58rem;
+											color: var(--text-dim);
+											margin-bottom: 0.4rem;
+											text-transform: uppercase;
+											letter-spacing: 0.1em;
+										"
+									>
+										Capital Locked
+									</div>
+									<div
+										style="
+											font-family: &quot;Syne&quot;, sans-serif;
+											font-size: 1rem;
+											font-weight: 600;
+											color: var(--amber);
+										"
+									>
+										8,320
+									</div>
+								</div>
+								<div
+									style="
+										padding: 1rem;
+										background: var(--surface);
+										border: 1px solid var(--border);
+										border-radius: 5px;
+									"
+								>
+									<div
+										style="
+											font-family: &quot;JetBrains Mono&quot;, monospace;
+											font-size: 0.58rem;
+											color: var(--text-dim);
+											margin-bottom: 0.4rem;
+											text-transform: uppercase;
+											letter-spacing: 0.1em;
+										"
+									>
+										Yield Accrued
+									</div>
+									<div
+										style="
+											font-family: &quot;Syne&quot;, sans-serif;
+											font-size: 1rem;
+											font-weight: 600;
+											color: var(--green);
+										"
+									>
+										,840
+									</div>
+								</div>
+								<div
+									style="
+										padding: 1rem;
+										background: var(--surface);
+										border: 1px solid var(--border);
+										border-radius: 5px;
+									"
+								>
+									<div
+										style="
+											font-family: &quot;JetBrains Mono&quot;, monospace;
+											font-size: 0.58rem;
+											color: var(--text-dim);
+											margin-bottom: 0.4rem;
+											text-transform: uppercase;
+											letter-spacing: 0.1em;
+										"
+									>
+										Withdrawable
+									</div>
+									<div
+										style="
+											font-family: &quot;Syne&quot;, sans-serif;
+											font-size: 1rem;
+											font-weight: 600;
+											color: var(--blue-light);
+										"
+									>
+										2,100
+									</div>
+								</div>
+								<div
+									style="
+										padding: 1rem;
+										background: var(--surface);
+										border: 1px solid var(--border);
+										border-radius: 5px;
+									"
+								>
+									<div
+										style="
+											font-family: &quot;JetBrains Mono&quot;, monospace;
+											font-size: 0.58rem;
+											color: var(--text-dim);
+											margin-bottom: 0.4rem;
+											text-transform: uppercase;
+											letter-spacing: 0.1em;
+										"
+									>
+										Risk Exposure
+									</div>
+									<div
+										style="
+											font-family: &quot;Syne&quot;, sans-serif;
+											font-size: 1rem;
+											font-weight: 600;
+											color: var(--text);
+										"
+									>
+										MEDIUM
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══ TOKENIZED ASSET LAYER ═══ -->
+		<section class="section" id="digital-assets">
+			<div class="container">
+				<div class="section-head">
+					<div class="label-tag" style="color: var(--blue)">
+						Tokenized Asset Layer
+					</div>
+					<h2 style="color: var(--white)">
+						Digital Representation<br />of Real Value
+					</h2>
+					<p style="margin-top: 0.85rem">
+						Kapitor operates three core token layers — each ledger-recorded,
+						fully auditable, and transferable within the ecosystem. This is
+						asset infrastructure, not speculation.
+					</p>
+				</div>
+				<div class="token-grid">
+					<div class="token-card blue">
+						<div class="token-symbol blue">EPT</div>
+						<div class="token-name">Kaloft · Economic Participation</div>
+						<h3 style="color: var(--white)">
+							NAV-based economic participation in Kapitor's core infrastructure
+						</h3>
+						<p>
+							Participation pools backed by trading, commodity, and yield
+							infrastructure. Lock periods of 1Y, 3Y, and 5Y with daily NAV
+							tracking and structured redemption windows.
+						</p>
+						<div class="token-metrics">
+							<div class="tm-row">
+								<span class="tm-key">Current NAV</span
+								><span class="tm-val" style="color: var(--blue-light)"
+									>05.20</span
+								>
+							</div>
+							<div class="tm-row">
+								<span class="tm-key">Pool Range</span
+								><span class="tm-val">M – 00M</span>
+							</div>
+							<div class="tm-row">
+								<span class="tm-key">Lock Options</span
+								><span class="tm-val">1Y / 3Y / 5Y</span>
+							</div>
+							<div class="tm-row">
+								<span class="tm-key">Audit Frequency</span
+								><span class="tm-val">Daily</span>
+							</div>
+						</div>
+						<div
+							class="token-tag"
+							style="
+								background: var(--blue-dim);
+								color: var(--blue-light);
+								border: 1px solid rgba(74, 127, 203, 0.2);
+							"
+						>
+							LEDGER-RECORDED · AUDITABLE
+						</div>
+					</div>
+					<div class="token-card green">
+						<div class="token-symbol green">KTN</div>
+						<div class="token-name">Katoin · Commodity Engine</div>
+						<h3 style="color: var(--white)">
+							Tokenized commodity engine with automated profit distribution
+						</h3>
+						<p>
+							Automated profit distribution upon trade execution. Coverage
+							across energy, metals, and agricultural commodities with 5 trade
+							tier levels and global commodity flow integration.
+						</p>
+						<div class="token-metrics">
+							<div class="tm-row">
+								<span class="tm-key">Current Price</span
+								><span class="tm-val" style="color: var(--green)">.62</span>
+							</div>
+							<div class="tm-row">
+								<span class="tm-key">Trade Levels</span
+								><span class="tm-val">5 Tiers</span>
+							</div>
+							<div class="tm-row">
+								<span class="tm-key">Distribution</span
+								><span class="tm-val">Per Trade Batch</span>
+							</div>
+							<div class="tm-row">
+								<span class="tm-key">Coverage</span
+								><span class="tm-val">Global Flows</span>
+							</div>
+						</div>
+						<div
+							class="token-tag"
+							style="
+								background: var(--green-dim);
+								color: var(--green);
+								border: 1px solid rgba(61, 184, 122, 0.2);
+							"
+						>
+							TRANSFERABLE · ON-CHAIN
+						</div>
+					</div>
+					<div class="token-card amber">
+						<div class="token-symbol amber">EQN</div>
+						<div class="token-name">EQOUIN · Equity Exposure</div>
+						<h3 style="color: var(--white)">
+							Internal equity exposure — valuation growth and dividend
+							distribution
+						</h3>
+						<p>
+							Represents proportional equity-like exposure to Kapitor operating
+							entities. Quarterly dividend distribution with capital
+							appreciation mechanics and an internal trading market.
+						</p>
+						<div class="token-metrics">
+							<div class="tm-row">
+								<span class="tm-key">Current NAV</span
+								><span class="tm-val" style="color: var(--amber)">2.40</span>
+							</div>
+							<div class="tm-row">
+								<span class="tm-key">Dividends</span
+								><span class="tm-val">Quarterly</span>
+							</div>
+							<div class="tm-row">
+								<span class="tm-key">YTD Appreciation</span
+								><span class="tm-val" style="color: var(--green)">+22.4%</span>
+							</div>
+							<div class="tm-row">
+								<span class="tm-key">Trading Market</span
+								><span class="tm-val">Internal OTC</span>
+							</div>
+						</div>
+						<div
+							class="token-tag"
+							style="
+								background: var(--amber-dim);
+								color: var(--amber);
+								border: 1px solid rgba(240, 160, 48, 0.2);
+							"
+						>
+							AUDITABLE · DIVIDENDS
+						</div>
+					</div>
+				</div>
+				<div class="not-meme">
+					<span style="color: var(--green); font-size: 1.1rem">◈</span>
+					<div>
+						<strong>This is asset infrastructure — not meme coins.</strong>
+						Every token is ledger-recorded, backed by real activity, and
+						governed by on-chain rules with full audit trails.
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══ INSTITUTIONAL ═══ -->
+		<section class="section" id="institutional">
+			<div class="container">
+				<div class="inst-layout">
+					<div>
+						<div class="inst-prime-badge">
+							<div class="inst-prime-label">Kapitor Prime</div>
+							<h3>Built for Enterprise &amp; Treasury Operations</h3>
+							<p>
+								Kapitor Prime serves banks, asset managers, family offices, and
+								corporate treasuries with the custody, FX, lending, and
+								compliance infrastructure required at institutional depth.
+							</p>
+						</div>
+						<div class="inst-chain">
+							<div
+								style="
+									font-family: &quot;JetBrains Mono&quot;, monospace;
+									font-size: 0.58rem;
+									letter-spacing: 0.12em;
+									text-transform: uppercase;
+									color: var(--text-dim);
+									margin-bottom: 0.5rem;
+								"
+							>
+								Every instrument is
+							</div>
+							<div class="chain-item">
+								<span class="ch-check">✓</span> Digitally Issued on the Kapitor
+								platform
+							</div>
+							<div class="chain-item">
+								<span class="ch-check">✓</span> Blockchain Recorded with
+								immutable audit trail
+							</div>
+							<div class="chain-item">
+								<span class="ch-check">✓</span> Ledger Settled with real-time
+								reconciliation
+							</div>
+							<div class="chain-item">
+								<span class="ch-check">✓</span> Transferable &amp; Auditable
+								within the ecosystem
+							</div>
+						</div>
+						<div
+							style="
+								margin-top: 2rem;
+								padding: 1rem 1.5rem;
+								border: 1px solid var(--border-md);
+								border-radius: 5px;
+								font-size: 0.78rem;
+								color: var(--text-dim);
+								font-family: &quot;JetBrains Mono&quot;, monospace;
+							"
+						>
+							Kapitor operates as financial infrastructure — not a trading app.
+						</div>
+					</div>
+					<div>
+						<div class="label-tag" style="color: var(--blue)">
+							Institutional Infrastructure
+						</div>
+						<h2 style="color: var(--white); margin-bottom: 2rem">
+							Prime Services
+						</h2>
+						<div class="inst-services">
+							<div class="inst-item">
+								<div class="inst-icon">🔐</div>
+								<h4>Institutional Custody</h4>
+								<p>
+									MPC wallets, multi-sig, cold storage with full insurance
+									coverage and qualified custody status.
+								</p>
+							</div>
+							<div class="inst-item">
+								<div class="inst-icon">⇄</div>
+								<h4>FX Infrastructure</h4>
+								<p>
+									Streaming quotes across 80+ currency pairs. Algorithmic
+									hedging and forward contracts.
+								</p>
+							</div>
+							<div class="inst-item">
+								<div class="inst-icon">🏦</div>
+								<h4>Treasury Solutions</h4>
+								<p>
+									Multi-entity treasury management, cash pooling, yield
+									optimisation, and dashboards.
+								</p>
+							</div>
+							<div class="inst-item">
+								<div class="inst-icon">📄</div>
+								<h4>Trade Finance (KFI)</h4>
+								<p>
+									Bank Guarantees, SBLC, Letters of Credit, and Performance
+									Guarantees — digitally issued.
+								</p>
+							</div>
+							<div class="inst-item">
+								<div class="inst-icon">⬡</div>
+								<h4>Digital KFI Issuance</h4>
+								<p>
+									Blockchain-native issuance with real-time status tracking and
+									on-chain verification.
+								</p>
+							</div>
+							<div class="inst-item">
+								<div class="inst-icon">⌗</div>
+								<h4>API Integration</h4>
+								<p>
+									Full REST and FIX API. Co-location available. SLA-backed
+									uptime and dedicated support.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══ COMPLIANCE ═══ -->
+		<section class="section" id="compliance">
+			<div class="container">
+				<div class="section-head">
+					<div class="label-tag" style="color: var(--green)">
+						Compliance & Governance
+					</div>
+					<h2 style="color: var(--white)">
+						Regulated Access.<br />Controlled Risk.
+					</h2>
+					<p style="margin-top: 0.85rem">
+						Every user operates within structured regulatory boundaries. Product
+						access is determined by compliance tier — automatically enforced at
+						the infrastructure level.
+					</p>
+				</div>
+				<div class="compliance-grid">
+					<div class="comp-item">
+						<div class="comp-num">01 / KYC</div>
+						<h3>Know Your Customer</h3>
+						<p>
+							Automated identity verification with biometric, document, and
+							sanctions screening. Completed in under 60 seconds with real-time
+							status updates.
+						</p>
+					</div>
+					<div class="comp-item">
+						<div class="comp-num">02 / KYB</div>
+						<h3>Know Your Business</h3>
+						<p>
+							Entity verification for corporate accounts. UBO mapping, corporate
+							structure analysis, and regulatory status confirmation across
+							jurisdictions.
+						</p>
+					</div>
+					<div class="comp-item">
+						<div class="comp-num">03 / AML</div>
+						<h3>AML Monitoring</h3>
+						<p>
+							Real-time transaction monitoring with ML-powered risk scoring.
+							FATF Travel Rule compliant. Continuous screening against global
+							watchlists.
+						</p>
+					</div>
+					<div class="comp-item">
+						<div class="comp-num">04 / RISK</div>
+						<h3>Risk Profiling</h3>
+						<p>
+							Dynamic user and transaction risk profiles updated continuously.
+							Scores govern investment limits and product access in real time.
+						</p>
+					</div>
+					<div class="comp-item">
+						<div class="comp-num">05 / GEO</div>
+						<h3>Jurisdiction Controls</h3>
+						<p>
+							Granular country-level access controls. Regulatory-driven
+							restrictions enforced at the infrastructure layer — not at the UI
+							level.
+						</p>
+					</div>
+					<div class="comp-item">
+						<div class="comp-num">06 / LIMITS</div>
+						<h3>Investment Limits</h3>
+						<p>
+							Compliance-tier-based investment thresholds enforced
+							automatically. Limits update as user verification level
+							progresses.
+						</p>
+					</div>
+				</div>
+				<div class="comp-tier-note">
+					Product access is determined by compliance tier. Every user operates
+					within structured regulatory boundaries.
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══ PROOF OF RESERVES ═══ -->
+		<section class="section" id="reserves">
+			<div class="container">
+				<div class="por-layout">
+					<div>
+						<div class="label-tag" style="color: var(--green)">
+							Proof of Reserves
+						</div>
+						<h2 style="color: var(--white)">
+							Transparent Capital<br />Verification
+						</h2>
+						<p style="margin-top: 0.85rem; margin-bottom: 2rem">
+							User balances are reconciled against secured reserves at all
+							times. Every liability is visible. No hidden positions. No
+							fractional opacity.
+						</p>
+						<div class="por-features">
+							<div class="por-feat">
+								<span class="pf-icon">◈</span>
+								<div>
+									<h4>On-Ledger Asset Verification</h4>
+									<p>
+										All assets verified directly against the Unified Ledger with
+										cryptographic proof.
+									</p>
+								</div>
+							</div>
+							<div class="por-feat">
+								<span class="pf-icon">◈</span>
+								<div>
+									<h4>Third-Party Audit Reports</h4>
+									<p>
+										Monthly audits conducted by an independent Big-4 firm.
+										Reports published publicly.
+									</p>
+								</div>
+							</div>
+							<div class="por-feat">
+								<span class="pf-icon">◈</span>
+								<div>
+									<h4>Real-Time Reserve Dashboard</h4>
+									<p>
+										Live reserve ratios, locked capital mapping, and reserve
+										movement tracking.
+									</p>
+								</div>
+							</div>
+							<div class="por-feat">
+								<span class="pf-icon">◈</span>
+								<div>
+									<h4>Merkle Tree Proof</h4>
+									<p>
+										On-chain Merkle tree allowing any user to independently
+										verify their balance is included in reserves.
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="no-opacity">
+							No hidden liabilities. No fractional opacity.
+						</div>
+					</div>
+					<!-- RESERVE DASHBOARD -->
+					<div class="por-dashboard">
+						<div class="por-header">
+							<div
+								style="
+									font-family: &quot;Syne&quot;, sans-serif;
+									font-size: 0.95rem;
+									font-weight: 600;
+									color: var(--white);
+								"
+							>
+								Reserve Dashboard
+							</div>
+							<div class="por-status">
+								<div class="live-dot"></div>
+								VERIFIED LIVE
+							</div>
+						</div>
+						<div class="por-metrics">
+							<div class="por-row">
+								<span class="por-key">Total Customer Assets</span
+								><span class="por-val">,480,000,000</span>
+							</div>
+							<div class="por-row">
+								<span class="por-key">Total Secured Reserves</span
+								><span class="por-val green">,594,400,000</span>
+							</div>
+							<div class="por-row">
+								<span class="por-key">Locked Capital (User)</span
+								><span class="por-val">40,200,000</span>
+							</div>
+							<div class="por-row">
+								<span class="por-key">Withdrawable Capital</span
+								><span class="por-val blue">,639,800,000</span>
+							</div>
+							<div class="por-row">
+								<span class="por-key">Last Merkle Proof</span
+								><span class="por-val">Feb 20, 2026 · 14:22 UTC</span>
+							</div>
+							<div class="por-row">
+								<span class="por-key">Last Third-Party Audit</span
+								><span class="por-val green">Feb 01, 2026 ✓</span>
+							</div>
+						</div>
+						<div class="por-ratio">
+							<div class="por-ratio-label">Reserve Ratio</div>
+							<div class="por-ratio-val">104.6%</div>
+							<div
+								style="
+									font-size: 0.65rem;
+									color: var(--green);
+									font-family: &quot;JetBrains Mono&quot;, monospace;
+									margin-top: 4px;
+								"
+							>
+								Fully over-reserved
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══ FINAL CTA ═══ -->
+		<section class="final-cta">
+			<div class="container">
+				<div class="final-cta-content">
+					<div
+						class="label-tag"
+						style="justify-content: center; text-align: center; display: flex"
+					>
+						Access the Kapitor Smart Wallet
+					</div>
+					<h2 style="color: var(--white)">
+						Unify Payments. Investments.<br />Assets. Treasury. Yield.
+					</h2>
+					<div class="sub-services">
+						<span class="sub-serv">Fiat Banking</span>
+						<span class="sub-serv">Crypto Markets</span>
+						<span class="sub-serv">Tokenized Assets</span>
+						<span class="sub-serv">Yield Infrastructure</span>
+						<span class="sub-serv">Institutional Finance</span>
+					</div>
+					<div class="final-btns">
+						<button class="btn-final-primary">
+							<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+								<circle
+									cx="7"
+									cy="7"
+									r="6"
+									stroke="white"
+									stroke-width="1.5"
+									fill="none"
+									opacity="0.6"
+								/>
+								<circle cx="7" cy="7" r="2.5" fill="white" />
+							</svg>
+							Open Smart Wallet
+						</button>
+						<button class="btn-final-ghost">
+							Request Institutional Access
+						</button>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══ FOOTER ═══ -->
+		<footer>
+			<div class="container">
+				<div class="footer-grid">
+					<div class="footer-brand">
+						<div class="footer-logo-wrap">
+							<img src="assets/kapitor.svg" alt="Kapitor Logo" />
+							<span>Kapitor</span>
+						</div>
+						<p>
+							The Global Financial Operating System. One ledger. One wallet.
+							Global control.
+						</p>
+					</div>
+					<div class="footer-col">
+						<h5>Platform</h5>
+						<ul>
+							<li><a href="kapitor-smart-wallet.html">Smart Wallet</a></li>
+							<li><a href="kapitor-pay.html">Kapitor Pay</a></li>
+							<li><a href="kapitor-trade.html">Trade</a></li>
+							<li><a href="kapitor-earn.html">Earn</a></li>
+							<li><a href="kapitor-stake.html">Stake</a></li>
+							<li><a href="kapitor-vaults.html">Vaults</a></li>
+						</ul>
+					</div>
+					<div class="footer-col">
+						<h5>Digital Assets</h5>
+						<ul>
+							<li><a href="kaloft-ept.html">Kaloft</a></li>
+							<li><a href="katoin.html">Katoin</a></li>
+							<li><a href="digitalassets.html">EQOUIN</a></li>
+							<li><a href="kfi.html">KFI</a></li>
+							<li><a href="rwa.html">Real-World Assets</a></li>
+						</ul>
+					</div>
+					<div class="footer-col">
+						<h5>Institutional</h5>
+						<ul>
+							<li><a href="prime.html">Kapitor Prime</a></li>
+							<li><a href="custody.html">Custody</a></li>
+							<li><a href="treasury.html">Treasury</a></li>
+							<li><a href="fx.html">FX</a></li>
+							<li><a href="api.html">API Access</a></li>
+						</ul>
+					</div>
+					<div class="footer-col">
+						<h5>Infrastructure</h5>
+						<ul>
+							<li><a href="#">Payment Rails</a></li>
+							<li><a href="#">Jurisdictions</a></li>
+							<li><a href="#">Compliance</a></li>
+							<li><a href="#">Proof of Reserves</a></li>
+							<li><a href="#">Security</a></li>
+						</ul>
+					</div>
+					<div class="footer-col">
+						<h5>Company</h5>
+						<ul>
+							<li><a href="#">About Kapitor</a></li>
+							<li><a href="#">Careers</a></li>
+							<li><a href="#">Media & Press</a></li>
+							<li><a href="#">Contact</a></li>
+							<li><a href="#">Whitepaper</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="footer-bottom">
+					<div class="footer-legal">
+						<a href="#">Terms of Service</a>
+						<a href="#">Privacy Policy</a>
+						<a href="#">Risk Disclosure</a>
+						<a href="#">AML Policy</a>
+						<a href="#">Cookie Policy</a>
+					</div>
+					<div class="footer-copy">
+						© Kapitor Technologies Pvt Ltd – All Rights Reserved
+					</div>
+				</div>
+			</div>
+		</footer>
+
+		<script src="script.js"></script>
+		<script>
+		(function() {
+			var header = document.getElementById('main-header');
+			var mobileToggle = document.querySelector('.nav-mobile-toggle');
+			function isMobile() { return window.innerWidth <= 900; }
+			if (mobileToggle && header) {
+				mobileToggle.addEventListener('click', function() {
+					header.classList.toggle('header-mobile-open');
+					mobileToggle.setAttribute('aria-expanded', header.classList.contains('header-mobile-open'));
+				});
+			}
+			document.querySelectorAll('.nav-item-wrap .nav-trigger').forEach(function(btn) {
+				btn.addEventListener('click', function(e) {
+					if (isMobile()) {
+						e.preventDefault();
+						var wrap = btn.closest('.nav-item-wrap');
+						wrap.classList.toggle('open');
+						btn.setAttribute('aria-expanded', wrap.classList.contains('open'));
+					}
+				});
+			});
+
+			// Mega menus (Platform + Digital Asset Layer): left hover -> right panel
+			document.querySelectorAll('.nav-item-wrap .nav-mega').forEach(function(mega) {
+				var wrap = mega.closest('.nav-item-wrap');
+				if (!wrap) return;
+				var tabs = mega.querySelectorAll('.mega-sec[data-mega]');
+				var panels = mega.querySelectorAll('.mega-panel[data-mega-panel]');
+				if (!tabs.length) return;
+
+				function setActive(key) {
+					tabs.forEach(function(t) {
+						var on = t.getAttribute('data-mega') === key;
+						t.classList.toggle('is-active', on);
+						t.setAttribute('aria-selected', on ? 'true' : 'false');
+					});
+					if (panels.length) {
+						panels.forEach(function(p) {
+							p.classList.toggle('is-active', p.getAttribute('data-mega-panel') === key);
+						});
+					}
+				}
+
+				tabs.forEach(function(tab) {
+					var href = tab.getAttribute('data-href');
+					var tappedOnce = false;
+
+					tab.addEventListener('mouseenter', function() {
+						if (!isMobile()) setActive(tab.getAttribute('data-mega'));
+					});
+					tab.addEventListener('focus', function() {
+						if (!isMobile()) setActive(tab.getAttribute('data-mega'));
+					});
+					tab.addEventListener('click', function(e) {
+						var key = tab.getAttribute('data-mega');
+						if (isMobile()) {
+							if (!href) {
+								e.preventDefault();
+								setActive(key);
+								return;
+							}
+							// two-tap mobile behavior for tabs with links
+							if (!tappedOnce) {
+								e.preventDefault();
+								setActive(key);
+								tappedOnce = true;
+								setTimeout(function() { tappedOnce = false; }, 1500);
+								return;
+							}
+							// second tap navigates
+							window.location.href = href;
+						} else if (href) {
+							// desktop click navigates for linked tabs
+							window.location.href = href;
+						}
+					});
+				});
+
+				var first = mega.querySelector('.mega-sec[data-mega]');
+				if (first) setActive(first.getAttribute('data-mega'));
+			});
+		})();
+		</script>
+	</body>
+</html>

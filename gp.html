@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIPS – Global Infrastructure Payment System | Kapitor</title>
+<link
+  href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap"
+  rel="stylesheet"
+>
+<style> 
+:root {
+  /* Core surfaces – match Kapitor brand light theme */
+  --bg: #FCF8E8;
+  --surface: #FFFFFF;
+  --surface2: #F5ECD6;
+  --surface3: #F5ECD6;
+
+  /* Borders & outlines */
+  --border: rgba(15, 23, 42, 0.08);
+  --border-md: rgba(15, 23, 42, 0.16);
+  --border-hi: rgba(15, 23, 42, 0.22);
+
+  /* Brand colors */
+  --blue: #1A6FB8;
+  --blue-light: #2B83D1;
+  --blue-dim: rgba(26, 111, 184, 0.10);
+  --blue-glow: rgba(26, 111, 184, 0.12);
+  --green: #33B269;
+  --green-dim: rgba(51, 178, 105, 0.12);
+  --green-border: rgba(51, 178, 105, 0.20);
+  --amber: #F7AE40;
+  --amber-dim: rgba(247, 174, 64, 0.14);
+  --amber-border: rgba(247, 174, 64, 0.22);
+
+  /* Semantic states */
+  --success: #0F9D58;
+  --warning: #F59E0B;
+  --error: #E53535;
+
+  /* Typography */
+  --text: #111827;
+  --text-muted: #6B6B6B;
+  --text-dim: #9CA3AF;
+  --white: #FFFFFF;
+
+  /* GIPS: deep ocean-blue / cyan-signal / globe-spanning (keep accents) */
+  --gips:#00b4d8;     --gips-light:#48ccec;
+  --gips-dim:rgba(0,180,216,0.08);    --gips-border:rgba(0,180,216,0.2);
+  --gips-deep:#0077a8; --gips-deep-dim:rgba(0,119,168,0.1);
+  --gips-neon:#00e5ff;
+  --gips-gold:#c8a030; --gips-gold-dim:rgba(200,160,48,0.09); --gips-gold-border:rgba(200,160,48,0.2);
+
+  /* rail colours (kept) */
+  --india:#ff9933;
+  --usa:#3366cc;
+  --eu:#003399;
+  --uk:#cc0000;
+  --brazil:#009900;
+  --africa:#ff8800;
+  --global:#00b4d8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:300;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+body::after{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+
+h1,h2,h3{
+  font-family:'Outfit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:700;
+  letter-spacing:-0.03em;
+}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem);line-height:1.03;}
+h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.1;}
+p{color:var(--text-muted);font-size:0.87rem;line-height:1.85;}
+.ey{font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;margin-bottom:1.4rem;}
+.ey::before{content:"";width:20px;height:1px;display:block;}
+.ey.gips{color:var(--gips-light);}  .ey.gips::before{background:var(--gips-light);}
+.ey.gold{color:var(--gips-gold);}   .ey.gold::before{background:var(--gips-gold);}
+.ey.g{color:var(--green);}          .ey.g::before{background:var(--green);}
+
+.container{max-width:1320px;margin:0 auto;padding:0 2.5rem;}
+.section{padding:7rem 0;}
+.section+.section{border-top:1px solid var(--border);}
+.s-intro{max-width:640px;margin-bottom:4rem;}
+.s-intro h2{color:var(--white);margin-bottom:0.85rem;}
+
+/* ─── HEADER ─── */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(252,248,232,0.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo img{width:26px;height:26px;object-fit:contain;}
+.logo-text{font-family:'Outfit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+nav a{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+nav a:hover{color:var(--text);}
+nav a.active{color:var(--gips-light);}
+.hdr-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-ghost{background:transparent;border:1px solid var(--border-md);color:var(--text-muted);padding:0.44rem 1.1rem;border-radius:5px;font-size:0.77rem;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--gips-border);color:var(--gips-light);}
+.btn-cta{background:var(--gips);color:#04070d;border:none;padding:0.48rem 1.3rem;border-radius:5px;font-size:0.77rem;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.2s;}
+.btn-cta:hover{background:var(--gips-light);}
+select.region{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.38rem 0.65rem;border-radius:4px;font-size:0.72rem;font-family:"Epilogue",sans-serif;cursor:pointer;}
+
+/* ─── HERO ─── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden;}
+/* globe-like radial glow */
+.hero-globe{position:absolute;top:50%;right:-5%;transform:translateY(-50%);width:720px;height:720px;background:radial-gradient(ellipse 50% 50%,rgba(0,180,216,0.07) 0%,rgba(0,119,168,0.04) 40%,transparent 70%);pointer-events:none;border-radius:50%;}
+/* subtle meridian lines */
+.hero-meridian{position:absolute;top:50%;right:6%;transform:translateY(-50%);width:640px;height:640px;border-radius:50%;border:1px solid rgba(0,180,216,0.06);pointer-events:none;}
+.hero-meridian2{position:absolute;top:50%;right:6%;transform:translateY(-50%) scaleX(0.5);width:640px;height:640px;border-radius:50%;border:1px solid rgba(0,180,216,0.04);pointer-events:none;}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,180,216,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,216,0.02) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 70% at 35% 50%,black 10%,transparent 72%);}
+
+.live-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:0.35rem 0.9rem;border:1px solid rgba(0,180,216,0.3);border-radius:3px;background:rgba(0,180,216,0.07);font-family:"JetBrains Mono",monospace;font-size:0.59rem;letter-spacing:0.14em;color:var(--gips-light);}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--gips);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.hero-content{position:relative;z-index:2;max-width:860px;}
+.hero h1{color:var(--white);margin-bottom:0.6rem;}
+.hero-token-id{font-family:"JetBrains Mono",monospace;font-size:0.64rem;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:1.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+.token-chip{padding:0.28rem 0.75rem;border-radius:3px;font-size:0.62rem;letter-spacing:0.1em;}
+.hero-sub{font-size:0.95rem;max-width:560px;color:rgba(168,192,216,0.5);margin-bottom:2rem;line-height:1.8;}
+/* rails mini-chips */
+.rail-chips{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:2rem;}
+.rc{font-family:"JetBrains Mono",monospace;font-size:0.6rem;padding:0.3rem 0.7rem;border-radius:3px;border:1px solid;display:flex;align-items:center;gap:5px;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-hero{background:var(--gips);color:#04070d;border:none;padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:var(--gips-light);transform:translateY(-1px);box-shadow:0 10px 40px rgba(0,180,216,0.28);}
+.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.88rem 2rem;border-radius:5px;font-size:0.85rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-out:hover{border-color:var(--gips-border);color:var(--gips-light);}
+
+/* HERO METRICS */
+.hero-metrics{margin-top:4.5rem;padding-top:2.5rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);gap:0;}
+.hm-item{padding:0 2rem 0 0;border-right:1px solid var(--border);}
+.hm-item:first-child{padding-left:0;}
+.hm-item:last-child{border-right:none;padding:0 0 0 2rem;}
+.hm-item:not(:first-child):not(:last-child){padding:0 2rem;}
+.hm-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.5rem;}
+.hm-val{font-family:"Syne",sans-serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.hm-sub{font-size:0.63rem;color:var(--text-dim);font-family:"JetBrains Mono",monospace;}
+.hm-sub .up{color:var(--gips-light);}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.6rem 0;overflow:hidden;background:var(--surface);}
+.t-track{display:flex;gap:3.5rem;animation:marquee 52s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:0.5rem;font-family:"JetBrains Mono",monospace;font-size:0.64rem;color:var(--text-dim);}
+.t-item .sym{color:var(--text-muted);}
+.t-item .up{color:var(--gips-light);}
+.t-sep{color:var(--text-dim);opacity:0.2;}
+
+/* ─── RAIL CARDS ─── */
+.rails-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.rc-card{background:var(--surface);position:relative;overflow:hidden;transition:background 0.25s;}
+.rc-card:hover{background:var(--surface2);}
+.rcc-topbar{height:3px;}
+.rcc-header{padding:1.5rem 1.5rem 0.85rem;}
+.rcc-flag{font-size:1.4rem;margin-bottom:0.4rem;display:block;}
+.rcc-icon-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;}
+.rcc-stat-val{font-family:"Syne",sans-serif;font-size:1.2rem;font-weight:800;line-height:1;}
+.rcc-stat-label{font-family:"JetBrains Mono",monospace;font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-top:1px;}
+.rcc-region{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:700;color:var(--white);margin-bottom:0.15rem;}
+.rcc-country{font-family:"JetBrains Mono",monospace;font-size:0.56rem;letter-spacing:0.07em;margin-bottom:0.5rem;}
+.rcc-desc{font-size:0.74rem;color:var(--text-muted);line-height:1.65;margin-bottom:0.75rem;}
+.rcc-body{padding:0 1.5rem;}
+/* rail instruments */
+.rcc-rails{display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.75rem;}
+.rcc-rail{font-family:"JetBrains Mono",monospace;font-size:0.56rem;padding:0.18rem 0.52rem;border-radius:3px;border:1px solid;font-weight:500;}
+/* use cases */
+.rcc-uses{display:flex;flex-direction:column;gap:0;margin-bottom:1.2rem;}
+.rcc-use{display:flex;align-items:center;gap:6px;padding:0.3rem 0;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.57rem;color:var(--text-muted);}
+.rcc-use:last-child{border-bottom:none;}
+.rcc-use::before{content:"→";font-size:0.57rem;flex-shrink:0;opacity:0.4;}
+/* status */
+.rcc-status{display:flex;align-items:center;gap:6px;padding:0.65rem 1.5rem;border-top:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.58rem;}
+.rcc-s-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;}
+
+/* ─── ARCHITECTURE ─── */
+.arch-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:12px;overflow:hidden;}
+.ap-topbar{height:2px;background:linear-gradient(90deg,var(--india),var(--usa),var(--eu),var(--uk),var(--brazil),var(--africa),var(--global));}
+.ap-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.ap-title{font-family:"Syne",sans-serif;font-size:0.95rem;font-weight:700;color:var(--white);}
+.ap-sub{font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--gips-light);letter-spacing:0.08em;}
+/* 7-step flow */
+.arch-flow{padding:2rem 1.75rem;border-bottom:1px solid var(--border);display:flex;align-items:stretch;gap:0;}
+.af-step{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;}
+.af-step:not(:last-child)::after{content:"→";position:absolute;right:-0.85rem;top:38%;font-family:"JetBrains Mono",monospace;font-size:0.9rem;color:var(--gips);z-index:1;}
+.af-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:0.7rem;font-weight:500;margin-bottom:0.55rem;flex-shrink:0;border:1px solid var(--gips-border);background:var(--gips-dim);color:var(--gips-light);}
+.af-num{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.2rem;}
+.af-label{font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);line-height:1.4;}
+/* fx detail */
+.arch-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);}
+.ab-col{background:var(--surface);padding:1.25rem 1.5rem;}
+.ab-col-label{font-family:"JetBrains Mono",monospace;font-size:0.57rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.75rem;}
+.ab-item{display:flex;align-items:center;gap:7px;padding:0.35rem 0;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.6rem;color:var(--text-muted);}
+.ab-item:last-child{border-bottom:none;}
+.ab-dot{width:5px;height:5px;border-radius:50%;background:var(--gips);flex-shrink:0;}
+
+/* ─── LIVE PAYMENT FEED ─── */
+.feed-layout{display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:start;}
+.feed-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.fp-topbar{height:2px;background:linear-gradient(90deg,var(--gips),var(--gips-deep));}
+.fp-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.fp-title{font-family:"Syne",sans-serif;font-size:0.9rem;font-weight:600;color:var(--white);}
+.fp-live{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:0.58rem;color:var(--gips-light);}
+/* tx rows */
+.tx-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;padding:0.7rem 1.75rem;border-bottom:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:0.6rem;align-items:center;transition:background 0.15s;}
+.tx-row.hdr{background:rgba(0,0,0,0.25);}
+.tx-row:last-child{border-bottom:none;}
+.tx-row:hover{background:rgba(0,180,216,0.025);}
+.tx-cell{color:var(--text-muted);}
+.tx-cell.hdr{color:var(--text-dim);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;}
+.tx-route{display:flex;flex-direction:column;gap:2px;}
+.tx-id{color:var(--gips-light);}
+.tx-corridor{color:var(--text-dim);font-size:0.54rem;}
+.tx-status{display:inline-block;padding:0.15rem 0.45rem;border-radius:2px;font-size:0.52rem;letter-spacing:0.07em;}
+.st-settled{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.st-processing{background:var(--gips-dim);color:var(--gips-light);border:1px solid var(--gips-border);}
+.st-fx{background:var(--gips-gold-dim);color:var(--gips-gold);border:1px solid var(--gips-gold-border);}
+/* volume metrics */
+.feed-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border);}
+.fm-item{background:var(--surface);padding:0.85rem 1rem;}
+.fm-label{font-family:"JetBrains Mono",monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.28rem;}
+.fm-val{font-family:"Syne",sans-serif;font-size:0.95rem;font-weight:700;}
+.fm-sub{font-family:"JetBrains Mono",monospace;font-size:0.52rem;color:var(--text-dim);margin-top:0.12rem;}
+/* right side features */
+.feed-features{display:flex;flex-direction:column;gap:0.6rem;margin-top:2rem;}
+.ff-item{display:flex;align-items:flex-start;gap:10px;padding:0.85rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;border-left:2px solid var(--gips);transition:border-color 0.2s;}
+.ff-item:hover{border-color:var(--border-md);}
+.ff-body h4{font-size:0.8rem;font-family:"Epilogue",sans-serif;font-weight:500;color:var(--text);margin-bottom:0.18rem;}
+.ff-body p{font-size:0.73rem;}
+
+/* ─── GOVERNANCE ─── */
+.gov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.gg-item{background:var(--surface);padding:1.5rem 1.4rem;transition:background 0.2s;}
+.gg-item:hover{background:var(--surface2);}
+.gg-icon{font-size:0.9rem;color:var(--gips-light);margin-bottom:0.5rem;}
+.gg-title{font-family:"Epilogue",sans-serif;font-size:0.82rem;font-weight:500;color:var(--white);margin-bottom:0.3rem;}
+.gg-desc{font-size:0.73rem;color:var(--text-muted);}
+
+/* ─── DASHBOARD ─── */
+.dash-panels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
+.dash-panel{background:var(--surface);border:1px solid var(--border-md);border-radius:10px;overflow:hidden;}
+.dp-topbar{height:2px;}
+.dp-header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.dp-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:600;color:var(--white);}
+.dp-tag{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.55rem;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);}
+.dp-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+.dp-metric{background:var(--surface);padding:1rem 1.1rem;}
+.dp-m-label{font-family:"JetBrains Mono",monospace;font-size:0.54rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.35rem;}
+.dp-m-val{font-family:"Syne",sans-serif;font-size:1rem;font-weight:700;}
+.dp-m-sub{font-family:"JetBrains Mono",monospace;font-size:0.54rem;margin-top:0.18rem;}
+.dp-rows{padding:0.25rem 0;}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.6rem;border-bottom:1px solid var(--border);}
+.dp-row:last-child{border-bottom:none;}
+.dp-row-key{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-muted);}
+.dp-row-val{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text);}
+/* corridor visual */
+.corridor-bars{padding:0 1.6rem 1.25rem;border-top:1px solid var(--border);}
+.cb-label{font-family:"JetBrains Mono",monospace;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin:0.85rem 0 0.5rem;}
+.cb-row{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.3rem;}
+.cb-name{font-family:"JetBrains Mono",monospace;font-size:0.57rem;color:var(--text-muted);width:78px;flex-shrink:0;}
+.cb-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.cb-fill{height:100%;border-radius:2px;}
+.cb-pct{font-family:"JetBrains Mono",monospace;font-size:0.56rem;color:var(--text-dim);width:28px;text-align:right;flex-shrink:0;}
+
+/* FINAL CTA */
+.final-cta{text-align:center;padding:8rem 0;position:relative;overflow:hidden;}
+.final-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 75% 55% at 50% 50%,rgba(0,180,216,0.07) 0%,transparent 62%);}
+.fc-inner{position:relative;z-index:2;}
+.fc-inner h2{color:var(--white);margin-bottom:0.75rem;max-width:600px;margin-left:auto;margin-right:auto;}
+.fc-inner p{max-width:460px;margin:0 auto 2rem;}
+.fc-trio{display:flex;justify-content:center;gap:0;margin:0 auto 2.5rem;max-width:480px;}
+.fct{font-family:"JetBrains Mono",monospace;font-size:0.65rem;padding:0.65rem 1.1rem;border:1px solid var(--gips-border);border-right:none;color:var(--gips-light);background:var(--gips-dim);text-align:center;}
+.fct:first-child{border-radius:4px 0 0 4px;}
+.fct:last-child{border-right:1px solid var(--gips-border);border-radius:0 4px 4px 0;}
+.fc-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-final{background:var(--gips);color:#04070d;border:none;padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:8px;}
+.btn-final:hover{background:var(--gips-light);box-shadow:0 10px 40px rgba(0,180,216,0.3);}
+.btn-final-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-md);padding:0.92rem 2.2rem;border-radius:5px;font-size:0.88rem;cursor:pointer;font-family:"Epilogue",sans-serif;transition:all 0.25s;}
+.btn-final-out:hover{border-color:var(--gips-border);color:var(--gips-light);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem 0 0;}
+.footer-grid{display:grid;grid-template-columns:1.8fr repeat(5,1fr);gap:3rem;margin-bottom:4rem;}
+.footer-brand p{font-size:0.77rem;color:var(--text-dim);margin-top:1rem;max-width:210px;}
+.footer-logo-row{display:flex;align-items:center;gap:9px;}
+.footer-logo-row img{width:24px;height:24px;object-fit:contain;}
+.footer-logo-row span{font-family:"Syne",sans-serif;font-size:1.15rem;font-weight:700;color:var(--white);}
+.footer-col h5{font-family:"JetBrains Mono",monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.5rem;}
+.footer-col a{font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;font-weight:300;}
+.footer-col a:hover{color:var(--gips-light);}
+.footer-bottom{border-top:1px solid var(--border);padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-legal{display:flex;gap:2rem;flex-wrap:wrap;}
+.footer-legal a{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s;}
+.footer-legal a:hover{color:var(--text-muted);}
+.footer-copy{font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.04em;}
+
+/* NAV DROPDOWNS (minimal) */
+.nav-wrap{display:flex;align-items:center;gap:0.15rem;}
+.nav-item-wrap{position:relative;}
+.nav-item-wrap .nav-trigger{display:flex;align-items:center;gap:3px;color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;white-space:nowrap;font-weight:400;background:none;border:none;cursor:pointer;font-family:inherit;}
+.nav-item-wrap .nav-trigger:hover,.nav-item-wrap.open .nav-trigger{color:var(--text);}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:240px;margin-top:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:600;padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+.nav-item-wrap:hover .nav-dropdown,.nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown a,.nav-dropdown-inner a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.78rem;padding:0.4rem 1rem;transition:color 0.2s,background 0.15s;}
+.nav-dropdown > a:hover,.nav-dropdown-inner a:hover{color:var(--text);background:var(--surface2);}
+.nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
+.nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
+.nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
+.nav-link:hover,.nav-link.active{color:var(--gips-light);}
+.nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
+.nav-mobile-toggle:hover{color:var(--text);}
+.chevron{font-size:0.55rem;opacity:0.4;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .footer-grid{grid-template-columns:repeat(3,1fr);}
+  .footer-brand{grid-column:1/-1;}
+  .hero-metrics{grid-template-columns:repeat(3,1fr);}
+  .hm-item:nth-child(3){border-right:none;}
+  .rails-grid{grid-template-columns:repeat(2,1fr);}
+  .arch-body{grid-template-columns:1fr 1fr;}
+  .gov-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:900px){
+  .nav-item-wrap:hover .nav-dropdown{opacity:0;visibility:hidden;}
+  .nav-item-wrap.open .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);position:relative;box-shadow:none;border:none;border-top:1px solid var(--border);border-radius:0;margin-top:0;}
+  nav{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0.5rem 0;max-height:80vh;overflow-y:auto;}
+  header.header-mobile-open nav{display:flex;}
+  .nav-wrap{flex-direction:column;align-items:stretch;gap:0;}
+  .nav-item-wrap{border-bottom:1px solid var(--border);}
+  .nav-item-wrap .nav-trigger{width:100%;justify-content:space-between;padding:0.6rem 1rem;}
+  nav .nav-link{display:block;padding:0.6rem 1rem;}
+  .nav-mobile-toggle{display:flex;}
+  .feed-layout,.dash-panels{grid-template-columns:1fr;}
+  .arch-flow{flex-wrap:wrap;gap:1rem;}
+  .af-step:not(:last-child)::after{display:none;}
+  .arch-body{grid-template-columns:1fr;}
+  .tx-row{grid-template-columns:1.5fr 1fr 1fr;}
+  .tx-row>*:nth-child(4),.tx-row.hdr>*:nth-child(4){display:none;}
+}
+@media(max-width:640px){
+  h1{font-size:2.2rem;}
+  .footer-grid{grid-template-columns:repeat(2,1fr);}
+  .rails-grid{grid-template-columns:1fr;}
+  .gov-grid{grid-template-columns:1fr;}
+  .fc-trio{flex-direction:column;max-width:240px;}
+  .fct{border-right:1px solid var(--gips-border);border-bottom:none;}
+}
+</style>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html" class="logo"><img src="assets/kapitor.svg" alt="Kapitor"><span class="logo-text">Kapitor</span></a>
+  <button type="button" class="nav-mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-wrap" aria-label="Main navigation">
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+          <a href="kapitor-smart-wallet.html">Security Framework</a>
+        </div>
+        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-pay.html">Global Transfers</a>
+          <a href="kapitor-pay.html">QR &amp; P2P</a>
+          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+          <a href="kapitor-pay.html">International Settlement</a>
+          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+        </div>
+        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-trade.html">Spot Markets</a>
+          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+          <a href="kapitor-trade.html">Derivatives</a>
+          <a href="kapitor-trade.html">OTC Desk</a>
+          <a href="kapitor-trade.html">Risk Engine</a>
+        </div>
+        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-earn.html">Conservative Strategy</a>
+          <a href="kapitor-earn.html">Balanced Strategy</a>
+          <a href="kapitor-earn.html">Growth Strategy</a>
+          <a href="kapitor-earn.html">Yield Sources</a>
+          <a href="kapitor-earn.html">Performance Reporting</a>
+        </div>
+        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-stake.html">ETH Liquid Staking</a>
+          <a href="kapitor-stake.html">SOL Staking</a>
+          <a href="kapitor-stake.html">DOT Staking</a>
+          <a href="kapitor-stake.html">ATOM Staking</a>
+          <a href="kapitor-stake.html">Layered Yield Model</a>
+        </div>
+        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
+        <div class="nav-dropdown-inner">
+          <a href="kapitor-vaults.html">Stable Income Vault</a>
+          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+          <a href="kapitor-vaults.html">Trade Finance Vault</a>
+          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item-wrap">
+      <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
+        <div class="nav-dropdown-inner">
+          <a href="kaloft-ept.html">Economic Participation Model</a>
+          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+          <a href="kaloft-ept.html">NAV Tracking</a>
+          <a href="kaloft-ept.html">Redemption Framework</a>
+        </div>
+        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
+        <div class="nav-dropdown-inner">
+          <a href="katoin.html">Commodity Tokenization</a>
+          <a href="katoin.html">Trade Levels</a>
+          <a href="katoin.html">Profit Distribution Logic</a>
+          <a href="katoin.html">Global Commodity Flow</a>
+        </div>
+        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
+        <div class="nav-dropdown-inner">
+          <a href="digitalassets.html">Valuation Mechanism</a>
+          <a href="digitalassets.html">Dividend Distribution</a>
+          <a href="digitalassets.html">Capital Appreciation Model</a>
+          <a href="digitalassets.html">Internal Trading Market</a>
+        </div>
+        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
+        <div class="nav-dropdown-inner">
+          <a href="kfi.html">Bank Guarantees (BG)</a>
+          <a href="kfi.html">SBLC</a>
+          <a href="kfi.html">Letter of Credit (LC)</a>
+          <a href="kfi.html">Performance Guarantees</a>
+          <a href="kfi.html">Digital Issuance</a>
+          <a href="kfi.html">Blockchain Record</a>
+        </div>
+      </div>
+    </div>
+    <a href="rwa.html" class="nav-link">RWA</a>
+    <a href="prime.html" class="nav-link">Prime</a>
+    <a href="gp.html" class="nav-link active">Global Payments</a>
+    <a href="compliance.html" class="nav-link">Compliance</a>
+    <a href="api.html" class="nav-link">Developers</a>
+    <a href="company.html" class="nav-link">Company</a>
+  </nav>
+  <div class="hdr-right">
+    <select class="region"><option>🌐 Global</option><option>🇮🇳 India</option><option>🇺🇸 USA</option><option>🇪🇺 Europe</option></select>
+    <button class="btn-ghost">Login</button>
+    <button class="btn-cta">Open Smart Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-globe"></div>
+  <div class="hero-meridian"></div>
+  <div class="hero-meridian2"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-content">
+      <div class="live-pill"><div class="ld"></div>6 · GIPS · GLOBAL INFRASTRUCTURE PAYMENT SYSTEM · ALL RAILS ACTIVE</div>
+      <h1 style="color:var(--white);">Global Rails.<br><span style="color:var(--gips-light);">Unified Ledger.</span></h1>
+      <div class="hero-token-id">
+        <span class="token-chip" style="background:var(--gips-dim);border:1px solid var(--gips-border);color:var(--gips-light);">GIPS</span>
+        <span class="token-chip" style="background:rgba(0,119,168,0.1);border:1px solid rgba(0,119,168,0.25);color:#70b8d8;">MULTI-RAIL SETTLEMENT LAYER</span>
+        <span style="color:var(--text-dim);">Compliant · FX-Mapped · Ledger-Recorded · Reserve-Reconciled</span>
+      </div>
+      <p class="hero-sub">GIPS connects domestic payment rails, real-time networks, card networks, international clearing systems, digital asset settlement, and Unified Ledger reconciliation. Infrastructure — not a plugin.</p>
+      <div class="rail-chips">
+        <div class="rc" style="background:rgba(255,153,51,0.1);border-color:rgba(255,153,51,0.25);color:#ffb566;">🇮🇳 UPI · IMPS · NEFT · RuPay</div>
+        <div class="rc" style="background:rgba(51,102,204,0.1);border-color:rgba(51,102,204,0.25);color:#88aaee;">🇺🇸 ACH · FedNow · Wire</div>
+        <div class="rc" style="background:rgba(0,51,153,0.12);border-color:rgba(100,140,220,0.25);color:#88aaff;">🇪🇺 SEPA · SEPA Instant</div>
+        <div class="rc" style="background:rgba(204,0,0,0.09);border-color:rgba(204,0,0,0.22);color:#f08080;">🇬🇧 Faster Payments</div>
+        <div class="rc" style="background:rgba(0,153,0,0.09);border-color:rgba(0,153,0,0.22);color:#70d870;">🇧🇷 PIX</div>
+        <div class="rc" style="background:rgba(255,136,0,0.09);border-color:rgba(255,136,0,0.22);color:#f0a060;">🌍 Mobile Money</div>
+        <div class="rc" style="background:var(--gips-dim);border-color:var(--gips-border);color:var(--gips-light);">🌐 SWIFT · Visa · Mastercard</div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-hero">◈ Open Smart Wallet</button>
+        <button class="btn-out">Explore Payment Corridors →</button>
+        <button class="btn-out">Request Institutional Access →</button>
+      </div>
+      <div class="hero-metrics">
+        <div class="hm-item">
+          <div class="hm-label">Daily Volume</div>
+          <div class="hm-val" style="color:var(--gips-light);">$8.4B</div>
+          <div class="hm-sub"><span class="up">▲ 18.4%</span> YTD</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Active Rails</div>
+          <div class="hm-val" style="color:var(--white);">7</div>
+          <div class="hm-sub">All jurisdictions</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Settlement Speed</div>
+          <div class="hm-val" style="color:var(--gips-light);">&lt;3s</div>
+          <div class="hm-sub">Domestic real-time</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">Off-Ledger Flows</div>
+          <div class="hm-val" style="color:var(--green);font-size:1.1rem;padding-top:0.2rem;">Zero</div>
+          <div class="hm-sub">All documented</div>
+        </div>
+        <div class="hm-item">
+          <div class="hm-label">AML Screened</div>
+          <div class="hm-val" style="color:var(--white);">100%</div>
+          <div class="hm-sub">Every transaction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="t-track">
+    <span class="t-item"><span class="sym">UPI</span><span class="up">ACTIVE · &lt;2s</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">FEDNOW</span><span class="up">ACTIVE · REAL-TIME</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SEPA INSTANT</span><span class="up">ACTIVE · &lt;10s</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">FASTER PAYMENTS</span><span class="up">ACTIVE</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">PIX</span><span class="up">ACTIVE · &lt;3s</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">SWIFT</span>ACTIVE · INTL</span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">DAILY VOLUME</span><span class="up">$8.4B</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">AML SCREENED</span><span class="up">100%</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">OFF-LEDGER FLOWS</span>ZERO</span>
+    <span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">UPI</span><span class="up">ACTIVE · &lt;2s</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">FEDNOW</span><span class="up">ACTIVE · REAL-TIME</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">DAILY VOLUME</span><span class="up">$8.4B</span></span><span class="t-sep">|</span>
+    <span class="t-item"><span class="sym">OFF-LEDGER FLOWS</span>ZERO</span>
+  </div>
+</div>
+
+<!-- ═══ RAIL CARDS ═══ -->
+<section class="section" id="rails">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey gips">Seven Payment Rails</div>
+      <h2 style="color:var(--white);">Local Speed. Global Reach.<br>Single Governed Infrastructure.</h2>
+      <p>GIPS routes every payment through compliant rails — FX-mapped where required, ledger-recorded on execution, compliance-screened at entry, and reserve-reconciled on settlement. No rail operates outside governance.</p>
+    </div>
+    <div class="rails-grid">
+
+      <!-- INDIA -->
+      <div class="rc-card">
+        <div class="rcc-topbar" style="background:var(--india);"></div>
+        <div class="rcc-header">
+          <span class="rcc-flag">🇮🇳</span>
+          <div class="rcc-icon-row">
+            <div style="flex:1;">
+              <div class="rcc-region">India</div>
+              <div class="rcc-country" style="color:rgba(255,153,51,0.7);">DOMESTIC REAL-TIME & BANKING</div>
+            </div>
+            <div style="text-align:right;"><div class="rcc-stat-val" style="color:#ffb566;">$1.8B</div><div class="rcc-stat-label">DAILY VOLUME</div></div>
+          </div>
+          <p class="rcc-desc">UPI, IMPS, NEFT, and RuPay integration enabling real-time QR payments, domestic bank transfers, payroll disbursement, merchant settlement, and card-based spending.</p>
+        </div>
+        <div class="rcc-body">
+          <div class="rcc-rails">
+            <span class="rcc-rail" style="background:rgba(255,153,51,0.1);border-color:rgba(255,153,51,0.28);color:#ffb566;">UPI</span>
+            <span class="rcc-rail" style="background:rgba(255,153,51,0.08);border-color:rgba(255,153,51,0.2);color:#ffb566;">IMPS</span>
+            <span class="rcc-rail" style="background:rgba(255,153,51,0.08);border-color:rgba(255,153,51,0.2);color:#ffb566;">NEFT</span>
+            <span class="rcc-rail" style="background:rgba(255,153,51,0.08);border-color:rgba(255,153,51,0.2);color:#ffb566;">RuPay</span>
+          </div>
+          <div class="rcc-uses">
+            <div class="rcc-use">Real-time QR payments</div>
+            <div class="rcc-use">Domestic bank transfers</div>
+            <div class="rcc-use">Payroll disbursement</div>
+            <div class="rcc-use">Merchant settlement</div>
+          </div>
+        </div>
+        <div class="rcc-status"><div class="rcc-s-dot"></div><span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.57rem;">ALL RAILS ACTIVE · &lt;2s</span></div>
+      </div>
+
+      <!-- USA -->
+      <div class="rc-card">
+        <div class="rcc-topbar" style="background:var(--usa);"></div>
+        <div class="rcc-header">
+          <span class="rcc-flag">🇺🇸</span>
+          <div class="rcc-icon-row">
+            <div style="flex:1;">
+              <div class="rcc-region">United States</div>
+              <div class="rcc-country" style="color:rgba(51,102,204,0.8);">CLEARING & REAL-TIME NETWORKS</div>
+            </div>
+            <div style="text-align:right;"><div class="rcc-stat-val" style="color:#88aaee;">$2.4B</div><div class="rcc-stat-label">DAILY VOLUME</div></div>
+          </div>
+          <p class="rcc-desc">ACH, FedNow, and Wire integration for corporate payroll, vendor payments, cross-border settlement, and treasury routing with automatic FX mapping and compliance screening.</p>
+        </div>
+        <div class="rcc-body">
+          <div class="rcc-rails">
+            <span class="rcc-rail" style="background:rgba(51,102,204,0.1);border-color:rgba(51,102,204,0.28);color:#88aaee;">ACH</span>
+            <span class="rcc-rail" style="background:rgba(51,102,204,0.08);border-color:rgba(51,102,204,0.2);color:#88aaee;">FedNow</span>
+            <span class="rcc-rail" style="background:rgba(51,102,204,0.08);border-color:rgba(51,102,204,0.2);color:#88aaee;">Wire</span>
+          </div>
+          <div class="rcc-uses">
+            <div class="rcc-use">Corporate payroll</div>
+            <div class="rcc-use">Vendor payments</div>
+            <div class="rcc-use">Cross-border settlement</div>
+            <div class="rcc-use">Treasury routing</div>
+          </div>
+        </div>
+        <div class="rcc-status"><div class="rcc-s-dot"></div><span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.57rem;">ALL RAILS ACTIVE · REAL-TIME</span></div>
+      </div>
+
+      <!-- EU -->
+      <div class="rc-card">
+        <div class="rcc-topbar" style="background:#4466cc;"></div>
+        <div class="rcc-header">
+          <span class="rcc-flag">🇪🇺</span>
+          <div class="rcc-icon-row">
+            <div style="flex:1;">
+              <div class="rcc-region">Europe</div>
+              <div class="rcc-country" style="color:rgba(100,140,220,0.8);">SEPA SETTLEMENT INFRASTRUCTURE</div>
+            </div>
+            <div style="text-align:right;"><div class="rcc-stat-val" style="color:#99b8ff;">$1.6B</div><div class="rcc-stat-label">DAILY VOLUME</div></div>
+          </div>
+          <p class="rcc-desc">SEPA and SEPA Instant integration for euro-denominated transfers, real-time settlement, corporate treasury movement, and merchant payouts. All flows compliance-tier controlled.</p>
+        </div>
+        <div class="rcc-body">
+          <div class="rcc-rails">
+            <span class="rcc-rail" style="background:rgba(100,140,220,0.1);border-color:rgba(100,140,220,0.28);color:#99b8ff;">SEPA</span>
+            <span class="rcc-rail" style="background:rgba(100,140,220,0.08);border-color:rgba(100,140,220,0.2);color:#99b8ff;">SEPA Instant</span>
+          </div>
+          <div class="rcc-uses">
+            <div class="rcc-use">Euro-denominated transfers</div>
+            <div class="rcc-use">Real-time settlement</div>
+            <div class="rcc-use">Corporate treasury movement</div>
+            <div class="rcc-use">Merchant payouts</div>
+          </div>
+        </div>
+        <div class="rcc-status"><div class="rcc-s-dot"></div><span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.57rem;">ACTIVE · &lt;10s SEPA INSTANT</span></div>
+      </div>
+
+      <!-- UK -->
+      <div class="rc-card">
+        <div class="rcc-topbar" style="background:var(--uk);"></div>
+        <div class="rcc-header">
+          <span class="rcc-flag">🇬🇧</span>
+          <div class="rcc-icon-row">
+            <div style="flex:1;">
+              <div class="rcc-region">United Kingdom</div>
+              <div class="rcc-country" style="color:rgba(204,0,0,0.7);">FASTER PAYMENTS NETWORK</div>
+            </div>
+            <div style="text-align:right;"><div class="rcc-stat-val" style="color:#f08080;">$820M</div><div class="rcc-stat-label">DAILY VOLUME</div></div>
+          </div>
+          <p class="rcc-desc">Faster Payments integration for real-time domestic transfers, corporate disbursement, bill payments, and merchant settlement. All UK payments ledger-reconciled in real time.</p>
+        </div>
+        <div class="rcc-body">
+          <div class="rcc-rails">
+            <span class="rcc-rail" style="background:rgba(204,0,0,0.09);border-color:rgba(204,0,0,0.22);color:#f08080;">Faster Payments</span>
+          </div>
+          <div class="rcc-uses">
+            <div class="rcc-use">Real-time domestic transfers</div>
+            <div class="rcc-use">Corporate disbursement</div>
+            <div class="rcc-use">Bill payments</div>
+            <div class="rcc-use">Merchant settlement</div>
+          </div>
+        </div>
+        <div class="rcc-status"><div class="rcc-s-dot"></div><span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.57rem;">ACTIVE · REAL-TIME RECONCILE</span></div>
+      </div>
+
+      <!-- BRAZIL -->
+      <div class="rc-card">
+        <div class="rcc-topbar" style="background:var(--brazil);"></div>
+        <div class="rcc-header">
+          <span class="rcc-flag">🇧🇷</span>
+          <div class="rcc-icon-row">
+            <div style="flex:1;">
+              <div class="rcc-region">Brazil</div>
+              <div class="rcc-country" style="color:rgba(0,153,0,0.75);">PIX INFRASTRUCTURE</div>
+            </div>
+            <div style="text-align:right;"><div class="rcc-stat-val" style="color:#70d870;">$480M</div><div class="rcc-stat-label">DAILY VOLUME</div></div>
+          </div>
+          <p class="rcc-desc">PIX integration enabling instant QR transfers, domestic business payments, merchant settlement, and local currency deposit. Fully synchronized with Kapitor's FX engine.</p>
+        </div>
+        <div class="rcc-body">
+          <div class="rcc-rails">
+            <span class="rcc-rail" style="background:rgba(0,153,0,0.09);border-color:rgba(0,153,0,0.22);color:#70d870;">PIX</span>
+          </div>
+          <div class="rcc-uses">
+            <div class="rcc-use">Instant QR transfers</div>
+            <div class="rcc-use">Domestic business payments</div>
+            <div class="rcc-use">Merchant settlement</div>
+            <div class="rcc-use">Local currency deposit</div>
+          </div>
+        </div>
+        <div class="rcc-status"><div class="rcc-s-dot"></div><span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.57rem;">ACTIVE · FX ENGINE SYNCED</span></div>
+      </div>
+
+      <!-- AFRICA -->
+      <div class="rc-card">
+        <div class="rcc-topbar" style="background:var(--africa);"></div>
+        <div class="rcc-header">
+          <span class="rcc-flag">🌍</span>
+          <div class="rcc-icon-row">
+            <div style="flex:1;">
+              <div class="rcc-region">Africa</div>
+              <div class="rcc-country" style="color:rgba(255,136,0,0.7);">MOBILE MONEY INTEGRATION</div>
+            </div>
+            <div style="text-align:right;"><div class="rcc-stat-val" style="color:#f0a060;">$260M</div><div class="rcc-stat-label">DAILY VOLUME</div></div>
+          </div>
+          <p class="rcc-desc">Regional mobile money operator integration for wallet-to-wallet transfers, merchant settlement, and cross-border corridors. AML screening and jurisdiction control applied.</p>
+        </div>
+        <div class="rcc-body">
+          <div class="rcc-rails">
+            <span class="rcc-rail" style="background:rgba(255,136,0,0.09);border-color:rgba(255,136,0,0.22);color:#f0a060;">Mobile Money</span>
+            <span class="rcc-rail" style="background:rgba(255,136,0,0.07);border-color:rgba(255,136,0,0.18);color:#f0a060;">Wallet-to-Wallet</span>
+          </div>
+          <div class="rcc-uses">
+            <div class="rcc-use">Wallet-to-wallet transfers</div>
+            <div class="rcc-use">Merchant settlement</div>
+            <div class="rcc-use">Cross-border corridors</div>
+            <div class="rcc-use">AML-screened flows</div>
+          </div>
+        </div>
+        <div class="rcc-status"><div class="rcc-s-dot"></div><span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.57rem;">ACTIVE · AML + JURISDICTION CTL</span></div>
+      </div>
+
+      <!-- GLOBAL -->
+      <div class="rc-card" style="grid-column:span 2;">
+        <div class="rcc-topbar" style="background:linear-gradient(90deg,var(--gips),var(--gips-deep));"></div>
+        <div class="rcc-header">
+          <span class="rcc-flag">🌐</span>
+          <div class="rcc-icon-row">
+            <div style="flex:1;">
+              <div class="rcc-region">Global Rail</div>
+              <div class="rcc-country" style="color:rgba(0,180,216,0.7);">SWIFT & CARD NETWORKS</div>
+            </div>
+            <div style="text-align:right;"><div class="rcc-stat-val" style="color:var(--gips-light);">$2.1B</div><div class="rcc-stat-label">DAILY VOLUME</div></div>
+          </div>
+          <p class="rcc-desc">SWIFT, Visa, and Mastercard integration for international wires, corporate settlement, card-based global spending, and cross-border trade payments. Card settlements route through Kapitor Pay and reconcile against Smart Wallet balances.</p>
+        </div>
+        <div class="rcc-body">
+          <div class="rcc-rails">
+            <span class="rcc-rail" style="background:var(--gips-dim);border-color:var(--gips-border);color:var(--gips-light);">SWIFT</span>
+            <span class="rcc-rail" style="background:var(--gips-dim);border-color:var(--gips-border);color:var(--gips-light);">Visa</span>
+            <span class="rcc-rail" style="background:var(--gips-dim);border-color:var(--gips-border);color:var(--gips-light);">Mastercard</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+            <div class="rcc-uses" style="padding-right:1.5rem;border-right:1px solid var(--border);">
+              <div class="rcc-use">International wires</div>
+              <div class="rcc-use">Corporate settlement</div>
+            </div>
+            <div class="rcc-uses" style="padding-left:1.5rem;">
+              <div class="rcc-use">Card-based global spending</div>
+              <div class="rcc-use">Cross-border trade payments</div>
+            </div>
+          </div>
+        </div>
+        <div class="rcc-status"><div class="rcc-s-dot"></div><span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.57rem;">ALL GLOBAL RAILS ACTIVE · SMART WALLET RECONCILED</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CORE ARCHITECTURE ═══ -->
+<section class="section" id="architecture">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey gips">GIPS Core Architecture</div>
+      <h2 style="color:var(--white);">Seven Steps. Every Payment.<br>No Exceptions.</h2>
+    </div>
+    <div class="arch-panel">
+      <div class="ap-topbar"></div>
+      <div class="ap-header">
+        <div class="ap-title">Payment Routing Sequence — Every Transaction</div>
+        <div class="ap-sub">NO OFF-LEDGER MOVEMENT · NO UNDOCUMENTED FLOW</div>
+      </div>
+      <!-- 7-step flow -->
+      <div class="arch-flow">
+        <div class="af-step"><div class="af-circle">COMP</div><div class="af-num">STEP 01</div><div class="af-label">Compliance<br>Screening</div></div>
+        <div class="af-step"><div class="af-circle">FX</div><div class="af-num">STEP 02</div><div class="af-label">FX Calculation<br>(if required)</div></div>
+        <div class="af-step"><div class="af-circle">LIQ</div><div class="af-num">STEP 03</div><div class="af-label">Liquidity<br>Validation</div></div>
+        <div class="af-step"><div class="af-circle">RAIL</div><div class="af-num">STEP 04</div><div class="af-label">Rail<br>Routing</div></div>
+        <div class="af-step"><div class="af-circle">LDG</div><div class="af-num">STEP 05</div><div class="af-label">Ledger Entry<br>Creation</div></div>
+        <div class="af-step"><div class="af-circle">SETT</div><div class="af-num">STEP 06</div><div class="af-label">Settlement<br>Confirmation</div></div>
+        <div class="af-step"><div class="af-circle">RSV</div><div class="af-num">STEP 07</div><div class="af-label">Reserve<br>Mapping</div></div>
+      </div>
+      <!-- three columns -->
+      <div class="arch-body">
+        <div class="ab-col">
+          <div class="ab-col-label">What Users See</div>
+          <div class="ab-item"><div class="ab-dot"></div>Exchange rate applied</div>
+          <div class="ab-item"><div class="ab-dot"></div>Fee breakdown (transparent)</div>
+          <div class="ab-item"><div class="ab-dot"></div>Settlement timestamp</div>
+          <div class="ab-item"><div class="ab-dot"></div>Payment reference ID</div>
+          <div class="ab-item"><div class="ab-dot"></div>Compliance confirmation</div>
+          <div class="ab-item"><div class="ab-dot"></div>Rail used</div>
+        </div>
+        <div class="ab-col">
+          <div class="ab-col-label">What Institutions See</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--gips-gold);"></div>FX exposure summary</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--gips-gold);"></div>Cross-border flow analytics</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--gips-gold);"></div>Corridor-level settlement data</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--gips-gold);"></div>Volume by corridor</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--gips-gold);"></div>Settlement speed metrics</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--gips-gold);"></div>Liquidity utilization</div>
+        </div>
+        <div class="ab-col">
+          <div class="ab-col-label">FX & Conversion Engine</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--green);"></div>Real-time exchange rate feeds</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--green);"></div>Spread transparency (full)</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--green);"></div>Treasury conversion routing</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--green);"></div>Cross-currency liquidity mgmt</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--green);"></div>No opaque conversion layers</div>
+          <div class="ab-item"><div class="ab-dot" style="background:var(--green);"></div>Ledger-reconciled on execution</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LIVE PAYMENT FEED ═══ -->
+<section class="section" id="live">
+  <div class="container">
+    <div class="feed-layout">
+      <div>
+        <div class="feed-panel">
+          <div class="fp-topbar"></div>
+          <div class="fp-header">
+            <div class="fp-title">Live Payment Feed</div>
+            <div class="fp-live"><div class="ld"></div>REAL-TIME</div>
+          </div>
+          <div class="tx-row hdr">
+            <span class="tx-cell hdr">ROUTE</span>
+            <span class="tx-cell hdr">AMOUNT</span>
+            <span class="tx-cell hdr">RAIL</span>
+            <span class="tx-cell hdr">STATUS</span>
+          </div>
+          <div class="tx-row">
+            <div class="tx-route"><span class="tx-id">TXN-00284182</span><span class="tx-corridor">🇮🇳 → 🇦🇪 INR/AED</span></div>
+            <span class="tx-cell">$84,000</span>
+            <span class="tx-cell" style="color:#ffb566;">UPI → SWIFT</span>
+            <span><span class="tx-status st-settled">SETTLED</span></span>
+          </div>
+          <div class="tx-row">
+            <div class="tx-route"><span class="tx-id">TXN-00284181</span><span class="tx-corridor">🇺🇸 → 🇪🇺 USD/EUR</span></div>
+            <span class="tx-cell">$240,000</span>
+            <span class="tx-cell" style="color:#88aaee;">ACH → SEPA</span>
+            <span><span class="tx-status st-processing">ROUTING</span></span>
+          </div>
+          <div class="tx-row">
+            <div class="tx-route"><span class="tx-id">TXN-00284180</span><span class="tx-corridor">🇧🇷 Local PIX</span></div>
+            <span class="tx-cell">$12,400</span>
+            <span class="tx-cell" style="color:#70d870;">PIX</span>
+            <span><span class="tx-status st-settled">SETTLED</span></span>
+          </div>
+          <div class="tx-row">
+            <div class="tx-route"><span class="tx-id">TXN-00284179</span><span class="tx-corridor">🌐 Visa Card · USD</span></div>
+            <span class="tx-cell">$4,820</span>
+            <span class="tx-cell" style="color:var(--gips-light);">Visa</span>
+            <span><span class="tx-status st-settled">SETTLED</span></span>
+          </div>
+          <div class="tx-row">
+            <div class="tx-route"><span class="tx-id">TXN-00284178</span><span class="tx-corridor">🇬🇧 → 🇮🇳 GBP/INR</span></div>
+            <span class="tx-cell">$180,000</span>
+            <span class="tx-cell" style="color:#f08080;">FPS → NEFT</span>
+            <span><span class="tx-status st-fx">FX CONVERTING</span></span>
+          </div>
+          <div class="tx-row">
+            <div class="tx-route"><span class="tx-id">TXN-00284177</span><span class="tx-corridor">🌍 Mobile Money · KES</span></div>
+            <span class="tx-cell">$8,200</span>
+            <span class="tx-cell" style="color:#f0a060;">M-Pesa</span>
+            <span><span class="tx-status st-settled">SETTLED</span></span>
+          </div>
+          <div class="feed-metrics">
+            <div class="fm-item"><div class="fm-label">Volume (Today)</div><div class="fm-val" style="color:var(--gips-light);">$8.4B</div><div class="fm-sub">All corridors</div></div>
+            <div class="fm-item"><div class="fm-label">Avg. Settlement</div><div class="fm-val" style="color:var(--white);">&lt;3s</div><div class="fm-sub">Domestic rail</div></div>
+            <div class="fm-item"><div class="fm-label">AML Flags</div><div class="fm-val" style="color:var(--green);">0</div><div class="fm-sub">Today</div></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ey gips">Live Infrastructure</div>
+        <h2 style="color:var(--white);">Every Payment. Routed. Recorded.<br>Reconciled.</h2>
+        <p style="margin-top:0.85rem;">GIPS processes payments across seven distinct rail types — from sub-2-second UPI transfers to multi-day SWIFT wires — under a single governance layer. Every transaction follows the same 7-step sequence regardless of rail, corridor, or currency.</p>
+        <div class="feed-features">
+          <div class="ff-item"><div class="ff-body"><h4>Compliance-First Architecture</h4><p>Compliance screening runs before any payment is routed. High-risk transactions trigger review workflows — no payment bypasses governance regardless of rail or currency.</p></div></div>
+          <div class="ff-item"><div class="ff-body"><h4>FX Transparency</h4><p>Applied exchange rate, spread, fee breakdown, and settlement time are visible to every user on every cross-currency transaction. No opaque conversion markup.</p></div></div>
+          <div class="ff-item"><div class="ff-body"><h4>Unified Ledger Reconciliation</h4><p>Every GIPS payment creates a ledger entry at the moment of execution — not at settlement. Reserve reconciliation is immediate and continuous.</p></div></div>
+          <div class="ff-item"><div class="ff-body"><h4>No Off-Ledger Movement</h4><p>No GIPS payment moves without a corresponding ledger entry and reserve mapping. There are no undocumented flows, no shadow balances, and no rail that operates outside governance.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GOVERNANCE ═══ -->
+<section class="section" id="governance">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey gold">Governance & Risk</div>
+      <h2 style="color:var(--white);">No Rail Bypasses Governance.<br>Every Transaction Screened.</h2>
+    </div>
+    <div class="gov-grid">
+      <div class="gg-item"><div class="gg-icon">⊘</div><div class="gg-title">AML Monitoring</div><p class="gg-desc">Every payment is screened against AML rules before routing. High-risk patterns trigger review workflows — flow is paused, not failed.</p></div>
+      <div class="gg-item"><div class="gg-icon" style="color:var(--gips-gold);">§</div><div class="gg-title">Jurisdiction-Based Restrictions</div><p class="gg-desc">Each rail operates under jurisdiction-specific rules. Access is automatically gated by the sender's compliance tier and destination jurisdiction.</p></div>
+      <div class="gg-item"><div class="gg-icon" style="color:var(--green);">◈</div><div class="gg-title">Transaction Limit Enforcement</div><p class="gg-desc">Per-rail, per-corridor, and per-entity transaction limits are enforced at routing — not flagged post-execution. Limits cannot be bypassed.</p></div>
+      <div class="gg-item"><div class="gg-icon" style="color:var(--gips-light);">▣</div><div class="gg-title">Sanctions Screening</div><p class="gg-desc">All counterparties are screened against active sanctions lists before each payment. Sanctions matches block routing automatically.</p></div>
+      <div class="gg-item"><div class="gg-icon" style="color:#f08080;">⬡</div><div class="gg-title">Risk Scoring</div><p class="gg-desc">Transaction risk scores are calculated at entry. Risk score updates feed the Risk Engine continuously — no static scoring between transactions.</p></div>
+      <div class="gg-item"><div class="gg-icon" style="color:var(--gips-gold);">⇄</div><div class="gg-title">Reserve Reconciliation</div><p class="gg-desc">Reserve mapping is the final step of every payment. No GIPS payment is complete without confirmed reserve reconciliation in the Unified Ledger.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD ═══ -->
+<section class="section">
+  <div class="container">
+    <div class="s-intro">
+      <div class="ey gips">Dashboard Overview</div>
+      <h2 style="color:var(--white);">User & Institutional<br>Payment Views</h2>
+    </div>
+    <div class="dash-panels">
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--gips),var(--gips-deep));"></div>
+        <div class="dp-header"><div class="dp-title">Smart Wallet Payment View</div><div class="dp-tag">USER</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Sent (MTD)</div><div class="dp-m-val" style="color:var(--white);">$284,400</div><div class="dp-m-sub" style="color:var(--text-dim);">18 transactions</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Received (MTD)</div><div class="dp-m-val" style="color:var(--gips-light);">$142,000</div><div class="dp-m-sub" style="color:var(--text-dim);">6 transactions</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Avg. Settlement</div><div class="dp-m-val" style="color:var(--green);">&lt;4s</div><div class="dp-m-sub" style="color:var(--text-dim);">Domestic</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Compliance Status</div><div class="dp-m-val" style="color:var(--green);">CLEAR</div><div class="dp-m-sub" style="color:var(--text-dim);">0 flags</div></div>
+        </div>
+        <div class="dp-rows">
+          <div class="dp-row"><span class="dp-row-key">Last Payment Rail</span><span class="dp-row-val">UPI → SWIFT (INR/AED)</span></div>
+          <div class="dp-row"><span class="dp-row-key">FX Applied</span><span class="dp-row-val">84.22 · 0.04bp spread</span></div>
+          <div class="dp-row"><span class="dp-row-key">Settlement Status</span><span class="dp-row-val" style="color:var(--green);">Settled · 14:22:08</span></div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dp-topbar" style="background:linear-gradient(90deg,var(--gips-gold),var(--gips));"></div>
+        <div class="dp-header"><div class="dp-title">Institutional Payments</div><div class="dp-tag" style="color:var(--gips-light);border-color:var(--gips-border);background:var(--gips-dim);">PRIME</div></div>
+        <div class="dp-metrics">
+          <div class="dp-metric"><div class="dp-m-label">Daily Volume</div><div class="dp-m-val" style="color:var(--white);">$2.4B</div><div class="dp-m-sub" style="color:var(--text-dim);">7 rails active</div></div>
+          <div class="dp-metric"><div class="dp-m-label">FX Exposure</div><div class="dp-m-val" style="color:var(--gips-gold);">$840M</div><div class="dp-m-sub" style="color:var(--text-dim);">8 currencies</div></div>
+          <div class="dp-metric"><div class="dp-m-label">AML Flags (MTD)</div><div class="dp-m-val" style="color:var(--green);">0</div><div class="dp-m-sub" style="color:var(--green);">All clear</div></div>
+          <div class="dp-metric"><div class="dp-m-label">Settlement Speed</div><div class="dp-m-val" style="color:var(--gips-light);">98.4%</div><div class="dp-m-sub" style="color:var(--text-dim);">&lt;30s</div></div>
+        </div>
+        <div class="corridor-bars">
+          <div class="cb-label">Volume by Corridor</div>
+          <div class="cb-row"><span class="cb-name" style="color:#ffb566;">🇮🇳 India</span><div class="cb-track"><div class="cb-fill" style="width:42%;background:var(--india);"></div></div><span class="cb-pct">42%</span></div>
+          <div class="cb-row"><span class="cb-name" style="color:#88aaee;">🇺🇸 USA</span><div class="cb-track"><div class="cb-fill" style="width:28%;background:var(--usa);"></div></div><span class="cb-pct">28%</span></div>
+          <div class="cb-row"><span class="cb-name" style="color:#99b8ff;">🇪🇺 Europe</span><div class="cb-track"><div class="cb-fill" style="width:18%;background:#4466cc;"></div></div><span class="cb-pct">18%</span></div>
+          <div class="cb-row"><span class="cb-name" style="color:var(--gips-light);">🌐 Global</span><div class="cb-track"><div class="cb-fill" style="width:12%;background:var(--gips);"></div></div><span class="cb-pct">12%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <div class="fc-inner">
+      <div class="ey gips" style="justify-content:center;display:flex;margin-bottom:1.5rem;">Global Rails. Unified Ledger.</div>
+      <h2>GIPS Connects Every Payment System<br>Into One Governed Infrastructure.</h2>
+      <p>Local speed. Global reach. Ledger reconciliation. No off-ledger movement. No undocumented flow.</p>
+      <div class="fc-trio">
+        <div class="fct">Local Speed</div>
+        <div class="fct">Global Reach</div>
+        <div class="fct">Ledger Reconciliation</div>
+      </div>
+      <div class="fc-btns">
+        <button class="btn-final">◈ Open Smart Wallet</button>
+        <button class="btn-final-out">Explore Payment Corridors</button>
+        <button class="btn-final-out">Request Institutional Access</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/kapitor.svg" alt="Kapitor"><span>Kapitor</span></div>
+        <p>The Global Financial Operating System. One ledger. One wallet. Global control.</p>
+      </div>
+      <div class="footer-col"><h5>Platform</h5><ul><li><a href="index.html">Smart Wallet</a></li><li><a href="gp.html">Pay</a></li><li><a href="#">Trade</a></li><li><a href="#">Earn</a></li><li><a href="#">Stake</a></li><li><a href="#">Vaults</a></li></ul></div>
+      <div class="footer-col"><h5>Digital Assets</h5><ul><li><a href="#">Kaloft (EPT)</a></li><li><a href="#">Katoin</a></li><li><a href="#">EQOUIN</a></li><li><a href="#">KFI</a></li><li><a href="rwa.html">RWA</a></li></ul></div>
+      <div class="footer-col"><h5>Institutional</h5><ul><li><a href="prime.html">Kapitor Prime</a></li><li><a href="#">Custody</a></li><li><a href="#">Treasury</a></li><li><a href="#">FX</a></li><li><a href="#">API Access</a></li></ul></div>
+      <div class="footer-col"><h5>Payments</h5><ul><li><a href="#" style="color:var(--gips-light);">GIPS</a></li><li><a href="#">Corridors</a></li><li><a href="#">FX Engine</a></li><li><a href="compliance.html">Compliance</a></li><li><a href="#">Institutional</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="company.html">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Media</a></li><li><a href="#">Contact</a></li><li><a href="#">Whitepaper</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Payment Terms</a><a href="#">AML Policy</a><a href="#">GIPS Documentation</a></div>
+      <div class="footer-copy">© Kapitor Technologies Pvt Ltd – All Rights Reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  window.addEventListener("scroll",()=>{document.getElementById("hdr").style.padding=window.scrollY>60?"0.65rem 2.5rem":"1rem 2.5rem";});
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});},{threshold:0.05});
+  document.querySelectorAll(
+    ".rc-card,.af-step,.ab-item,.tx-row,.fm-item,.ff-item,.gg-item,.dp-metric,.dp-row,.cb-row"
+  ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
+  (function(){
+    var header=document.getElementById("hdr");
+    var mobileToggle=document.querySelector(".nav-mobile-toggle");
+    function isMobile(){return window.innerWidth<=900;}
+    if(mobileToggle&&header){
+      mobileToggle.addEventListener("click",function(){
+        header.classList.toggle("header-mobile-open");
+        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
+      });
+    }
+    document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+      btn.addEventListener("click",function(e){
+        if(isMobile()){e.preventDefault();var wrap=btn.closest(".nav-item-wrap");wrap.classList.toggle("open");btn.setAttribute("aria-expanded",wrap.classList.contains("open"));}
+      });
+    });
+  })();
+</script>
+</body>
+</html>
