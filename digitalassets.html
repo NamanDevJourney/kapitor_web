@@ -374,6 +374,22 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
 .nav-dropdown .nav-dropdown-head{font-weight:500;color:var(--text);padding:0.5rem 1rem 0.25rem;font-size:0.76rem;}
 .nav-dropdown-inner{padding-left:0.5rem;border-left:1px solid var(--border);margin:0 0.5rem 0.25rem 1rem;}
 .nav-dropdown-inner a{padding:0.3rem 0.75rem;font-size:0.74rem;}
+
+/* ─── Two-panel nav dropdown ─── */
+.nav-two-panel-dropdown{min-width:680px;padding:0.7rem;}
+.nav-two-panel-grid{display:grid;grid-template-columns:260px 1fr;gap:0.75rem;align-items:start;}
+.nav-two-panel-left{background:var(--surface2);border-radius:8px;padding:0.45rem;display:flex;flex-direction:column;gap:0.15rem;}
+.nav-two-panel-tab{width:100%;text-align:left;background:transparent;border:1px solid transparent;color:var(--text-muted);padding:0.6rem 0.75rem;border-radius:8px;cursor:pointer;font-size:0.79rem;font-weight:600;font-family:inherit;transition:background 0.15s ease,border-color 0.15s ease,color 0.15s ease;}
+.nav-two-panel-tab:hover,.nav-two-panel-tab.is-active{color:var(--api-light);background:var(--api-dim);border-color:var(--api-border);}
+.nav-two-panel-right{background:var(--white);border:1px solid var(--border);border-radius:10px;position:relative;min-height:240px;overflow:hidden;}
+.nav-two-panel-panel{position:absolute;inset:0;padding:0.75rem 0.85rem;overflow-y:auto;opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity 0.2s,transform 0.2s,visibility 0.2s;}
+.nav-two-panel-panel.is-active{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-two-panel-panel a{display:block;color:var(--text-muted);text-decoration:none;font-size:0.74rem;padding:0.33rem 0.6rem;border-radius:8px;transition:color 0.2s,background 0.15s;}
+.nav-two-panel-panel a:hover{color:var(--text);background:var(--surface2);}
+@media(max-width:900px){
+  .nav-two-panel-dropdown{min-width:0;width:100%;}
+  .nav-two-panel-grid{grid-template-columns:1fr;}
+}
 .nav-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;display:flex;align-items:center;white-space:nowrap;font-weight:400;}
 .nav-link:hover,.nav-link.active{color:var(--eq-light);}
 .nav-mobile-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:1px solid var(--border-md);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0;}
@@ -420,94 +436,107 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
   <nav class="nav-wrap" aria-label="Main navigation">
     <div class="nav-item-wrap">
       <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Platform <span class="chevron">▾</span></button>
-      <div class="nav-dropdown">
-        <a href="kapitor-smart-wallet.html" class="nav-dropdown-head">Kapitor Smart Wallet</a>
-        <div class="nav-dropdown-inner">
-          <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
-          <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
-          <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
-          <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
-          <a href="kapitor-smart-wallet.html">Security Framework</a>
-        </div>
-        <a href="kapitor-pay.html" class="nav-dropdown-head">Kapitor Pay</a>
-        <div class="nav-dropdown-inner">
-          <a href="kapitor-pay.html">Global Transfers</a>
-          <a href="kapitor-pay.html">QR &amp; P2P</a>
-          <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
-          <a href="kapitor-pay.html">Salary &amp; Payroll</a>
-          <a href="kapitor-pay.html">International Settlement</a>
-          <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
-        </div>
-        <a href="kapitor-trade.html" class="nav-dropdown-head">Kapitor Trade</a>
-        <div class="nav-dropdown-inner">
-          <a href="kapitor-trade.html">Spot Markets</a>
-          <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
-          <a href="kapitor-trade.html">Derivatives</a>
-          <a href="kapitor-trade.html">OTC Desk</a>
-          <a href="kapitor-trade.html">Risk Engine</a>
-        </div>
-        <a href="kapitor-earn.html" class="nav-dropdown-head">Kapitor Earn</a>
-        <div class="nav-dropdown-inner">
-          <a href="kapitor-earn.html">Conservative Strategy</a>
-          <a href="kapitor-earn.html">Balanced Strategy</a>
-          <a href="kapitor-earn.html">Growth Strategy</a>
-          <a href="kapitor-earn.html">Yield Sources</a>
-          <a href="kapitor-earn.html">Performance Reporting</a>
-        </div>
-        <a href="kapitor-stake.html" class="nav-dropdown-head">Kapitor Stake</a>
-        <div class="nav-dropdown-inner">
-          <a href="kapitor-stake.html">ETH Liquid Staking</a>
-          <a href="kapitor-stake.html">SOL Staking</a>
-          <a href="kapitor-stake.html">DOT Staking</a>
-          <a href="kapitor-stake.html">ATOM Staking</a>
-          <a href="kapitor-stake.html">Layered Yield Model</a>
-        </div>
-        <a href="kapitor-vaults.html" class="nav-dropdown-head">Kapitor Vaults</a>
-        <div class="nav-dropdown-inner">
-          <a href="kapitor-vaults.html">Stable Income Vault</a>
-          <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
-          <a href="kapitor-vaults.html">Bond-Backed Vault</a>
-          <a href="kapitor-vaults.html">Trade Finance Vault</a>
-          <a href="kapitor-vaults.html">Capital Protected Vault</a>
+      <div class="nav-dropdown nav-two-panel-dropdown" data-key="platform" role="menu" aria-label="Platform menu">
+        <div class="nav-two-panel-grid">
+          <div class="nav-two-panel-left" role="tablist" aria-label="Platform categories">
+            <button type="button" class="nav-two-panel-tab is-active" data-key="wallet" role="tab" aria-selected="true">Kapitor Smart Wallet</button>
+            <button type="button" class="nav-two-panel-tab" data-key="pay" role="tab" aria-selected="false">Kapitor Pay</button>
+            <button type="button" class="nav-two-panel-tab" data-key="trade" role="tab" aria-selected="false">Kapitor Trade</button>
+            <button type="button" class="nav-two-panel-tab" data-key="earn" role="tab" aria-selected="false">Kapitor Earn</button>
+            <button type="button" class="nav-two-panel-tab" data-key="stake" role="tab" aria-selected="false">Kapitor Stake</button>
+            <button type="button" class="nav-two-panel-tab" data-key="vaults" role="tab" aria-selected="false">Kapitor Vaults</button>
+          </div>
+          <div class="nav-two-panel-right" role="region" aria-live="polite">
+            <div class="nav-two-panel-panel is-active" data-key="wallet" role="tabpanel" aria-hidden="false">
+              <a href="kapitor-smart-wallet.html">Multi-Currency Fiat</a>
+              <a href="kapitor-smart-wallet.html">Crypto &amp; Stablecoins</a>
+              <a href="kapitor-smart-wallet.html">Token Holdings (Kaloft, Katoin, EQOUIN, KFI)</a>
+              <a href="kapitor-smart-wallet.html">Unified Ledger Architecture</a>
+              <a href="kapitor-smart-wallet.html">Security Framework</a>
+            </div>
+            <div class="nav-two-panel-panel" data-key="pay" role="tabpanel" aria-hidden="true">
+              <a href="kapitor-pay.html">Global Transfers</a>
+              <a href="kapitor-pay.html">QR &amp; P2P</a>
+              <a href="kapitor-pay.html">Cards &amp; Virtual Cards</a>
+              <a href="kapitor-pay.html">Salary &amp; Payroll</a>
+              <a href="kapitor-pay.html">International Settlement</a>
+              <a href="kapitor-pay.html">Global Bill Payment System (GBPS)</a>
+            </div>
+            <div class="nav-two-panel-panel" data-key="trade" role="tabpanel" aria-hidden="true">
+              <a href="kapitor-trade.html">Spot Markets</a>
+              <a href="kapitor-trade.html">Swaps &amp; Liquidity Routing</a>
+              <a href="kapitor-trade.html">Derivatives</a>
+              <a href="kapitor-trade.html">OTC Desk</a>
+              <a href="kapitor-trade.html">Risk Engine</a>
+            </div>
+            <div class="nav-two-panel-panel" data-key="earn" role="tabpanel" aria-hidden="true">
+              <a href="kapitor-earn.html">Conservative Strategy</a>
+              <a href="kapitor-earn.html">Balanced Strategy</a>
+              <a href="kapitor-earn.html">Growth Strategy</a>
+              <a href="kapitor-earn.html">Yield Sources</a>
+              <a href="kapitor-earn.html">Performance Reporting</a>
+            </div>
+            <div class="nav-two-panel-panel" data-key="stake" role="tabpanel" aria-hidden="true">
+              <a href="kapitor-stake.html">ETH Liquid Staking</a>
+              <a href="kapitor-stake.html">SOL Staking</a>
+              <a href="kapitor-stake.html">DOT Staking</a>
+              <a href="kapitor-stake.html">ATOM Staking</a>
+              <a href="kapitor-stake.html">Layered Yield Model</a>
+            </div>
+            <div class="nav-two-panel-panel" data-key="vaults" role="tabpanel" aria-hidden="true">
+              <a href="kapitor-vaults.html">Stable Income Vault</a>
+              <a href="kapitor-vaults.html">Bitcoin Yield Vault</a>
+              <a href="kapitor-vaults.html">Bond-Backed Vault</a>
+              <a href="kapitor-vaults.html">Trade Finance Vault</a>
+              <a href="kapitor-vaults.html">Capital Protected Vault</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="nav-item-wrap active">
+    <div class="nav-item-wrap">
       <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false">Digital Assets <span class="chevron">▾</span></button>
-      <div class="nav-dropdown">
-        <a href="kaloft-ept.html" class="nav-dropdown-head">Kaloft (EPT)</a>
-        <div class="nav-dropdown-inner">
-          <a href="kaloft-ept.html">Economic Participation Model</a>
-          <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
-          <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
-          <a href="kaloft-ept.html">NAV Tracking</a>
-          <a href="kaloft-ept.html">Redemption Framework</a>
-        </div>
-        <a href="katoin.html" class="nav-dropdown-head">Katoin (Commodity Engine)</a>
-        <div class="nav-dropdown-inner">
-          <a href="katoin.html">Commodity Tokenization</a>
-          <a href="katoin.html">Trade Levels</a>
-          <a href="katoin.html">Profit Distribution Logic</a>
-          <a href="katoin.html">Global Commodity Flow</a>
-        </div>
-        <a href="digitalassets.html" class="nav-dropdown-head">EQOUIN (Equity Exposure)</a>
-        <div class="nav-dropdown-inner">
-          <a href="digitalassets.html">Valuation Mechanism</a>
-          <a href="digitalassets.html">Dividend Distribution</a>
-          <a href="digitalassets.html">Capital Appreciation Model</a>
-          <a href="digitalassets.html">Internal Trading Market</a>
-        </div>
-        <a href="kfi.html" class="nav-dropdown-head">KFI – Kapitor Financial Instruments</a>
-        <div class="nav-dropdown-inner">
-          <a href="kfi.html">Bank Guarantees (BG)</a>
-          <a href="kfi.html">SBLC</a>
-          <a href="kfi.html">Letter of Credit (LC)</a>
-          <a href="kfi.html">Performance Guarantees</a>
-          <a href="kfi.html">Digital Issuance</a>
-          <a href="kfi.html">Blockchain Record</a>
+      <div class="nav-dropdown nav-two-panel-dropdown" data-key="digital-assets" role="menu" aria-label="Digital Assets menu">
+        <div class="nav-two-panel-grid">
+          <div class="nav-two-panel-left" role="tablist" aria-label="Digital assets categories">
+            <button type="button" class="nav-two-panel-tab is-active" data-key="kaloft" role="tab" aria-selected="true">Kaloft (EPT)</button>
+            <button type="button" class="nav-two-panel-tab" data-key="katoin" role="tab" aria-selected="false">Katoin</button>
+            <button type="button" class="nav-two-panel-tab" data-key="eqouin" role="tab" aria-selected="false">EQOUIN</button>
+            <button type="button" class="nav-two-panel-tab" data-key="kfi" role="tab" aria-selected="false">KFI – Kapitor Financial Instruments</button>
+          </div>
+          <div class="nav-two-panel-right" role="region" aria-live="polite">
+            <div class="nav-two-panel-panel is-active" data-key="kaloft" role="tabpanel" aria-hidden="false">
+              <a href="kaloft-ept.html">Economic Participation Model</a>
+              <a href="kaloft-ept.html">Pool Structures (1M–100M)</a>
+              <a href="kaloft-ept.html">Lock Periods (1Y / 3Y / 5Y)</a>
+              <a href="kaloft-ept.html">NAV Tracking</a>
+              <a href="kaloft-ept.html">Redemption Framework</a>
+            </div>
+            <div class="nav-two-panel-panel" data-key="katoin" role="tabpanel" aria-hidden="true">
+              <a href="katoin.html">Commodity Tokenization</a>
+              <a href="katoin.html">Trade Levels</a>
+              <a href="katoin.html">Profit Distribution Logic</a>
+              <a href="katoin.html">Global Commodity Flow</a>
+            </div>
+            <div class="nav-two-panel-panel" data-key="eqouin" role="tabpanel" aria-hidden="true">
+              <a href="digitalassets.html">Valuation Mechanism</a>
+              <a href="digitalassets.html">Dividend Distribution</a>
+              <a href="digitalassets.html">Capital Appreciation Model</a>
+              <a href="digitalassets.html">Internal Trading Market</a>
+            </div>
+            <div class="nav-two-panel-panel" data-key="kfi" role="tabpanel" aria-hidden="true">
+              <a href="kfi.html">Bank Guarantees (BG)</a>
+              <a href="kfi.html">SBLC</a>
+              <a href="kfi.html">Letter of Credit (LC)</a>
+              <a href="kfi.html">Performance Guarantees</a>
+              <a href="kfi.html">Digital Issuance</a>
+              <a href="kfi.html">Blockchain Record</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
     <a href="rwa.html" class="nav-link">RWA</a>
     <a href="prime.html" class="nav-link">Prime</a>
     <a href="gp.html" class="nav-link">Global Payments</a>
