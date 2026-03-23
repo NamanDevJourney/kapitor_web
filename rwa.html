@@ -113,8 +113,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;displ
 .nav-main-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
 .nav-main-link:hover{color:var(--text);}
 .nav-main-link.active{color:var(--rwa-light);}
-.nav-dropdown{position:absolute;top:100%;left:0;margin-top:0.35rem;min-width:260px;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 18px 45px rgba(15,23,42,0.18);padding:0.6rem 0;display:none;}
-.nav-item-wrap:hover>.nav-dropdown{display:block;}
+.nav-dropdown{position:absolute;top:100%;left:0;margin-top:0.35rem;min-width:260px;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 18px 45px rgba(15,23,42,0.18);padding:0.6rem 0;display:block;}
 .nav-dropdown-head{display:block;padding:0.5rem 1rem;font-size:0.78rem;font-weight:600;color:var(--text);text-decoration:none;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
 .nav-dropdown-inner{padding:0 0 0.4rem 0.85rem;display:flex;flex-direction:column;}
 .nav-dropdown-inner a{padding:0.3rem 0.9rem;font-size:0.74rem;color:var(--text-muted);text-decoration:none;border-radius:3px;display:block;}
@@ -450,7 +449,19 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
         </div>
       </div>
     </div>
-    <a href="rwa.html" class="nav-main-link active">RWA</a>
+    <div class="nav-item-wrap">
+      <a href="rwa.html" class="nav-main-link active">RWA</a>
+      <div class="nav-dropdown" role="menu" aria-label="RWA menu">
+        <div class="nav-dropdown-inner">
+          <a href="#tokenized-bonds">Tokenized Bonds</a>
+          <a href="#gold">Gold</a>
+          <a href="#real-estate">Real Estate</a>
+          <a href="#carbon-credits">Carbon Credits</a>
+          <a href="#private-credit">Private Credit</a>
+          <a href="#trade-finance">Trade Finance Assets</a>
+        </div>
+      </div>
+    </div>
     <a href="prime.html" class="nav-main-link">Prime</a>
     <a href="gp.html" class="nav-main-link">Global Payments</a>
     <a href="compliance.html" class="nav-main-link">Compliance</a>
@@ -562,7 +573,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
     <div class="asset-grid">
 
       <!-- BONDS -->
-      <div class="ac-card">
+      <div class="ac-card" id="tokenized-bonds">
         <div class="acc-topbar" style="background:var(--bond);"></div>
         <div class="acc-header">
           <div class="acc-num">ASSET CLASS 01</div>
@@ -594,7 +605,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
       </div>
 
       <!-- GOLD -->
-      <div class="ac-card">
+      <div class="ac-card" id="gold">
         <div class="acc-topbar" style="background:var(--gold-c);"></div>
         <div class="acc-header">
           <div class="acc-num">ASSET CLASS 02</div>
@@ -626,7 +637,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
       </div>
 
       <!-- REAL ESTATE -->
-      <div class="ac-card">
+      <div class="ac-card" id="real-estate">
         <div class="acc-topbar" style="background:var(--re);"></div>
         <div class="acc-header">
           <div class="acc-num">ASSET CLASS 03</div>
@@ -658,7 +669,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
       </div>
 
       <!-- CARBON CREDITS -->
-      <div class="ac-card">
+      <div class="ac-card" id="carbon-credits">
         <div class="acc-topbar" style="background:var(--carbon);"></div>
         <div class="acc-header">
           <div class="acc-num">ASSET CLASS 04</div>
@@ -690,7 +701,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
       </div>
 
       <!-- PRIVATE CREDIT -->
-      <div class="ac-card">
+      <div class="ac-card" id="private-credit">
         <div class="acc-topbar" style="background:var(--pcredit);"></div>
         <div class="acc-header">
           <div class="acc-num">ASSET CLASS 05</div>
@@ -722,7 +733,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
       </div>
 
       <!-- TRADE FINANCE -->
-      <div class="ac-card">
+      <div class="ac-card" id="trade-finance">
         <div class="acc-topbar" style="background:var(--trade);"></div>
         <div class="acc-header">
           <div class="acc-num">ASSET CLASS 06</div>

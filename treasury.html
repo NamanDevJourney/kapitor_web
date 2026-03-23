@@ -68,8 +68,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2.5rem;displ
 .nav-main-link{color:var(--text-muted);text-decoration:none;font-size:0.79rem;padding:0.42rem 0.78rem;border-radius:4px;transition:color 0.2s;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
 .nav-main-link:hover{color:var(--text);}
 .nav-main-link.active{color:var(--tr-light);}
-.nav-dropdown{position:absolute;top:100%;left:0;margin-top:0.35rem;min-width:260px;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 18px 45px rgba(15,23,42,0.18);padding:0.6rem 0;display:none;}
-.nav-item-wrap:hover>.nav-dropdown{display:block;}
+.nav-dropdown{position:absolute;top:100%;left:0;margin-top:0.35rem;min-width:260px;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 18px 45px rgba(15,23,42,0.18);padding:0.6rem 0;display:block;}
 .nav-dropdown-head{display:block;padding:0.5rem 1rem;font-size:0.78rem;font-weight:600;color:var(--text);text-decoration:none;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
 .nav-dropdown-inner{padding:0 0 0.4rem 0.85rem;display:flex;flex-direction:column;}
 .nav-dropdown-inner a{padding:0.3rem 0.9rem;font-size:0.74rem;color:var(--text-muted);text-decoration:none;border-radius:3px;display:block;}
@@ -314,7 +313,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
   .nav-wrap{display:none;position:absolute;top:100%;left:0;right:0;margin-top:0.35rem;padding:0.75rem 1.25rem;background:rgba(252,248,232,0.98);border-bottom:1px solid var(--border);flex-direction:column;align-items:flex-start;gap:0.25rem;}
   .nav-wrap.is-open{display:flex;}
   .nav-item-wrap{width:100%;flex-direction:column;align-items:flex-start;}
-  .nav-dropdown{position:static;margin-top:0.15rem;box-shadow:none;border-radius:6px;width:100%;display:none;}
+  .nav-dropdown{position:static;margin-top:0.15rem;box-shadow:none;border-radius:6px;width:100%;display:block;}
   .nav-dropdown-inner{padding-left:1.4rem;}
   .hdr-right{gap:0.5rem;}
   .hdr-right .btn-cta{padding-inline:0.9rem;}

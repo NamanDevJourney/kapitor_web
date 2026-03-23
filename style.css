@@ -258,3 +258,243 @@ footer {
   color: var(--error);
 }
 
+/* ========================================================================
+   KAPITOR – NAVBAR DROPDOWNS (Global Overrides)
+   ======================================================================== */
+
+/* Base dropdown container (single-column + developers + page menus). */
+.nav-dropdown {
+  /* Keep layout consistent even if page-level CSS used display:none. */
+  display: block;
+
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 240px;
+  margin-top: 2px;
+  padding: 0.5rem 0;
+
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  max-height: 80vh;
+  overflow-y: auto;
+
+  z-index: 600;
+
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(-6px) !important;
+  pointer-events: none !important;
+  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms;
+}
+
+/* Dropdown visibility is controlled only by JS via `.is-open` / `.open` classes. */
+.nav-dropdown.is-open,
+.nav-item-wrap.open .nav-dropdown {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+/* Disabled menus (used for page-only dropdowns). */
+.kapitor-nav-menu-disabled {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(-6px) !important;
+  pointer-events: none !important;
+}
+
+.nav-dropdown a,
+.nav-dropdown-inner a {
+  display: block;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.78rem;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.nav-dropdown a:hover,
+.nav-dropdown-inner a:hover {
+  background: #f0ede6;
+  color: var(--blue);
+}
+
+/* Page dropdown sizing (single-column). */
+.nav-dropdown[role="menu"]:not(.nav-two-panel-dropdown) {
+  min-width: 220px;
+  max-width: 300px;
+}
+
+/* ========================================================================
+   KAPITOR – TWO-PANEL NAV DROPDOWNS (Platform / Digital Assets)
+   ======================================================================== */
+
+.nav-two-panel-dropdown {
+  min-width: 680px;
+  padding: 0.7rem;
+}
+
+.nav-two-panel-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.nav-two-panel-left {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.nav-two-panel-tab {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-left: 2px solid transparent;
+  color: var(--text-muted);
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.79rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background 120ms ease, color 120ms ease, border-left-color 120ms ease;
+}
+
+.nav-two-panel-tab:hover,
+.nav-two-panel-tab.is-active {
+  background: #f0ede6;
+  color: var(--blue);
+  border-left-color: var(--blue);
+}
+
+.nav-two-panel-right {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  position: relative;
+  min-height: 240px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.02),
+    inset 0 2px 14px rgba(0, 0, 0, 0.04);
+}
+
+.nav-two-panel-panel {
+  position: absolute;
+  inset: 0;
+  padding: 0.75rem 0.85rem;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms;
+  pointer-events: none;
+}
+
+.nav-two-panel-panel.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.nav-two-panel-panel a {
+  display: block;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.74rem;
+  padding: 0.33rem 0.6rem;
+  border-radius: 8px;
+  transition: color 120ms ease, background 120ms ease;
+}
+
+.nav-two-panel-panel a:hover {
+  color: var(--text);
+  background: #efefed;
+}
+
+@media (max-width: 900px) {
+  .nav-item-wrap.open .nav-dropdown,
+  .nav-dropdown.is-open {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-top: 0.15rem;
+    width: 100%;
+  }
+
+  .nav-two-panel-dropdown {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .nav-two-panel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================================================
+   PAGE-SPECIFIC (RWA / Prime / Global Payments / Compliance / Developers / Company)
+   Exact colors + typography for the dropdown interaction.
+   ======================================================================== */
+.nav-dropdown[role="menu"]:not(.nav-two-panel-dropdown) {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.09);
+}
+
+.nav-dropdown[role="menu"]:not(.nav-two-panel-dropdown) a,
+.nav-dropdown[role="menu"]:not(.nav-two-panel-dropdown) .nav-dropdown-inner a {
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 11px 20px;
+  transition: background 180ms ease, color 180ms ease;
+}
+
+.nav-dropdown[role="menu"]:not(.nav-two-panel-dropdown) a:hover,
+.nav-dropdown[role="menu"]:not(.nav-two-panel-dropdown) .nav-dropdown-inner a:hover {
+  background: #111111;
+  color: #f5f4ef;
+}
+
+/* When a dropdown is open, visually emphasize the exact text span. */
+.nav-item-wrap.dropdown-open .nav-text {
+  color: var(--blue);
+  font-weight: 600;
+}
+
+/* ========================================================================
+   Compatibility dropdown transitions (used only if `.dropdown` / `.submenu`
+   classes exist in markup).
+   ======================================================================== */
+.dropdown,
+.submenu {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 200ms ease,
+    transform 200ms ease,
+    visibility 200ms;
+  pointer-events: none;
+}
+
+.dropdown.is-open,
+.submenu.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
