@@ -998,10 +998,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
   ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
 
   (function(){
-    const toggle=document.querySelector(".nav-mobile-toggle");
     const nav=document.querySelector(".nav-wrap");
-    if(!toggle||!nav)return;
-    toggle.addEventListener("click",()=>{const open=nav.classList.toggle("is-open");toggle.setAttribute("aria-expanded",open?"true":"false");});
+    if(!nav)return;
     nav.querySelectorAll(".nav-item-wrap>.nav-trigger").forEach(btn=>{
       btn.addEventListener("click",e=>{
         if(window.innerWidth>900)return;

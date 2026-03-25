@@ -520,7 +520,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
     <!-- TOP 3 VAULTS -->
     <div class="vaults-grid">
       <!-- V1: STABLE INCOME -->
-      <div class="vault-card">
+      <div class="vault-card" id="stable-income-vault">
         <div class="vc-topbar" style="background:var(--v1);"></div>
         <div class="vc-header">
           <div class="vc-num">VAULT 01</div>
@@ -560,7 +560,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
       </div>
 
       <!-- V2: BITCOIN YIELD -->
-      <div class="vault-card featured">
+      <div class="vault-card featured" id="btc-vault">
         <div class="vc-topbar" style="background:var(--v2);"></div>
         <div style="position:absolute;top:1.4rem;right:1.4rem;font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:0.1em;padding:0.22rem 0.6rem;border-radius:3px;background:var(--v2-dim);color:var(--v2);border:1px solid var(--v2-border);">MOST POPULAR</div>
         <div class="vc-header">
@@ -601,7 +601,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
       </div>
 
       <!-- V3: BOND-BACKED -->
-      <div class="vault-card">
+      <div class="vault-card" id="bond-backed-vault">
         <div class="vc-topbar" style="background:var(--v3);"></div>
         <div class="vc-header">
           <div class="vc-num">VAULT 03</div>
@@ -644,7 +644,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
     <!-- BOTTOM 2 VAULTS -->
     <div class="vaults-bottom">
       <!-- V4: TRADE FINANCE -->
-      <div class="vault-card">
+      <div class="vault-card" id="trade-finance-vault">
         <div class="vc-topbar" style="background:var(--v4);"></div>
         <div class="vc-header">
           <div class="vc-num">VAULT 04</div>
@@ -684,7 +684,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
       </div>
 
       <!-- V5: CAPITAL PROTECTED -->
-      <div class="vault-card">
+      <div class="vault-card" id="capital-protected-vault">
         <div class="vc-topbar" style="background:var(--v5);"></div>
         <div class="vc-header">
           <div class="vc-num">VAULT 05</div>
@@ -1017,15 +1017,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
   });
 
   (function(){
-    var header=document.getElementById("hdr");
-    var mobileToggle=document.querySelector(".nav-mobile-toggle");
     function isMobile(){return window.innerWidth<=900;}
-    if(mobileToggle&&header){
-      mobileToggle.addEventListener("click",function(){
-        header.classList.toggle("header-mobile-open");
-        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
-      });
-    }
     document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
       btn.addEventListener("click",function(e){
         if(isMobile()){
