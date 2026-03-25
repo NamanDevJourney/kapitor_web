@@ -1059,15 +1059,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
     ".rc-card,.af-step,.ab-item,.tx-row,.fm-item,.ff-item,.gg-item,.dp-metric,.dp-row,.cb-row"
   ).forEach(el=>{el.style.opacity="0";el.style.transform="translateY(10px)";el.style.transition="opacity 0.42s ease,transform 0.42s ease";obs.observe(el);});
   (function(){
-    var header=document.getElementById("hdr");
-    var mobileToggle=document.querySelector(".nav-mobile-toggle");
     function isMobile(){return window.innerWidth<=900;}
-    if(mobileToggle&&header){
-      mobileToggle.addEventListener("click",function(){
-        header.classList.toggle("header-mobile-open");
-        mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
-      });
-    }
     document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
       btn.addEventListener("click",function(e){
         if(isMobile()){e.preventDefault();var wrap=btn.closest(".nav-item-wrap");wrap.classList.toggle("open");btn.setAttribute("aria-expanded",wrap.classList.contains("open"));}

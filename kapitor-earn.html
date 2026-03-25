@@ -650,7 +650,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
     </div>
     <div class="strat-compare">
       <!-- CONSERVATIVE -->
-      <div class="strat-col">
+      <div class="strat-col" id="strat-conservative">
         <div class="strat-top-bar" style="background:var(--blue);"></div>
         <div class="strat-header">
           <div class="strat-tier">Tier 01</div>
@@ -723,7 +723,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
         <button class="strat-btn" style="border:1px solid var(--green-border);color:var(--green);background:var(--green-dim);">SELECT BALANCED</button>
       </div>
       <!-- GROWTH -->
-      <div class="strat-col">
+      <div class="strat-col" id="strat-growth">
         <div class="strat-top-bar" style="background:var(--amber);"></div>
         <div class="strat-header">
           <div class="strat-tier">Tier 03</div>
@@ -1242,16 +1242,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:5rem
 <script src="script.js"></script>
 <script>
 (function(){
-  var header=document.getElementById("hdr");
-  var mobileToggle=document.querySelector(".nav-mobile-toggle");
-  function isMobile(){return window.innerWidth<=900;}
-  if(mobileToggle&&header){
-    mobileToggle.addEventListener("click",function(){
-      header.classList.toggle("header-mobile-open");
-      mobileToggle.setAttribute("aria-expanded",header.classList.contains("header-mobile-open"));
-    });
-  }
-  document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
+    function isMobile(){return window.innerWidth<=900;}
+    document.querySelectorAll(".nav-item-wrap .nav-trigger").forEach(function(btn){
     btn.addEventListener("click",function(e){
       if(isMobile()){e.preventDefault();var wrap=btn.closest(".nav-item-wrap");wrap.classList.toggle("open");btn.setAttribute("aria-expanded",wrap.classList.contains("open"));}
     });
